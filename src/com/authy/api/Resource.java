@@ -2,6 +2,7 @@ package com.authy.api;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -13,6 +14,7 @@ import java.util.Map.Entry;
 
 import java.net.HttpURLConnection;
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLHandshakeException;
 
 /**
  * Class to send http requests.
@@ -112,6 +114,9 @@ public class Resource {
 			status = connection.getResponseCode();
 			answer = getResponse(connection);
 		}
+		catch(SSLHandshakeException e) {
+			System.err.println("SSL verification is failing. This might be because of an attack. Contact support@authy.com");
+		}
 		catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -169,7 +174,7 @@ public class Resource {
 		return sb.toString();
 	}
 	
-	private void writeXml(HttpURLConnection connection, Response data) throws Exception {
+	private void writeXml(HttpURLConnection connection, Response data) throws SSLHandshakeException, IOException {
 		if(data == null)
 			return;
 		

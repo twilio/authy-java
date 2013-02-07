@@ -73,12 +73,16 @@ public class Error implements Response {
 		Map<String, String> map = new HashMap<String, String>();
 		
 		map.put("message", message);
+		map.put("country-code", countryCode);
+		map.put("url", url);
 		
 		return map;
 	}
 
 	@Override
 	public String toString() {
-		return "Error [message=" + message + "]";
+		return "Error [message=" + message + ", url=" + url + ", countryCode="
+				+ countryCode + "]";
 	}
+
 }

@@ -3,6 +3,7 @@ package com.authy.api;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
@@ -72,7 +73,7 @@ public class Users extends Resource {
 	 * @param options
 	 * @return Hash instance with API's response.
 	 */
-	public Hash requestSms(int userId, Response options) {
+	public Hash requestSms(int userId, Map<String, String> options) {
 		String url = "";
 		
 		try {
@@ -82,7 +83,8 @@ public class Users extends Resource {
 			e.printStackTrace();
 		}
 		
-		String content = this.get(SMS_PATH + url, options);
+		MapToResponse opt = new MapToResponse(options);
+		String content = this.get(SMS_PATH + url, opt);
 		
 		return instanceFromXml(this.getStatus(), content);
 	}
@@ -164,6 +166,22 @@ public class Users extends Resource {
 		return hash;
 	}
 
+	static class MapToResponse implements Response {
+		private Map<String, String> options;
+		
+		public MapToResponse(Map<String, String> options) {
+			this.options = options;
+		}
+		
+		public String toXML() {
+			return "";
+		}
+
+		public Map<String, String> toMap() {
+			return options;
+		}
+	}
+	
 	@XmlRootElement(name="user")
 	static class User implements Response {
 		String email, cellphone, countryCode;

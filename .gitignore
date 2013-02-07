@@ -11,6 +11,5 @@ target
 .classpath
 bin/
 build/
-dist/
 doc/
 

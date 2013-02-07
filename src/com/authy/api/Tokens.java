@@ -108,7 +108,8 @@ public class Tokens extends Resource {
 		}
 		
 		public Map<String, String> toMap() {
-			options.put("force", "true");
+			if(!options.containsKey("force"))
+				options.put("force", "true");
 			
 			return options;
 		}

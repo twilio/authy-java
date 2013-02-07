@@ -4,7 +4,7 @@ Java library to access the Authy API
 
 ## Compilation
 
-Use `ant` to generate `authy-java.jar`
+Use `ant` to generate `authy-java.jar` or use the jar file in `dist` directory.
 
 	ant compress
 	
@@ -114,17 +114,8 @@ In case `sms.isOk()` returns `false`, you can get an Error object using `sms.get
 This call will be ignored if the user is using the Authy Mobile App. If you still want to send
 the SMS pass force=true as an option
 
-	Response options = new Response() {
-		public String toXML() {
-			return "";
-		}
-		public Map<String, String> toMap() {
-			Map<String, String> map = new HashMap<String, String>();
-			map.put("force", "true");
-			return map;
-		}
-	};
-	
+	Map<String, String> options = new HashMap<String, String>();
+	options.put("force", "true");
 	Hash sms = users.requestSms(authy_id, options);
 
 ## More...
