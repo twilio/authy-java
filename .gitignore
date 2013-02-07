@@ -3,9 +3,6 @@
 target
 
 # Package Files #
-*.jar
-*.war
-*.ear
 .settings
 .project
 .classpath
