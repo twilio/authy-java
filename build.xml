@@ -1,0 +1,21 @@
+<project name="authy-java">
+  <target name="init">
+    <mkdir dir="build/classes" />
+    <mkdir dir="dist" />
+  </target>
+
+  <target name="compile" depends="init">
+    <javac srcdir="src" destdir="build/classes" />
+  </target>
+
+  <target name="compress" depends="compile">
+    <jar destfile="dist/authy-java.jar"
+         basedir="build/classes"
+         excludes="**/Main*.class" />
+  </target>
+
+  <target name="clean">
+    <delete dir="build" />
+    <delete dir="dist" />
+  </target>
+</project>
