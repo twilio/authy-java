@@ -131,7 +131,7 @@ public class Resource {
 		return status;
 	}
 	
-	private HttpURLConnection createConnection(URL url, String method, 
+	protected HttpURLConnection createConnection(URL url, String method, 
 			Map<String, String> options) throws Exception {
 
 		
