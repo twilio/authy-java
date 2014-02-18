@@ -6,6 +6,7 @@ package com.authy;
  *
  */
 public class AuthyApiException extends AuthyException {
+	private static final long serialVersionUID = 1L;
 	String status, uri, message;
 
 	public AuthyApiException(String status, String uri, String message) {
