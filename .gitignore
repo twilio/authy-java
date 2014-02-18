@@ -6,7 +6,7 @@ target
 .settings
 .project
 .classpath
-bin/
-build/
-doc/
 
+# InteliJ IDEA
+*.iml
+.idea

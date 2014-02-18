@@ -6,7 +6,10 @@ package com.authy;
  *
  */
 public class AuthyException extends Exception {
-	public AuthyException(String message) {
+
+    private static final long serialVersionUID = 1L;
+
+    public AuthyException(String message) {
 		super(message);
 	}
 }

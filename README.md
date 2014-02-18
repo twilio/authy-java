@@ -1,39 +1,61 @@
-# Authy
+# Authy - Java API
 
 Java library to access the Authy API
 
 ## Compilation
 
-Use `ant` to generate `authy-java.jar` or use the jar file in `dist` directory.
+Use Maven `mvn` to generate `jar` artifact.
 
-	ant compress
-	
-This will generate a jar file in `dist` folder.
+```bash
+mvn install
+```
+
+This will generate a jar file in `target` folder and install it into your private Maven repository.
+
+## Maven dependency
+
+Add this entry to your `pom.xml` to include jar artifacto into build.
+
+```xml
+<dependency>
+    <groupId>com.authy</groupId>
+    <artifactId>authy-java</artifactId>
+    <version>0.1.0</version>
+</dependency>
+```
 
 ## Usage
 
 Import API:
 
-	import com.authy.*;
-	import com.authy.api.*;
-	
+```java
+import com.authy.*;
+import com.authy.api.*;
+```
+
 Create an API instance:
 
-	AuthyApiClient client = new AuthyApiClient("your-api-key", "https://api.authy.com/");
+```java
+AuthyApiClient client = new AuthyApiClient("your-api-key", "https://api.authy.com/");
+```
 
 or
 
-	AuthyApiClient client = new AuthyApiClient("your-api-key");
+```java
+AuthyApiClient client = new AuthyApiClient("your-api-key");
+```
 
 Get a Users and Tokens instance:
 
-	Users users = client.getUsers();
-	Tokens tokens = client.getTokens();
+```java
+Users users = client.getUsers();
+Tokens tokens = client.getTokens();
+```
 
 ## Registering a user
 
 __NOTE: User is matched based on cellphone and country code not e-mail.
-A cellphone is uniquely associated with an authy_id.__  
+A cellphone is uniquely associated with an authy_id.__
 
 
 `users.createUser()` requires the user e-mail address and cellphone. Optionally you can pass in the countryCode or we will asume
@@ -41,37 +63,49 @@ USA. The call will return you the authy id for the user that you need to store i
 
 To create a user just use:
 
-	User user = users.createUser("new_user@email.com", "405-342-5699", "57");
+```java
+User user = users.createUser("new_user@email.com", "405-342-5699", "57");
+```
 
 You can check if the user was created calling `user.isOk()`.
 If request went right, you need to store the authy id in your database. Use `user.getId()` to get this `id` in your database.
 
-	if(user.isOk())
-		// Store user.getId() in your database
+```java
+if (user.isOk()) {
+    // Store user.getId() in your database
+}
+```
 
 If something goes wrong `user.isOk()` returns `false` and you can see the errors using the following code
 
-	user.getError();
-	
+```java
+user.getError();
+```
+
 It returns an Error object explaining what went wrong with the request.
 
 ## Verifying a user
 
 
-__NOTE: Token verification is only enforced if the user has completed registration. To change this behaviour see Forcing Verification section below.__  
-   
+__NOTE: Token verification is only enforced if the user has completed registration. To change this behaviour see Forcing Verification section below.__
+
    >*Registration is completed once the user installs and registers the Authy mobile app or logins once successfully using SMS.*
 
 `tokens.verify()` takes the authy_id that you are verifying and the token that you want to verify. You should have the authy_id in your database
 
-    Token verification = tokens.verify(authy_id, "token-user-entered");
+```java
+Token verification = tokens.verify(authy_id, "token-user-entered");
+```
 
 Once again you can use `isOk()` to verify whether the token was valid or not.
 
-    if(verification.isOk())
-		// token was valid, user can sign in
-    else
-		// token is invalid
+```java
+if (verification.isOk()) {
+    // token was valid, user can sign in
+} else {
+    // token is invalid
+}
+```
 
 In case `verification.isOk()` returns `false`, you can get an Error object using `verification.getError()`
 
@@ -79,22 +113,29 @@ In case `verification.isOk()` returns `false`, you can get an Error object using
 
 If you wish to verify tokens even if the user has not yet complete registration, pass force=true when verifying the token.
 
-	Map<String, String> options = new HashMap<String, String>();
-	options.put("force", "true");
-    Token verification = tokens.verify(authy_id, "token-user-entered", options);
+```java
+Map<String, String> options = new HashMap<String, String>();
+options.put("force", "true");
+Token verification = tokens.verify(authy_id, "token-user-entered", options);
+```
 
 ## Deleting a user
 
 `users.deleteUser()` takes the authy_id that you want to delete. You should have the authy_id in your database
 
-	Hash response = users.deleteUser();
+```java
+Hash response = users.deleteUser();
+```
 
 Once again you can use `isOk()` to verify whether the user was deleted or not.
 
-	if(response.isOk())
-		// User was deleted
-	else
-		// Some error ocurred
+```java
+if (response.isOk()) {
+    // User was deleted
+} else {
+    // Some error ocurred
+}
+```
 
 In case `response.isOk()` returns `false`, you can get an Error object using `response.getError()`
 
@@ -102,21 +143,28 @@ In case `response.isOk()` returns `false`, you can get an Error object using `re
 
 `users.requestSms()` takes the authy_id that you want to send a SMS token. This requires Authy SMS plugin to be enabled.
 
-    Hash sms = users.requestSms(authy_id);
-	
+```java
+Hash sms = users.requestSms(authy_id);
+```
+
 As always, you can use `isOk()` to verify if the token was sent.
 
-    if(sms.isOk())
-		// sms was sent
+```java
+if (sms.isOk()) {
+    // sms was sent
+}
+```
 
 In case `sms.isOk()` returns `false`, you can get an Error object using `sms.getError()`
 
 This call will be ignored if the user is using the Authy Mobile App. If you still want to send
 the SMS pass force=true as an option
 
-	Map<String, String> options = new HashMap<String, String>();
-	options.put("force", "true");
-	Hash sms = users.requestSms(authy_id, options);
+```java
+Map<String, String> options = new HashMap<String, String>();
+options.put("force", "true");
+Hash sms = users.requestSms(authy_id, options);
+```
 
 ## More...
 
@@ -135,7 +183,7 @@ You can find the full API documentation in the [official documentation](https://
 * Please try not to mess with the Rakefile, version, or history. If you want to have your own version, or is otherwise necessary, that is fine, but please isolate to its own commit so I can cherry-pick around it.
 
 Copyright
-== 
+==
 
 Copyright (c) 2013 Authy Inc. See LICENSE.txt for
 further details.

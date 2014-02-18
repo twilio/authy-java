@@ -3,7 +3,6 @@ package com.authy.api;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URLEncoder;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
@@ -167,16 +166,18 @@ public class Users extends Resource {
 	}
 
 	static class MapToResponse implements Response {
-		private Map<String, String> options;
+		private final Map<String, String> options;
 		
 		public MapToResponse(Map<String, String> options) {
 			this.options = options;
 		}
 		
+		@Override
 		public String toXML() {
 			return "";
 		}
 
+		@Override
 		public Map<String, String> toMap() {
 			return options;
 		}
@@ -222,6 +223,7 @@ public class Users extends Resource {
 			this.countryCode = countryCode;
 		}
 		
+		@Override
 		public String toXML() {
 			StringWriter sw = new StringWriter();
 			String xml = "";
@@ -240,6 +242,7 @@ public class Users extends Resource {
 			return xml;
 		}
 
+		@Override
 		public Map<String, String> toMap() {
 			return null;
 		}
