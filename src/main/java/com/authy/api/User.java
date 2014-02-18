@@ -3,7 +3,6 @@ package com.authy.api;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.XmlElement;
@@ -38,6 +37,7 @@ public class User extends Instance implements Response {
 	 * Map a Token instance to its XML representation.
 	 * @return a String with the description of this object in XML.
 	 */
+    @Override
 	public String toXML() {
 		Error error = getError();
 		
@@ -65,6 +65,7 @@ public class User extends Instance implements Response {
 	 * Map a Token instance to its Java's Map representation.
 	 * @return a Java's Map with the description of this object.
 	 */
+    @Override
 	public Map<String, String> toMap() {
 		Map<String, String> map = new HashMap<String, String>();
 		

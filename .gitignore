@@ -6,7 +6,4 @@ target
 .settings
 .project
 .classpath
-bin/
-build/
-doc/
 
