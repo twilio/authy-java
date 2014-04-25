@@ -14,20 +14,12 @@ public class AuthyApiClient {
 	
 	public static final String DEFAULT_API_URI = "https://api.authy.com";
 	
-	public AuthyApiClient(String apiKey, String apiUri) {
-		this.apiUri = apiUri;
-		this.apiKey = apiKey;
-		
-		this.users = new Users(this.apiUri, this.apiKey);
-		this.tokens = new Tokens(this.apiUri, this.apiKey);
+	public AuthyApiClient(String apiKey) {
+		this(apiKey, DEFAULT_API_URI, false);
 	}
 	
-	public AuthyApiClient(String apiKey) {
-		this.apiUri = DEFAULT_API_URI;
-		this.apiKey = apiKey;
-		
-		this.users = new Users(this.apiUri, this.apiKey);
-		this.tokens = new Tokens(this.apiUri, this.apiKey);
+	public AuthyApiClient(String apiKey, String apiUri) {
+		this(apiKey, apiUri, false);
 	}
 	
 	public AuthyApiClient(String apiKey, String apiUri, boolean testFlag) {
