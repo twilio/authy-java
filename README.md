@@ -41,7 +41,7 @@ USA. The call will return you the authy id for the user that you need to store i
 
 To create a user just use:
 
-	User user = users.createUser("new_user@email.com", "405-342-5699", "57");
+	User user = Users.createUser("new_user@email.com", "405-342-5699", "57");
 
 You can check if the user was created calling `user.isOk()`.
 If request went right, you need to store the authy id in your database. Use `user.getId()` to get this `id` in your database.
