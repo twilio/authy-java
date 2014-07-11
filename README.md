@@ -36,18 +36,18 @@ __NOTE: User is matched based on cellphone and country code not e-mail.
 A cellphone is uniquely associated with an authy_id.__  
 
 
-`users.createUser()` requires the user e-mail address and cellphone. Optionally you can pass in the countryCode or we will asume
-USA. The call will return you the authy id for the user that you need to store in your database.
+`users.createUser(String, String)` requires the user's e-mail address and cellphone. Optionally you can pass in the countryCode or we will assume USA. The call will return the authy id for the user that you need to store in your database.
 
 To create a user just use:
 
 	User user = users.createUser("new_user@email.com", "405-342-5699", "57");
+	// createUser takes as arguments the email, phone number and country code
 
 You can check if the user was created calling `user.isOk()`.
-If request went right, you need to store the authy id in your database. Use `user.getId()` to get this `id` in your database.
+If the request was successful, you will need to store the authy id in your database. Use `user.getId()` to get this `id` in your database.
 
 	if(user.isOk())
-		// Store user.getId() in your database
+	// Store user.getId() in your database
 
 If something goes wrong `user.isOk()` returns `false` and you can see the errors using the following code
 
