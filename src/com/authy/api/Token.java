@@ -15,23 +15,25 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="token")
 public class Token extends Instance implements Response {
-	boolean valid;
 
-	public Token() {
-		this.valid = false;
+    public static final String VALID_TOKEN_MESSAGE = "Token is valid.";
+
+	public Token() {}
+
+	public Token(int status, String content, String message) {
+		super(status, content, message);
 	}
 
-	public Token(int status, String content) {
-		super(status, content);
-	}
-
-	public boolean isValid() {
-		return valid;
-	}
-
-	public void setValid(boolean valid) {
-		this.valid = valid;
-	}
+    /**
+     * Check if this is token is correct. (i.e No error occurred)
+     * @return true if no error occurred else false.
+     */
+    public boolean isOk() {
+        if(super.isOk()) {
+            return this.message.equals(VALID_TOKEN_MESSAGE);
+        }
+        return false;
+    }
 
 	/**
 	 * Map a Token instance to its XML representation.

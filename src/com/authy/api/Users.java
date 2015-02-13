@@ -122,6 +122,7 @@ public class Users extends Resource {
 				StringReader xml = new StringReader(content);
 				Hash hash = (Hash)unmarshaller.unmarshal(new StreamSource(xml));
 				user = hash.getUser();
+                user.message = hash.getMessage();
 			}
 			user.status = status;
 			user.setError(error);

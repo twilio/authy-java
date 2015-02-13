@@ -16,15 +16,22 @@ import javax.xml.transform.stream.StreamSource;
 public class Instance {
 	int status;
 	String content;
+    String message;
 	Error error;
 	
 	public Instance() {
 		content = "";
 	}
-	
-	public Instance(int status, String content) {
+
+    public Instance(int status, String content) {
+        this.status = status;
+        this.content = content;
+    }
+    
+	public Instance(int status, String content, String message) {
 		this.status = status;
 		this.content = content;
+        this.message = message;
 	}
 	
 	/**

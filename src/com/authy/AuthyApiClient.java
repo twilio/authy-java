@@ -11,9 +11,11 @@ public class AuthyApiClient {
 	private Users users;
 	private Tokens tokens;
 	private String apiUri, apiKey;
-	
+
+    public static final String CLIENT_NAME = "AuthyJava";
 	public static final String DEFAULT_API_URI = "https://api.authy.com";
-	
+    public static final String VERSION = "1.0.1";
+
 	public AuthyApiClient(String apiKey, String apiUri) {
 		this.apiUri = apiUri;
 		this.apiKey = apiKey;

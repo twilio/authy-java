@@ -10,6 +10,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
+import com.authy.AuthyException;
+
 /**
  * 
  * @author Julian Camargo
@@ -17,8 +19,7 @@ import javax.xml.transform.stream.StreamSource;
  */
 public class Tokens extends Resource {
 	public static final String TOKEN_VERIFICATION_PATH = "/protected/xml/verify/";
-	public static final String VALID_TOKEN_MESSAGE = "is valid";
-	
+
 	public Tokens(String uri, String key) {
 		super(uri, key);
 	}
@@ -36,18 +37,18 @@ public class Tokens extends Resource {
 		internalToken.setOption(options);
 		
 		StringBuffer path = new StringBuffer(TOKEN_VERIFICATION_PATH);
-		
 		try {
+            validateToken(token);
 			path.append(URLEncoder.encode(token, ENCODE) + '/');
 			path.append(URLEncoder.encode(Integer.toString(userId), ENCODE));
+
+            String content = this.get(path.toString(), internalToken);
+            return tokenFromXml(this.getStatus(), content);
 		}
 		catch(Exception e) {
 			e.printStackTrace();
 		}
-		
-		String content = this.get(path.toString(), internalToken);
-		
-		return tokenFromXml(this.getStatus(), content);
+        return new Token();
 	}
 	
 	private Token tokenFromXml(int status, String content) {
@@ -66,8 +67,7 @@ public class Tokens extends Resource {
 			StringReader xml = new StringReader(content);
 			Hash hash = (Hash)unmarshaller.unmarshal(new StreamSource(xml));
 
-			token = new Token(status, content);
-			token.setValid(token.isOk() && hash.getToken().equals(VALID_TOKEN_MESSAGE));
+			token = new Token(status, content, hash.getMessage());
 		}
 		catch(JAXBException e) {
 			e.printStackTrace();
@@ -90,7 +90,26 @@ public class Tokens extends Resource {
 		}
 		return error;
 	}
-	
+
+    private void validateToken(String token) throws AuthyException {
+        int len = token.length();
+        if(!isInteger(token) ){
+            throw new AuthyException("Invalid Token. Only digits accepted.");
+        }
+        if(len < 6 || len > 10){
+            throw new AuthyException("Invalid Token. Unexpected length.");
+        }
+    }
+
+    private boolean isInteger(String s) {
+        try {
+            Long.parseLong(s);
+        } catch(NumberFormatException e) {
+            return false;
+        }
+        return true;
+    }
+
 	class InternalToken implements Response {
 		Map<String, String> options;
 		

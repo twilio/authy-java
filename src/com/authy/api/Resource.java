@@ -16,6 +16,8 @@ import java.net.HttpURLConnection;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLHandshakeException;
 
+import com.authy.AuthyApiClient;
+
 /**
  * Class to send http requests.
  * @author Julian Camargo
@@ -25,6 +27,7 @@ public class Resource {
 	private String apiUri, apiKey;
 	private int status;
 	private boolean testFlag = false;
+    private Map<String, String> defaultOptions;
 
 	public static final String ENCODE = "UTF-8";
 	public static final String XML_CONTENT_TYPE = "application/xml";
@@ -47,10 +50,7 @@ public class Resource {
 	 * @return response from API.
 	 */
 	public String post(String path, Response data) {
-		Map<String, String> options = new HashMap<String, String>();
-		options.put("Content-Type", XML_CONTENT_TYPE);
-
-		return request("POST", path, data, options);
+		return request("POST", path, data, getDefaultOptions());
 	}
 	
 	/**
@@ -60,10 +60,7 @@ public class Resource {
 	 * @return response from API.
 	 */
 	public String get(String path, Response data) {
-		Map<String, String> options = new HashMap<String, String>();
-		options.put("Content-Type", XML_CONTENT_TYPE);
-
-		return request("GET", path, data, options);
+		return request("GET", path, data, getDefaultOptions());
 	}
 	
 	/**
@@ -73,10 +70,7 @@ public class Resource {
 	 * @return response from API.
 	 */
 	public String put(String path, Response data) {
-		Map<String, String> options = new HashMap<String, String>();
-		options.put("Content-Type", XML_CONTENT_TYPE);
-
-		return request("PUT", path, data, options);
+		return request("PUT", path, data, getDefaultOptions());
 	}
 	
 	/**
@@ -86,10 +80,7 @@ public class Resource {
 	 * @return response from API.
 	 */
 	public String delete(String path, Response data) {
-		Map<String, String> options = new HashMap<String, String>();
-		options.put("Content-Type", XML_CONTENT_TYPE);
-
-		return request("DELETE", path, data, options);
+		return request("DELETE", path, data, getDefaultOptions());
 	}
 	
 	public String request(String method, String path, Response data, Map<String, String> options) {
@@ -200,4 +191,19 @@ public class Resource {
 		
 		return sb.toString();
 	}
+
+    private Map<String, String> getDefaultOptions() {
+        if(this.defaultOptions == null || this.defaultOptions.isEmpty()){
+            this.defaultOptions = new HashMap<String, String>();
+            this.defaultOptions.put("Content-Type", XML_CONTENT_TYPE);
+            this.defaultOptions.put("User-Agent", getUserAgent());
+        }
+        return this.defaultOptions;
+    }
+
+    private String getUserAgent() {
+        String os = String.format("%s-%s-%s; Java %s", System.getProperty("os.name"), System.getProperty("os.version"),
+                System.getProperty("os.arch"), System.getProperty("java.specification.version"));
+        return String.format("%s/%s (%s)", AuthyApiClient.CLIENT_NAME, AuthyApiClient.VERSION, os);
+    }
 }

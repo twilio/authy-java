@@ -21,8 +21,8 @@ public class User extends Instance implements Response {
 	public User() {
 	}
 
-	public User(int status, String content) {
-		super(status, content);
+	public User(int status, String content, String message) {
+		super(status, content, message);
 	}
 
 	@XmlElement(name="id")
