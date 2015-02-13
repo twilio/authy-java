@@ -123,6 +123,7 @@ public class Users extends Resource {
 				Hash hash = (Hash)unmarshaller.unmarshal(new StreamSource(xml));
 				user = hash.getUser();
 			}
+			user.status = status;
 			user.setError(error);
 		}
 		catch(JAXBException e) {
