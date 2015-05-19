@@ -64,7 +64,7 @@ public class Users extends Resource {
 	 * @return Hash instance with API's response.
 	 */
 	public Hash requestSms(int userId) {
-		return requestSms(userId, null);
+		return requestSms(userId, new HashMap<String, String>(0));
 	}
 	
 	/**
