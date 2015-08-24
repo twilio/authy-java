@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import java.net.HttpURLConnection;
-import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLHandshakeException;
 
 import com.authy.AuthyApiClient;
@@ -126,12 +125,8 @@ public class Resource {
 			Map<String, String> options) throws Exception {
 
 		
-		HttpURLConnection connection = null;
-		if(testFlag)
-			connection = (HttpURLConnection)url.openConnection();
-		else
-			connection = (HttpsURLConnection)url.openConnection();
-		
+		HttpURLConnection connection = url.openConnection();
+
 		connection.setRequestMethod(method);
 		
 		for(Entry<String, String> s : options.entrySet()) {
