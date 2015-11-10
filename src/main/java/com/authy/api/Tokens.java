@@ -2,8 +2,8 @@ package com.authy.api;
 
 import java.io.StringReader;
 import java.net.URLEncoder;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -11,6 +11,9 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
 import com.authy.AuthyException;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * 
@@ -33,8 +36,7 @@ public class Tokens extends Resource {
 	}
 
 	public Token verify(int userId, String token, Map<String, String> options) {
-		InternalToken internalToken = new InternalToken();
-		internalToken.setOption(options);
+		InternalToken internalToken = new InternalToken(options);
 		
 		StringBuffer path = new StringBuffer(TOKEN_VERIFICATION_PATH);
 		try {
@@ -110,27 +112,29 @@ public class Tokens extends Resource {
         return true;
     }
 
-	class InternalToken implements Response {
-		Map<String, String> options;
-		
-		public InternalToken() {
-			options = new HashMap<String, String>();
-		}
-		
-		public void setOption(Map<String, String> options) {
-			if(options != null)
-				this.options = options;
-		}
-		
-		public String toXML() {
-			return null;
-		}
-		
-		public Map<String, String> toMap() {
-			if(!options.containsKey("force"))
-				options.put("force", "true");
-			
-			return options;
-		}
+	class InternalToken extends Request {
+	    @JsonIgnore
+        private Map<String, String> additionalProperties = new HashMap<String, String>();
+
+        public InternalToken() {}
+
+        public InternalToken(Map<String, String> options) {
+            this.additionalProperties = options;
+        }
+
+        @JsonAnyGetter
+        public Map<String, String> getAdditionalProperties() {
+            return this.additionalProperties;
+        }
+
+        @JsonAnySetter
+        public void setAdditionalProperty(String name, String value) {
+            this.additionalProperties.put(name, value);
+        }
+
+        @Override
+        public Request.Serialization preferredSerialization() {
+            return Request.Serialization.QueryString;
+        }
 	}
 }

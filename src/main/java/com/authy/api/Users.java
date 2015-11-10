@@ -1,18 +1,20 @@
 package com.authy.api;
 
 import java.io.StringReader;
-import java.io.StringWriter;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.transform.stream.StreamSource;
+
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  *
@@ -169,24 +171,32 @@ public class Users extends Resource {
 		return hash;
 	}
 
-	static class MapToResponse implements Response {
-		private Map<String, String> options;
+	static class MapToResponse extends Request {
+		@JsonIgnore
+		private Map<String, String> additionalProperties = new HashMap<String, String>();
 
-		public MapToResponse(Map<String, String> options) {
-			this.options = options;
+		public MapToResponse(Map<String, String> properties) {
+			this.additionalProperties = properties;
 		}
 
-		public String toXML() {
-			return "";
+		@JsonAnyGetter
+		public Map<String, String> getAdditionalProperties() {
+			return this.additionalProperties;
 		}
 
-		public Map<String, String> toMap() {
-			return options;
+		@JsonAnySetter
+		public void setAdditionalProperty(String name, String value) {
+			this.additionalProperties.put(name, value);
+		}
+
+		@Override
+		public Serialization preferredSerialization() {
+			return Serialization.QueryString;
 		}
 	}
 
 	@XmlRootElement(name="user")
-	static class User implements Response {
+	static class User extends Request {
 		String email, cellphone, countryCode;
 
 		public User() {
@@ -225,26 +235,9 @@ public class Users extends Resource {
 			this.countryCode = countryCode;
 		}
 
-		public String toXML() {
-			StringWriter sw = new StringWriter();
-			String xml = "";
-
-			try {
-				JAXBContext context = JAXBContext.newInstance(this.getClass());
-				Marshaller marshaller = context.createMarshaller();
-
-				marshaller.marshal(this, sw);
-
-				xml = sw.toString();
-			}
-			catch(Exception e) {
-				e.printStackTrace();
-			}
-			return xml;
-		}
-
-		public Map<String, String> toMap() {
-			return null;
+		@Override
+		public Serialization preferredSerialization() {
+			return Serialization.XML;
 		}
 	}
 }
