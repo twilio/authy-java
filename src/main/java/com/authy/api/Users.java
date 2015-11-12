@@ -25,6 +25,8 @@ public class Users extends Resource {
 	public static final String NEW_USER_PATH = "/protected/xml/users/new";
 	public static final String DELETE_USER_PATH = "/protected/xml/users/delete/";
 	public static final String SMS_PATH = "/protected/xml/sms/";
+    public static final String APPROVAL_REQUEST_PATH = "/onetouch/xml/users/%d/approval_requests";
+    public static final String APPROVAL_REQUEST_STATUS_PATH = "/onetouch/xml/approval_requests/%s";
 	public static final String DEFAULT_COUNTRY_CODE = "1";
 
 	public Users(String uri, String key) {
@@ -111,6 +113,32 @@ public class Users extends Resource {
 		return instanceFromXml(this.getStatus(), content);
 	}
 
+    /**
+     * Create a OneTouch approval request for this user
+     * @param id
+     * @param message
+     * @param details
+     * @param hiddenDetails
+     * @param secondsToExpire
+     */
+    public ApprovalRequestResponseWrapper requestApproval(
+        int id,
+        String message,
+        Map<String, String> details,
+        Map<String, String> hiddenDetails,
+        Integer secondsToExpire) {
+        ApprovalRequest approvalRequest =
+            new ApprovalRequest(message, details, hiddenDetails, secondsToExpire);
+
+        String content = this.post(String.format(APPROVAL_REQUEST_PATH, id), approvalRequest);
+        return this.instanceFromXml(content, ApprovalRequestResponseWrapper.class);
+    }
+
+    public ApprovalStatusResponseWrapper checkApproval(String uuid) {
+        String content = this.get(String.format(APPROVAL_REQUEST_STATUS_PATH, uuid), null);
+        return this.instanceFromXml(content, ApprovalStatusResponseWrapper.class);
+    }
+
 	private com.authy.api.User userFromXml(int status, String content) {
 		com.authy.api.User user = new com.authy.api.User();
 
@@ -170,6 +198,29 @@ public class Users extends Resource {
 		}
 		return hash;
 	}
+
+    private <T extends HashWrapper> T instanceFromXml(String content, Class<T> clazz) {
+        try {
+            JAXBContext context = JAXBContext.newInstance(clazz, Errors.class);
+            Unmarshaller unmarshaller = context.createUnmarshaller();
+
+            StringReader xml = new StringReader(content);
+            Object ret = unmarshaller.unmarshal(xml);
+
+            if(clazz.isInstance(ret)) {
+                return clazz.cast(ret);
+            }
+
+            if(ret instanceof Errors) {
+                T obj = clazz.newInstance();
+                obj.setErrors((Errors)ret);
+                return obj;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 	static class MapToResponse extends Request {
 		@JsonIgnore
