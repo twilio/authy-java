@@ -4,11 +4,19 @@ Java library to access the Authy API
 
 ## Compilation
 
+### Using Apache Ant
+
 Use `ant` to generate `authy-java.jar` or use the jar file in `dist` directory.
 
 	ant compress
 	
 This will generate a jar file in `dist` folder.
+
+### Using Apache Maven
+
+Use `mvn install` to compile and install the library in your local maven repository. This also installs the sources JAR file for source code lookup for better debugging.
+
+You will also find the JAR files in the `target` directory.
 
 ## Usage
 
@@ -133,6 +141,11 @@ You can find the full API documentation in the [official documentation](https://
 * Commit and push until you are happy with your contribution.
 * Make sure to add tests for it. This is important so I don't break it in a future version unintentionally.
 * Please try not to mess with the Rakefile, version, or history. If you want to have your own version, or is otherwise necessary, that is fine, but please isolate to its own commit so I can cherry-pick around it.
+
+Contributors
+==
+* Bhagya Silva [http://about.me/bhagyas](http://about.me/bhagyas)
+
 
 Copyright
 == 
