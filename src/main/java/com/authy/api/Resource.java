@@ -147,6 +147,10 @@ public class Resource {
     return status;
   }
 
+  public String getContentType() {
+    return this.contentType;
+  }
+
   protected HttpURLConnection createConnection(URL url, String method,
       Map<String, String> options) throws Exception {
 
