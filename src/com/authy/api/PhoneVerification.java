@@ -18,7 +18,7 @@ import com.authy.AuthyException;
  *
  */
 public class PhoneVerification extends Resource {
-  public static final String START_VERIFICATION_CODE_PATH = "/protected/json/phones/verification/";
+  public static final String PHONE_VERIFICATION_API_PATH = "/protected/json/phones/verification/";
 
   public PhoneVerification(String uri, String key) {
     super(uri, key, "JSON");
@@ -30,12 +30,31 @@ public class PhoneVerification extends Resource {
 
   public Verification start(Phone phone) {
     Verification verification = new Verification();
-    StringBuffer path = new StringBuffer(START_VERIFICATION_CODE_PATH);
+    StringBuffer path = new StringBuffer(PHONE_VERIFICATION_API_PATH);
     String response = "";
 
     try {
       path.append("start");
       response = this.post(path.toString(), phone);
+
+      verification.setStatus(this.getStatus());
+      verification.setResponse(response);
+    }
+
+    catch(Exception e) {
+      e.printStackTrace();
+    }
+    return verification;
+  }
+
+  public Verification check(Phone phone) {
+    Verification verification = new Verification();
+    StringBuffer path = new StringBuffer(PHONE_VERIFICATION_API_PATH);
+    String response = "";
+
+    try {
+      path.append("check");
+      response = this.get(path.toString(), phone);
 
       verification.setStatus(this.getStatus());
       verification.setResponse(response);

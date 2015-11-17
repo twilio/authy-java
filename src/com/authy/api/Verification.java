@@ -118,9 +118,9 @@ public class Verification implements Response {
       this.message = json.getString("message");
 
     if( !json.isNull("is_ported") )
-      this.isPorted = Boolean.parseBoolean(json.getString("is_ported"));
+      this.isPorted = json.getBoolean("is_ported");
 
     if( !json.isNull("is_cellphone") )
-      this.isCellphone = Boolean.parseBoolean(json.getString("is_cellphone"));
+      this.isCellphone = json.getBoolean("is_cellphone");
   }
 }

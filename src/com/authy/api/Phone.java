@@ -19,8 +19,9 @@ import javax.xml.bind.*;
 public class Phone implements Response {
   String number;
   String countryCode;
-  String locale;
-  String via;
+  String locale = "en";
+  String via = "sms";
+  String verificationCode = "Code no needed in this request, it is default value";
 
   public Phone() {}
 
@@ -29,6 +30,12 @@ public class Phone implements Response {
     this.countryCode = countryCode;
     this.locale = locale;
     this.via = via;
+  }
+
+  public Phone(String number, String countryCode, String verificationCode) {
+    this.number = number;
+    this.countryCode = countryCode;
+    this.verificationCode = verificationCode;
   }
 
   @XmlElement(name="phone_number")
@@ -49,6 +56,11 @@ public class Phone implements Response {
   @XmlElement(name="via")
     public String getVia() {
       return via;
+  }
+
+  @XmlElement(name="verification_code")
+    public String getVerificationCode() {
+      return verificationCode;
   }
 
   /**
@@ -82,6 +94,7 @@ public class Phone implements Response {
     map.put("country_code", countryCode);
     map.put("locale", locale);
     map.put("via", via);
+    map.put("verification_code", verificationCode);
 
     return map;
   }
@@ -93,6 +106,7 @@ public class Phone implements Response {
     verification.put("country_code", this.countryCode);
     verification.put("locale", this.locale);
     verification.put("via", this.via);
+    verification.put("verification_code", this.verificationCode);
 
     return verification.toString();
   }
