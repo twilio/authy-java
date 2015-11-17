@@ -74,4 +74,6 @@ public class Token extends Instance implements Response {
 		
 		return map;
 	}
+
+  public String toJSON(){ return ""; }
 }

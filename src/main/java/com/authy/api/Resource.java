@@ -27,22 +27,43 @@ public class Resource {
 	private String apiUri, apiKey;
 	private int status;
 	private boolean testFlag = false;
-    private Map<String, String> defaultOptions;
+  private Map<String, String> defaultOptions;
 
 	public static final String ENCODE = "UTF-8";
 	public static final String XML_CONTENT_TYPE = "application/xml";
+	public static final String JSON_CONTENT_TYPE = "application/json";
+
+	private boolean isJSON = false;
+	private String contentType = XML_CONTENT_TYPE;
 	
 	public Resource(String uri, String key) {
 		apiUri = uri;
 		apiKey = key;
 	}
-	
+
+	public Resource(String uri, String key, String contentType) {
+		apiUri = uri;
+		apiKey = key;
+		isJSON = contentType == "JSON";
+		if(isJSON)
+			this.contentType = JSON_CONTENT_TYPE;
+	}
+
 	public Resource(String uri, String key, boolean testFlag) {
 		apiUri = uri;
 		apiKey = key;
 		this.testFlag = testFlag;
 	}
-	
+
+	public Resource(String uri, String key, boolean testFlag,  String contentType) {
+		apiUri = uri;
+		apiKey = key;
+		this.testFlag = testFlag;
+		isJSON = contentType == "JSON";
+		if(isJSON)
+			this.contentType = JSON_CONTENT_TYPE;
+	}
+
 	/**
 	 * POST method.
 	 * @param path
@@ -99,7 +120,11 @@ public class Resource {
 			connection = createConnection(url, method, options);
 			
 			if(method.equals("POST") || method.equals("PUT")) {
-				writeXml(connection, data);
+				if(isJSON) {
+					writeJson(connection, data);
+				} else {
+					writeXml(connection, data);
+				}
 			}
 
 			status = connection.getResponseCode();
@@ -177,6 +202,19 @@ public class Resource {
 		output.close();
 	}
 	
+	private void writeJson(HttpURLConnection connection, Response data) throws SSLHandshakeException, IOException {
+		if(data == null)
+			return;
+		
+		OutputStream os = connection.getOutputStream();
+		
+		BufferedWriter output = new BufferedWriter(new OutputStreamWriter(os));
+		output.write(data.toJSON());
+		output.flush();
+		output.close();
+	}
+	
+
 	private String prepareGet(Response data) throws Exception {
 		if(data == null)
 			return "";
@@ -195,7 +233,8 @@ public class Resource {
     private Map<String, String> getDefaultOptions() {
         if(this.defaultOptions == null || this.defaultOptions.isEmpty()){
             this.defaultOptions = new HashMap<String, String>();
-            this.defaultOptions.put("Content-Type", XML_CONTENT_TYPE);
+            this.defaultOptions.put("Content-Type", contentType);
+            this.defaultOptions.put("Content-Type", contentType);
             this.defaultOptions.put("User-Agent", getUserAgent());
         }
         return this.defaultOptions;

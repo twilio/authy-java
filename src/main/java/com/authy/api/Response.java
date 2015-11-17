@@ -10,4 +10,5 @@ import java.util.Map;
 public interface Response {
 	public String toXML();
 	public Map<String, String> toMap();
+  public String toJSON();
 }

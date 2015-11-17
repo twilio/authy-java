@@ -132,5 +132,7 @@ public class Tokens extends Resource {
 			
 			return options;
 		}
+
+		public String toJSON(){ return ""; }
 	}
 }

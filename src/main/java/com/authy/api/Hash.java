@@ -86,6 +86,7 @@ public class Hash extends Instance implements Response {
 		return xml;
 	}
 
+	public String toJSON(){ return ""; }
 	/**
 	 * Map a Token instance to its Java's Map representation.
 	 * @return a Java's Map with the description of this object.

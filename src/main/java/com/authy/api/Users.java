@@ -183,6 +183,8 @@ public class Users extends Resource {
 		public Map<String, String> toMap() {
 			return options;
 		}
+
+		public String toJSON(){ return ""; }
 	}
 
 	@XmlRootElement(name="user")
@@ -246,5 +248,7 @@ public class Users extends Resource {
 		public Map<String, String> toMap() {
 			return null;
 		}
+
+		public String toJSON(){ return ""; }
 	}
 }

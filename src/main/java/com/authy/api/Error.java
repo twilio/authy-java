@@ -79,6 +79,7 @@ public class Error implements Response {
 		return map;
 	}
 
+	public String toJSON(){ return ""; }
 	@Override
 	public String toString() {
 		return "Error [message=" + message + ", url=" + url + ", countryCode="
