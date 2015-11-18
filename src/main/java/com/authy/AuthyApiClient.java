@@ -13,6 +13,7 @@ public class AuthyApiClient {
 	private String apiUri, apiKey;
 	private Phone phone;
 	private PhoneVerification phoneVerification;
+	private PhoneInfo phoneInfo;
 
   public static final String CLIENT_NAME = "AuthyJava";
 	public static final String DEFAULT_API_URI = "https://api.authy.com";
@@ -22,6 +23,7 @@ public class AuthyApiClient {
 		this.apiUri = apiUri;
 		this.apiKey = apiKey;
 
+		this.phoneInfo = new PhoneInfo(this.apiUri, this.apiKey);
 		this.phoneVerification = new PhoneVerification(this.apiUri, this.apiKey);
 		this.users = new Users(this.apiUri, this.apiKey);
 		this.tokens = new Tokens(this.apiUri, this.apiKey);
@@ -31,6 +33,7 @@ public class AuthyApiClient {
 		this.apiUri = DEFAULT_API_URI;
 		this.apiKey = apiKey;
 
+		this.phoneInfo = new PhoneInfo(this.apiUri, this.apiKey);
 		this.phoneVerification = new PhoneVerification(this.apiUri, this.apiKey);
 		this.users = new Users(this.apiUri, this.apiKey);
 		this.tokens = new Tokens(this.apiUri, this.apiKey);
@@ -40,6 +43,7 @@ public class AuthyApiClient {
 		this.apiUri = apiUri;
 		this.apiKey = apiKey;
 
+		this.phoneInfo = new PhoneInfo(this.apiUri, this.apiKey, testFlag);
 		this.phoneVerification = new PhoneVerification(this.apiUri, this.apiKey, testFlag);
 		this.users = new Users(this.apiUri, this.apiKey, testFlag);
 		this.tokens = new Tokens(this.apiUri, this.apiKey, testFlag);
@@ -55,5 +59,9 @@ public class AuthyApiClient {
 
 	public PhoneVerification getPhoneVerification() {
 		return this.phoneVerification;
+	}
+
+	public PhoneInfo getPhoneInfo() {
+		return this.phoneInfo;
 	}
 }

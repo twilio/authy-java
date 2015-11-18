@@ -38,6 +38,11 @@ public class Phone implements Response {
     this.verificationCode = verificationCode;
   }
 
+  public Phone(String number, String countryCode) {
+    this.number = number;
+    this.countryCode = countryCode;
+  }
+
   @XmlElement(name="phone_number")
     public String getNumber() {
       return number;
