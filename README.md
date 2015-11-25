@@ -23,18 +23,10 @@ ant compress
 
 This will generate a jar file in `dist` folder.
 
-If you want to use ant step by step you can follow these commands:
+If you want to use this command:
 ```shell
-$ ant clean
-$ ant compile
 $ ant compress
 ```
-or in one line
-
-```shell
-$ ant clean ; ant compile ; ant compress
-```
-
 ### Using Apache Maven
 
 Use `mvn install` to compile and install the library in your local maven repository. This also installs the sources JAR file for source code lookup for better debugging.
