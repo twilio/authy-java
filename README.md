@@ -91,8 +91,9 @@ If the request was successful, you will need to store the authy id in your datab
 
 ```java
 
-if(user.isOk())
- // Store user.getId() in your database
+  if(user.isOk()){
+    // Store user.getId() in your database
+  }
 ```
   If something goes wrong `user.isOk()` returns `false` and you can see the errors using the following code
 
@@ -116,7 +117,7 @@ if(user.isOk())
   Once again you can use `isOk()` to verify whether the token was valid or not.
 
 ```java
-	if(verification.isOk()){
+  if(verification.isOk()){
   // token was valid, user can sign in
   }else{
   	// token is invalid
@@ -143,11 +144,11 @@ if(user.isOk())
 
   Once again you can use `isOk()` to verify whether the user was deleted or not.
 ```java
-	if(response.isOk()){
-	  // User was deleted
-	  }else{
-	  // Some error ocurred
-	  }
+  if(response.isOk()){
+    // User was deleted
+  }else{
+    // Some error ocurred
+  }
 ```
 
   In case `response.isOk()` returns `false`, you can get an Error object using `response.getError()`
@@ -187,8 +188,10 @@ if(user.isOk())
   PhoneVerification phoneVerification  = client.getPhoneVerification();
 
   Verification verification;
-  Phone phone = new Phone("111-111-1111", "1", "en", "sms");
-  verification = phoneVerification.start(phone);
+  Params params = new Params();
+  params.setAttribute("locale", en);
+
+  verification = phoneVerification.start("111-111-1111", "1", "sms", params);
 
   System.out.println(verification.getMessage());
   System.out.println(verification.getIsPorted());
@@ -200,16 +203,13 @@ if(user.isOk())
   Once you sent the verification code the user will receive the code in the
   mobile device. Then you need to provide this code to check if it is okay.
 
-  You will notice that the `Phone` constructor is different from the `Phone`
-  sending the verification code.
 
   ```java
   AuthyApiClient client = new AuthyApiClient("SomeApiKey");
   PhoneVerification phoneVerification = client.getPhoneVerification();
 
   Verification verification;
-  Phone phone = new Phone("111-111-1111", "1", "2061");
-  verification = phoneVerification.check(Phone);
+  verification = phoneVerification.check("111-111-1111", "1", "2061");
 
   System.out.println(verificationCode.getMessage());
   System.out.println(verificationCode.getIsPorted());
@@ -222,11 +222,9 @@ if(user.isOk())
   ```java
   AuthyApiClient client = new AuthyApiClient("SomeApiKey");
   PhoneInfo phoneInfo  = client.getPhoneInfo();
-
   PhoneInfoResponse phoneInfoResponse;
-  Phone phone = new Phone("111-111-1111", "1");
 
-  phoneInfoResponse = phoneInfo.info(phoneToinfo);
+  phoneInfoResponse = phoneInfo.info("111-111-1111", "1");
 
   System.out.println(phoneInfoResponse.getMessage());
   System.out.println(phoneInfoResponse.getProvider());

@@ -10,8 +10,7 @@ public class TestPhoneInfo {
 
   @Test
   public void itTestsPhoneInfo() {
-    Phone phone = new Phone("7754615609", "1");
-    PhoneInfoResponse result = subject.info(phone);
+    PhoneInfoResponse result = subject.info("7754615609", "1");
 
     Assert.assertEquals(true, result.getMessage().contains("Phone number information as of"));
     Assert.assertEquals("", result.getProvider());

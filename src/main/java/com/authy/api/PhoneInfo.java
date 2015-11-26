@@ -28,14 +28,27 @@ public class PhoneInfo extends Resource {
     super(uri, key, testFlag, "JSON");
   }
 
-  public PhoneInfoResponse info(Phone phone) {
+  public PhoneInfoResponse info(String phoneNumber, String countryCode) {
+    Params params = new Params();
+    params.setAttribute("phone_number", phoneNumber);
+    params.setAttribute("country_code", countryCode);
+    return getInfo(params);
+  }
+
+  public PhoneInfoResponse info(String phoneNumber, String countryCode, Params params) {
+    params.setAttribute("phone_number", phoneNumber);
+    params.setAttribute("country_code", countryCode);
+    return getInfo(params);
+  }
+
+  private PhoneInfoResponse getInfo(Params params) {
     PhoneInfoResponse info = new PhoneInfoResponse();
     StringBuffer path = new StringBuffer(PHONE_INFO_API_PATH);
     String response = "";
 
     try {
       path.append("info");
-      response = this.get(path.toString(), phone);
+      response = this.get(path.toString(), params);
 
       info.setStatus(this.getStatus());
       info.setResponse(response);

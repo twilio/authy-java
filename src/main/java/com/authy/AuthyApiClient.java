@@ -11,7 +11,6 @@ public class AuthyApiClient {
   private Users users;
   private Tokens tokens;
   private String apiUri, apiKey;
-  private Phone phone;
   private PhoneVerification phoneVerification;
   private PhoneInfo phoneInfo;
 

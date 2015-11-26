@@ -1,20 +1,10 @@
 package com.authy.api;
 
-import java.io.StringReader;
-import java.net.URLEncoder;
-import java.util.Map;
-import java.util.HashMap;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
-
 import com.authy.AuthyException;
 
 /**
  *
- * @author Moisés Vargas
+ * @author Authy Inc
  *
  */
 public class PhoneVerification extends Resource {
@@ -28,14 +18,18 @@ public class PhoneVerification extends Resource {
     super(uri, key, testFlag, "JSON");
   }
 
-  public Verification start(Phone phone) {
+  public Verification start(String phoneNumber, String countryCode, String via, Params params) {
+    params.setAttribute("phone_number", phoneNumber);
+    params.setAttribute("country_code", countryCode);
+    params.setAttribute("via", via);
+
     Verification verification = new Verification();
     StringBuffer path = new StringBuffer(PHONE_VERIFICATION_API_PATH);
     String response = "";
 
     try {
       path.append("start");
-      response = this.post(path.toString(), phone);
+      response = this.post(path.toString(), params);
 
       verification.setStatus(this.getStatus());
       verification.setResponse(response);
@@ -47,14 +41,31 @@ public class PhoneVerification extends Resource {
     return verification;
   }
 
-  public Verification check(Phone phone) {
+  public Verification check(String phoneNumber, String countryCode, String code) {
+    Params params = new Params();
+    params.setAttribute("phone_number", phoneNumber);
+    params.setAttribute("country_code", countryCode);
+    params.setAttribute("verification_code", code);
+
+    return verificationCheck(params);
+  }
+
+  public Verification check(String phoneNumber, String countryCode, String code, Params params) {
+    params.setAttribute("phone_number", phoneNumber);
+    params.setAttribute("country_code", countryCode);
+    params.setAttribute("verification_code", code);
+
+    return verificationCheck(params);
+  }
+
+  private Verification verificationCheck(Params params){
     Verification verification = new Verification();
     StringBuffer path = new StringBuffer(PHONE_VERIFICATION_API_PATH);
     String response = "";
 
     try {
       path.append("check");
-      response = this.get(path.toString(), phone);
+      response = this.get(path.toString(), params);
 
       verification.setStatus(this.getStatus());
       verification.setResponse(response);
