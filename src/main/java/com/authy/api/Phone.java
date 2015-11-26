@@ -16,7 +16,7 @@ import javax.xml.bind.*;
  *
  */
 @XmlRootElement(name="verification")
-public class Phone implements Response {
+public class Phone implements Formattable {
   String number;
   String countryCode;
   String locale = "en";

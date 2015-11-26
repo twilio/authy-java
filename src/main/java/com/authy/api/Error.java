@@ -14,7 +14,7 @@ import javax.xml.bind.annotation.*;
  *
  */
 @XmlRootElement(name="errors")
-public class Error implements Response {
+public class Error implements Formattable {
 	private String message, url, countryCode;
 
 	@XmlElement(name="country-code")
@@ -78,8 +78,9 @@ public class Error implements Response {
 		
 		return map;
 	}
-
+	// required to satisfy Formattable interface
 	public String toJSON(){ return ""; }
+
 	@Override
 	public String toString() {
 		return "Error [message=" + message + ", url=" + url + ", countryCode="

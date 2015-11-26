@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  */
 @XmlRootElement(name="user")
-public class User extends Instance implements Response {
+public class User extends Instance implements Formattable {
 	int id;
 	
 	public User() {
@@ -75,5 +75,6 @@ public class User extends Instance implements Response {
 		return map;
 	}
 
+	// required to satisfy Formattable interface
 	public String toJSON(){ return ""; }
 }

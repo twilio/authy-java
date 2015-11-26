@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  */
 @XmlRootElement(name="verification")
-public class Verification implements Response {
+public class Verification implements Formattable {
   private int status = 503;
   private String response;
   private org.json.JSONObject jsonResponse;

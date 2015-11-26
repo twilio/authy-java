@@ -70,7 +70,7 @@ public class Resource {
    * @param data
    * @return response from API.
    */
-  public String post(String path, Response data) {
+  public String post(String path, Formattable data) {
     return request("POST", path, data, getDefaultOptions());
   }
 
@@ -80,7 +80,7 @@ public class Resource {
    * @param data
    * @return response from API.
    */
-  public String get(String path, Response data) {
+  public String get(String path, Formattable data) {
     return request("GET", path, data, getDefaultOptions());
   }
 
@@ -90,7 +90,7 @@ public class Resource {
    * @param data
    * @return response from API.
    */
-  public String put(String path, Response data) {
+  public String put(String path, Formattable data) {
     return request("PUT", path, data, getDefaultOptions());
   }
 
@@ -100,11 +100,11 @@ public class Resource {
    * @param data
    * @return response from API.
    */
-  public String delete(String path, Response data) {
+  public String delete(String path, Formattable data) {
     return request("DELETE", path, data, getDefaultOptions());
   }
 
-  public String request(String method, String path, Response data, Map<String, String> options) {
+  public String request(String method, String path, Formattable data, Map<String, String> options) {
     HttpURLConnection connection = null;
     String answer = null;
 
@@ -194,7 +194,7 @@ public class Resource {
     return sb.toString();
   }
 
-  private void writeXml(HttpURLConnection connection, Response data) throws SSLHandshakeException, IOException {
+  private void writeXml(HttpURLConnection connection, Formattable data) throws SSLHandshakeException, IOException {
     if(data == null)
       return;
 
@@ -206,7 +206,7 @@ public class Resource {
     output.close();
   }
 
-  private void writeJson(HttpURLConnection connection, Response data) throws SSLHandshakeException, IOException {
+  private void writeJson(HttpURLConnection connection, Formattable data) throws SSLHandshakeException, IOException {
     if(data == null)
       return;
 
@@ -219,7 +219,7 @@ public class Resource {
   }
 
 
-  private String prepareGet(Response data) throws Exception {
+  private String prepareGet(Formattable data) throws Exception {
     if(data == null)
       return "";
 

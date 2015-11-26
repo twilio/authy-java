@@ -10,7 +10,7 @@ import java.util.Map;
  *
  */
 
-public class PhoneInfoResponse implements Response {
+public class PhoneInfoResponse implements Formattable {
   private int status = 503;
   private String response;
   private org.json.JSONObject jsonResponse;

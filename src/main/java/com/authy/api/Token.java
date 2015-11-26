@@ -14,7 +14,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  */
 @XmlRootElement(name="token")
-public class Token extends Instance implements Response {
+public class Token extends Instance implements Formattable {
 
   public static final String VALID_TOKEN_MESSAGE = "Token is valid.";
 
@@ -75,5 +75,6 @@ public class Token extends Instance implements Response {
     return map;
   }
 
+  // required to satisfy Formattable interface
   public String toJSON(){ return ""; }
 }

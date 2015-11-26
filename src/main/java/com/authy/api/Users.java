@@ -169,7 +169,7 @@ public class Users extends Resource {
 		return hash;
 	}
 
-	static class MapToResponse implements Response {
+	static class MapToResponse implements Formattable {
 		private Map<String, String> options;
 
 		public MapToResponse(Map<String, String> options) {
@@ -184,11 +184,12 @@ public class Users extends Resource {
 			return options;
 		}
 
+		// required to satisfy Formattable interface
 		public String toJSON(){ return ""; }
 	}
 
 	@XmlRootElement(name="user")
-	static class User implements Response {
+	static class User implements Formattable {
 		String email, cellphone, countryCode;
 
 		public User() {
@@ -249,6 +250,7 @@ public class Users extends Resource {
 			return null;
 		}
 
+		// required to satisfy Formattable interface
 		public String toJSON(){ return ""; }
 	}
 }
