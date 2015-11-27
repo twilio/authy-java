@@ -110,7 +110,7 @@ public class Tokens extends Resource {
         return true;
     }
 
-	class InternalToken implements Response {
+	class InternalToken implements Formattable {
 		Map<String, String> options;
 		
 		public InternalToken() {
@@ -132,5 +132,8 @@ public class Tokens extends Resource {
 			
 			return options;
 		}
+
+		// required to satisfy Formattable interface
+		public String toJSON(){ return ""; }
 	}
 }

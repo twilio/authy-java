@@ -5,13 +5,19 @@
   </target>
 
   <target name="compile" depends="init">
-    <javac srcdir="src/main/java" destdir="build/classes" />
+    <javac srcdir="src/main/java" destdir="build/classes">
+      <classpath>
+        <pathelement path="lib/json-20150729.jar"/>
+      </classpath>
+    </javac>
   </target>
 
   <target name="compress" depends="compile">
     <jar destfile="dist/authy-java.jar"
          basedir="build/classes"
-         excludes="**/Main*.class" />
+         excludes="**/Main*.class">
+      <zipgroupfileset dir="lib" includes="json-20150729.jar" />
+    </jar>
   </target>
 
   <target name="clean">

@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.*;
  *
  */
 @XmlRootElement(name="hash")
-public class Hash extends Instance implements Response {
+public class Hash extends Instance implements Formattable {
 
 	private User user = null;
 	private String message, token;
@@ -85,6 +85,9 @@ public class Hash extends Instance implements Response {
 		}
 		return xml;
 	}
+
+	// required to satisfy Formattable interface
+	public String toJSON(){ return ""; }
 
 	/**
 	 * Map a Token instance to its Java's Map representation.
