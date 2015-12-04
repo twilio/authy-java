@@ -257,5 +257,5 @@ If the request was successful, you will need to store the authy id in your datab
   Copyright
   ==
 
-  Copyright (c) 2013 Authy Inc. See LICENSE.txt for
+  Copyright (c) 2011-2020 Authy Inc. See LICENSE.txt for
   further details.
