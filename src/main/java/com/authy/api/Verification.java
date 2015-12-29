@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  */
 @XmlRootElement(name="verification")
-public class Verification implements Formattable {
+public class Verification extends Request {
   private int status = 503;
   private String response;
   private org.json.JSONObject jsonResponse;
@@ -122,5 +122,10 @@ public class Verification implements Formattable {
 
     if( !json.isNull("is_cellphone") )
       this.isCellphone = json.getBoolean("is_cellphone");
+  }
+
+  @Override
+  public Serialization preferredSerialization() {
+    return Serialization.XML;
   }
 }
