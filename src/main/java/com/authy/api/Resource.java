@@ -66,7 +66,11 @@ public class Resource {
   /**
    * POST method.
    * @param path
+   *      allowed object is
+   *      {@link String}
    * @param data
+   *      allowed object is
+   *      {@link Request}
    * @return response from API.
    */
   public String post(String path, Request data) {
@@ -76,7 +80,11 @@ public class Resource {
   /**
    * GET method.
    * @param path
+   *      allowed object is
+   *      {@link String}
    * @param data
+   *      allowed object is
+   *      {@link Request}
    * @return response from API.
    */
   public String get(String path, Request data) {
@@ -86,7 +94,11 @@ public class Resource {
   /**
    * PUT method.
    * @param path
+   *      allowed object is
+   *      {@link String}
    * @param data
+   *      allowed object is
+   *      {@link Request}
    * @return response from API.
    */
   public String put(String path, Request data) {
@@ -96,7 +108,11 @@ public class Resource {
   /**
    * DELETE method.
    * @param path
+   *      allowed object is
+   *      {@link String}
    * @param data
+   *      allowed object is
+   *      {@link Request}
    * @return response from API.
    */
   public String delete(String path, Request data) {

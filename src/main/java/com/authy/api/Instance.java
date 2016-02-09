@@ -68,6 +68,8 @@ public class Instance {
 	/**
 	 * Set an Error object.
 	 * @param error
+   *      allowed object is
+   *      {@link Error}
 	 */
 	public void setError(Error error) {
 		this.error = error;

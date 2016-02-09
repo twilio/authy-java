@@ -179,6 +179,35 @@ If the request was successful, you will need to store the authy id in your datab
   Hash sms = users.requestSms(authy_id, options);
 ```
 
+## One Touch Support
+
+  `users.requestApproval(...)` takes the authy_id and approval details
+  it will create a approval request in OneTouch, then the approval request
+  status can be query by the approval request `uuid`
+
+```java
+  String userAuthyId = 103
+  Map<String, String> details = new HashMap<String, String>();
+  Map<String, String> hiddenDetails = new HashMap<String, String>();
+
+  details.put("username", "Bill Smith");
+  details.put("location", "California, USA");
+  details.put("amount", "$20.000");
+  hiddenDetails.put("ip_dress", "10.10.3.203");
+
+  com.authy.api.ApprovalRequestResponseWrapper approvalResponse;
+  approvalResponse = users.requestApproval(userAuthyId, "Login requested for a CapTrade Bank account.", details, hiddenDetails, 86400);
+
+  String uuid = rapprovalResponse.getApprovalRequest().getUuid();
+  System.out.println(uuid);
+```
+
+  Query approval request status
+```java
+  String status = users.checkApproval(uuid).getApprovalStatus().getStatus();
+  System.out.println(status);
+```
+
 ## Phone Verification
 
 ### Sending the verification code.

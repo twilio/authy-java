@@ -40,8 +40,11 @@ public class Users extends Resource {
 	/**
 	 * Create a new user using his e-mail, phone and country code.
 	 * @param email
+	 *      User's email
 	 * @param phone
+	 *      User's phone number
 	 * @param countryCode
+	 *      User's country code
 	 * @return a User instance
 	 */
 	public com.authy.api.User createUser(String email, String phone, String countryCode) {
@@ -55,7 +58,9 @@ public class Users extends Resource {
 	/**
 	 * Create a new user using his e-mail and phone. It uses USA country code by default.
 	 * @param email
+	 *      User's email
 	 * @param phone
+	 *      User's phone number
 	 * @return a User instance
 	 */
 	public com.authy.api.User createUser(String email, String phone) {
@@ -65,6 +70,7 @@ public class Users extends Resource {
 	/**
 	 * Send token via sms to a user.
 	 * @param userId
+	 *      User's authy id
 	 * @return Hash instance with API's response.
 	 */
 	public Hash requestSms(int userId) {
@@ -74,7 +80,9 @@ public class Users extends Resource {
 	/**
 	 * Send token via sms to a user with some options defined.
 	 * @param userId
+	 *      User's authy id
 	 * @param options
+	 *      options for SMS
 	 * @return Hash instance with API's response.
 	 */
 	public Hash requestSms(int userId, Map<String, String> options) {
@@ -96,6 +104,7 @@ public class Users extends Resource {
 	/**
 	 * Delete a user.
 	 * @param userId
+	 *      User's authy id
 	 * @return Hash instance with API's response.
 	 */
 	public Hash deleteUser(int userId) {
@@ -116,10 +125,18 @@ public class Users extends Resource {
     /**
      * Create a OneTouch approval request for this user
      * @param id
+     *      User's authy id
      * @param message
+     *      Approval message
      * @param details
+     *      details of approval
      * @param hiddenDetails
+     *      hidden details
      * @param secondsToExpire
+     *      time to expire approval
+     * @return
+     *			allowed object
+     *			{@link ApprovalRequestResponseWrapper}
      */
     public ApprovalRequestResponseWrapper requestApproval(
         int id,

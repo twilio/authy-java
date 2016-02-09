@@ -77,7 +77,7 @@ public class ApprovalStatusResponse {
 
     /**
      * Gets the value of the appSerialId property.
-     * 
+     * @return appSerialId
      */
     public short getAppSerialId() {
         return appSerialId;
@@ -85,7 +85,11 @@ public class ApprovalStatusResponse {
 
     /**
      * Sets the value of the appSerialId property.
-     * 
+     *
+     * @param value
+     *     allowed object is
+     *     {@link short }
+     *
      */
     public void setAppSerialId(short value) {
         this.appSerialId = value;
@@ -93,7 +97,7 @@ public class ApprovalStatusResponse {
 
     /**
      * Gets the value of the authyId property.
-     * 
+     * @return authyId
      */
     public int getAuthyId() {
         return authyId;
@@ -101,6 +105,10 @@ public class ApprovalStatusResponse {
 
     /**
      * Sets the value of the authyId property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link int }
      * 
      */
     public void setAuthyId(int value) {
@@ -184,7 +192,7 @@ public class ApprovalStatusResponse {
      * 
      * @return
      *     possible object is
-     *     {@link ApprovalRequest.CreatedAt }
+     *     {@link XMLGregorianCalendar }
      *     
      */
     public XMLGregorianCalendar getCreatedAt() {
@@ -196,7 +204,7 @@ public class ApprovalStatusResponse {
      * 
      * @param value
      *     allowed object is
-     *     {@link ApprovalRequest.CreatedAt }
+     *     {@link XMLGregorianCalendar }
      *     
      */
     public void setCreatedAt(XMLGregorianCalendar value) {
@@ -208,7 +216,7 @@ public class ApprovalStatusResponse {
      * 
      * @return
      *     possible object is
-     *     {@link ApprovalRequest.Notified }
+     *     {@link boolean }
      *     
      */
     public boolean getNotified() {
@@ -220,7 +228,7 @@ public class ApprovalStatusResponse {
      * 
      * @param value
      *     allowed object is
-     *     {@link ApprovalRequest.Notified }
+     *     {@link boolean }
      *     
      */
     public void setNotified(boolean value) {
@@ -232,7 +240,7 @@ public class ApprovalStatusResponse {
      * 
      * @return
      *     possible object is
-     *     {@link ApprovalRequest.ProcessedAt }
+     *     {@link XMLGregorianCalendar }
      *     
      */
     public XMLGregorianCalendar getProcessedAt() {
@@ -244,7 +252,7 @@ public class ApprovalStatusResponse {
      * 
      * @param value
      *     allowed object is
-     *     {@link ApprovalRequest.ProcessedAt }
+     *     {@link XMLGregorianCalendar }
      *     
      */
     public void setProcessedAt(XMLGregorianCalendar value) {
@@ -280,7 +288,7 @@ public class ApprovalStatusResponse {
      * 
      * @return
      *     possible object is
-     *     {@link ApprovalRequest.UpdatedAt }
+     *     {@link XMLGregorianCalendar }
      *     
      */
     public XMLGregorianCalendar getUpdatedAt() {
@@ -292,7 +300,7 @@ public class ApprovalStatusResponse {
      * 
      * @param value
      *     allowed object is
-     *     {@link ApprovalRequest.UpdatedAt }
+     *     {@link XMLGregorianCalendar }
      *     
      */
     public void setUpdatedAt(XMLGregorianCalendar value) {
