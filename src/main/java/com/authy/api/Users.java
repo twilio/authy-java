@@ -1,18 +1,20 @@
 package com.authy.api;
 
 import java.io.StringReader;
-import java.io.StringWriter;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.transform.stream.StreamSource;
+
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  *
@@ -23,6 +25,8 @@ public class Users extends Resource {
 	public static final String NEW_USER_PATH = "/protected/xml/users/new";
 	public static final String DELETE_USER_PATH = "/protected/xml/users/delete/";
 	public static final String SMS_PATH = "/protected/xml/sms/";
+    public static final String APPROVAL_REQUEST_PATH = "/onetouch/xml/users/%d/approval_requests";
+    public static final String APPROVAL_REQUEST_STATUS_PATH = "/onetouch/xml/approval_requests/%s";
 	public static final String DEFAULT_COUNTRY_CODE = "1";
 
 	public Users(String uri, String key) {
@@ -36,8 +40,11 @@ public class Users extends Resource {
 	/**
 	 * Create a new user using his e-mail, phone and country code.
 	 * @param email
+	 *      User's email
 	 * @param phone
+	 *      User's phone number
 	 * @param countryCode
+	 *      User's country code
 	 * @return a User instance
 	 */
 	public com.authy.api.User createUser(String email, String phone, String countryCode) {
@@ -51,7 +58,9 @@ public class Users extends Resource {
 	/**
 	 * Create a new user using his e-mail and phone. It uses USA country code by default.
 	 * @param email
+	 *      User's email
 	 * @param phone
+	 *      User's phone number
 	 * @return a User instance
 	 */
 	public com.authy.api.User createUser(String email, String phone) {
@@ -61,6 +70,7 @@ public class Users extends Resource {
 	/**
 	 * Send token via sms to a user.
 	 * @param userId
+	 *      User's authy id
 	 * @return Hash instance with API's response.
 	 */
 	public Hash requestSms(int userId) {
@@ -70,7 +80,9 @@ public class Users extends Resource {
 	/**
 	 * Send token via sms to a user with some options defined.
 	 * @param userId
+	 *      User's authy id
 	 * @param options
+	 *      options for SMS
 	 * @return Hash instance with API's response.
 	 */
 	public Hash requestSms(int userId, Map<String, String> options) {
@@ -92,6 +104,7 @@ public class Users extends Resource {
 	/**
 	 * Delete a user.
 	 * @param userId
+	 *      User's authy id
 	 * @return Hash instance with API's response.
 	 */
 	public Hash deleteUser(int userId) {
@@ -108,6 +121,40 @@ public class Users extends Resource {
 
 		return instanceFromXml(this.getStatus(), content);
 	}
+
+    /**
+     * Create a OneTouch approval request for this user
+     * @param id
+     *      User's authy id
+     * @param message
+     *      Approval message
+     * @param details
+     *      details of approval
+     * @param hiddenDetails
+     *      hidden details
+     * @param secondsToExpire
+     *      time to expire approval
+     * @return
+     *			allowed object
+     *			{@link ApprovalRequestResponseWrapper}
+     */
+    public ApprovalRequestResponseWrapper requestApproval(
+        int id,
+        String message,
+        Map<String, String> details,
+        Map<String, String> hiddenDetails,
+        Integer secondsToExpire) {
+        ApprovalRequest approvalRequest =
+            new ApprovalRequest(message, details, hiddenDetails, secondsToExpire);
+
+        String content = this.post(String.format(APPROVAL_REQUEST_PATH, id), approvalRequest);
+        return this.instanceFromXml(content, ApprovalRequestResponseWrapper.class);
+    }
+
+    public ApprovalStatusResponseWrapper checkApproval(String uuid) {
+        String content = this.get(String.format(APPROVAL_REQUEST_STATUS_PATH, uuid), null);
+        return this.instanceFromXml(content, ApprovalStatusResponseWrapper.class);
+    }
 
 	private com.authy.api.User userFromXml(int status, String content) {
 		com.authy.api.User user = new com.authy.api.User();
@@ -169,19 +216,51 @@ public class Users extends Resource {
 		return hash;
 	}
 
-	static class MapToResponse implements Formattable {
-		private Map<String, String> options;
+	private <T extends HashWrapper> T instanceFromXml(String content, Class<T> clazz) {
+    try {
+      JAXBContext context = JAXBContext.newInstance(clazz, Errors.class);
+      Unmarshaller unmarshaller = context.createUnmarshaller();
 
-		public MapToResponse(Map<String, String> options) {
-			this.options = options;
+      StringReader xml = new StringReader(content);
+      Object ret = unmarshaller.unmarshal(xml);
+
+      if(clazz.isInstance(ret)) {
+        return clazz.cast(ret);
+      }
+
+      if(ret instanceof Errors) {
+        T obj = clazz.newInstance();
+        obj.setErrors((Errors)ret);
+        return obj;
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return null;
+	}
+
+	static class MapToResponse extends Request {
+		@JsonIgnore
+		private Map<String, String> additionalProperties = new HashMap<String, String>();
+
+		public MapToResponse(Map<String, String> properties) {
+			this.additionalProperties = properties;
 		}
 
-		public String toXML() {
-			return "";
+
+		@JsonAnyGetter
+		public Map<String, String> getAdditionalProperties() {
+			return this.additionalProperties;
 		}
 
-		public Map<String, String> toMap() {
-			return options;
+		@JsonAnySetter
+		public void setAdditionalProperty(String name, String value) {
+			this.additionalProperties.put(name, value);
+		}
+
+		@Override
+		public Serialization preferredSerialization() {
+			return Serialization.QueryString;
 		}
 
 		// required to satisfy Formattable interface
@@ -189,7 +268,7 @@ public class Users extends Resource {
 	}
 
 	@XmlRootElement(name="user")
-	static class User implements Formattable {
+	static class User extends Request {
 		String email, cellphone, countryCode;
 
 		public User() {
@@ -228,26 +307,9 @@ public class Users extends Resource {
 			this.countryCode = countryCode;
 		}
 
-		public String toXML() {
-			StringWriter sw = new StringWriter();
-			String xml = "";
-
-			try {
-				JAXBContext context = JAXBContext.newInstance(this.getClass());
-				Marshaller marshaller = context.createMarshaller();
-
-				marshaller.marshal(this, sw);
-
-				xml = sw.toString();
-			}
-			catch(Exception e) {
-				e.printStackTrace();
-			}
-			return xml;
-		}
-
-		public Map<String, String> toMap() {
-			return null;
+		@Override
+		public Serialization preferredSerialization() {
+			return Serialization.XML;
 		}
 
 		// required to satisfy Formattable interface

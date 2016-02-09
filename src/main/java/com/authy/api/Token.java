@@ -14,7 +14,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  */
 @XmlRootElement(name="token")
-public class Token extends Instance implements Formattable {
+public class Token extends Instance implements Response {
 
   public static final String VALID_TOKEN_MESSAGE = "Token is valid.";
 

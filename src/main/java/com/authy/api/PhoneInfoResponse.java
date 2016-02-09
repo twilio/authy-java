@@ -10,7 +10,7 @@ import java.util.Map;
  *
  */
 
-public class PhoneInfoResponse implements Formattable {
+public class PhoneInfoResponse extends Request {
   private int status = 503;
   private String response;
   private org.json.JSONObject jsonResponse;
@@ -111,5 +111,10 @@ public class PhoneInfoResponse implements Formattable {
 
     if( !json.isNull("type") )
       this.type = json.getString("type");
+  }
+
+  @Override
+  public Serialization preferredSerialization() {
+    return Serialization.JSON;
   }
 }

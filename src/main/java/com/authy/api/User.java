@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  */
 @XmlRootElement(name="user")
-public class User extends Instance implements Formattable {
+public class User extends Instance implements Response {
 	int id;
 	
 	public User() {

@@ -14,7 +14,7 @@ import javax.xml.bind.annotation.*;
  *
  */
 @XmlRootElement(name="errors")
-public class Error implements Formattable {
+public class Error implements Response {
 	private String message, url, countryCode;
 
 	@XmlElement(name="country-code")

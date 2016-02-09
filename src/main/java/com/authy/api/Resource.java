@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -67,44 +66,60 @@ public class Resource {
   /**
    * POST method.
    * @param path
+   *      allowed object is
+   *      {@link String}
    * @param data
+   *      allowed object is
+   *      {@link Request}
    * @return response from API.
    */
-  public String post(String path, Formattable data) {
+  public String post(String path, Request data) {
     return request("POST", path, data, getDefaultOptions());
   }
 
   /**
    * GET method.
    * @param path
+   *      allowed object is
+   *      {@link String}
    * @param data
+   *      allowed object is
+   *      {@link Request}
    * @return response from API.
    */
-  public String get(String path, Formattable data) {
+  public String get(String path, Request data) {
     return request("GET", path, data, getDefaultOptions());
   }
 
   /**
    * PUT method.
    * @param path
+   *      allowed object is
+   *      {@link String}
    * @param data
+   *      allowed object is
+   *      {@link Request}
    * @return response from API.
    */
-  public String put(String path, Formattable data) {
+  public String put(String path, Request data) {
     return request("PUT", path, data, getDefaultOptions());
   }
 
   /**
    * DELETE method.
    * @param path
+   *      allowed object is
+   *      {@link String}
    * @param data
+   *      allowed object is
+   *      {@link Request}
    * @return response from API.
    */
-  public String delete(String path, Formattable data) {
+  public String delete(String path, Request data) {
     return request("DELETE", path, data, getDefaultOptions());
   }
 
-  public String request(String method, String path, Formattable data, Map<String, String> options) {
+  public String request(String method, String path, Request data, Map<String, String> options) {
     HttpURLConnection connection = null;
     String answer = null;
 
@@ -112,8 +127,8 @@ public class Resource {
       StringBuffer sb = new StringBuffer();
       sb.append("?api_key=" + apiKey);
 
-      if(method.equals("GET")) {
-        sb.append(prepareGet(data));
+      if(method.equals("GET") && data != null) {
+        sb.append('&').append(data.toQueryString());
       }
 
       URL url = new URL(apiUri + path + sb.toString());
@@ -194,19 +209,21 @@ public class Resource {
     return sb.toString();
   }
 
-  private void writeXml(HttpURLConnection connection, Formattable data) throws SSLHandshakeException, IOException {
+  private void writeXml(HttpURLConnection connection, Request data) throws SSLHandshakeException, IOException {
     if(data == null)
       return;
+
+    connection.setRequestProperty("Content-Type", data.preferredSerialization().getContentType());
 
     OutputStream os = connection.getOutputStream();
 
     BufferedWriter output = new BufferedWriter(new OutputStreamWriter(os));
-    output.write(data.toXML());
+    output.write(data.preferredSerializedContent());
     output.flush();
     output.close();
   }
 
-  private void writeJson(HttpURLConnection connection, Formattable data) throws SSLHandshakeException, IOException {
+  private void writeJson(HttpURLConnection connection, Request data) throws SSLHandshakeException, IOException {
     if(data == null)
       return;
 
@@ -216,22 +233,6 @@ public class Resource {
     output.write(data.toJSON());
     output.flush();
     output.close();
-  }
-
-
-  private String prepareGet(Formattable data) throws Exception {
-    if(data == null)
-      return "";
-
-    StringBuffer sb = new StringBuffer();
-    Map<String, String> params = data.toMap();
-
-    for(Entry<String, String> s : params.entrySet()) {
-      sb.append('&');
-      sb.append(URLEncoder.encode(s.getKey(), ENCODE) + "=" + URLEncoder.encode(s.getValue(), ENCODE));
-    }
-
-    return sb.toString();
   }
 
   private Map<String, String> getDefaultOptions() {

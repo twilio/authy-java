@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.*;
  *
  */
 @XmlRootElement(name="hash")
-public class Hash extends Instance implements Formattable {
+public class Hash extends Instance implements Response {
 
 	private User user = null;
 	private String message, token;
