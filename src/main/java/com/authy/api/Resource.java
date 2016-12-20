@@ -11,6 +11,8 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Class to send http requests.
@@ -21,6 +23,7 @@ public class Resource {
   public static final String ENCODE = "UTF-8";
   public static final String XML_CONTENT_TYPE = "application/xml";
   public static final String JSON_CONTENT_TYPE = "application/json";
+  private static final Logger LOGGER = Logger.getLogger(Resource.class.getName());
   private String apiUri, apiKey;
   private int status;
   private boolean testFlag = false;
@@ -111,6 +114,10 @@ public class Resource {
       connection = createConnection(url, method, options);
 
       connection.setRequestProperty("X-Authy-API-Key", apiKey);
+
+      if (data.toMap().containsKey("api_key")) {
+        LOGGER.log(Level.WARNING, "Found 'api_key' as a parameter, please remove it, Authy-Java already 'api_key' for you.");
+      }
 
       if(method.equals("POST") || method.equals("PUT")) {
         if(isJSON) {
