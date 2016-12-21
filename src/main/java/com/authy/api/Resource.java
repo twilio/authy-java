@@ -1,22 +1,18 @@
 package com.authy.api;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import com.authy.AuthyApiClient;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLHandshakeException;
+import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import java.net.HttpURLConnection;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLHandshakeException;
-
-import com.authy.AuthyApiClient;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Class to send http requests.
@@ -24,15 +20,14 @@ import com.authy.AuthyApiClient;
  *
  */
 public class Resource {
+  public static final String ENCODE = "UTF-8";
+  public static final String XML_CONTENT_TYPE = "application/xml";
+  public static final String JSON_CONTENT_TYPE = "application/json";
+  private static final Logger LOGGER = Logger.getLogger(Resource.class.getName());
   private String apiUri, apiKey;
   private int status;
   private boolean testFlag = false;
   private Map<String, String> defaultOptions;
-
-  public static final String ENCODE = "UTF-8";
-  public static final String XML_CONTENT_TYPE = "application/xml";
-  public static final String JSON_CONTENT_TYPE = "application/json";
-
   private boolean isJSON = false;
   private String contentType = XML_CONTENT_TYPE;
 
@@ -109,8 +104,7 @@ public class Resource {
     String answer = null;
 
     try {
-      StringBuffer sb = new StringBuffer();
-      sb.append("?api_key=" + apiKey);
+      StringBuilder sb = new StringBuilder();
 
       if(method.equals("GET")) {
         sb.append(prepareGet(data));
@@ -118,6 +112,12 @@ public class Resource {
 
       URL url = new URL(apiUri + path + sb.toString());
       connection = createConnection(url, method, options);
+
+      connection.setRequestProperty("X-Authy-API-Key", apiKey);
+
+      if (data.toMap().containsKey("api_key")) {
+        LOGGER.log(Level.WARNING, "Found 'api_key' as a parameter, please remove it, Authy-Java already 'api_key' for you.");
+      }
 
       if(method.equals("POST") || method.equals("PUT")) {
         if(isJSON) {
