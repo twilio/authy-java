@@ -1,11 +1,11 @@
 package com.authy.api;
 
-import java.io.StringWriter;
-import java.util.Map;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.StringWriter;
+import java.util.Map;
 
 /**
  * 

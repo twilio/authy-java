@@ -1,12 +1,12 @@
 package com.authy.api;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.annotation.*;
 
 /**
  * 
@@ -70,9 +70,9 @@ public class Error implements Formattable {
 	 * @return a Java's Map with the description of this object.
 	 */
 	public Map<String, String> toMap() {
-		Map<String, String> map = new HashMap<String, String>();
-		
-		map.put("message", message);
+        Map<String, String> map = new HashMap<>();
+
+        map.put("message", message);
 		map.put("country-code", countryCode);
 		map.put("url", url);
 		

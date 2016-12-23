@@ -1,13 +1,12 @@
 package com.authy.api;
 
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 
@@ -66,9 +65,9 @@ public class User extends Instance implements Formattable {
 	 * @return a Java's Map with the description of this object.
 	 */
 	public Map<String, String> toMap() {
-		Map<String, String> map = new HashMap<String, String>();
-		
-		map.put("id", Integer.toString(id));
+        Map<String, String> map = new HashMap<>();
+
+        map.put("id", Integer.toString(id));
 		map.put("status", Integer.toString(status));
 		map.put("content", content);
 		

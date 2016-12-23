@@ -6,7 +6,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by hansospina on 12/20/16.
+ *
+ * @author hansospina
+ *
+ * Copyright © 2016 Twilio, Inc. All Rights Reserved.
  */
 public class JSONBody implements Formattable {
 
@@ -22,7 +25,7 @@ public class JSONBody implements Formattable {
 
     public Map<String, String> toMap() {
 
-        HashMap<String,String> map = new HashMap<String, String>();
+        HashMap<String, String> map = new HashMap<>();
 
         for(String key : obj.keySet()){
             map.put(key,obj.getString(key));

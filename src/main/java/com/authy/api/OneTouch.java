@@ -15,12 +15,12 @@ public class OneTouch extends Resource{
     public static final String APPROVAL_REQUEST_STATUS = "/onetouch/json/approval_requests/";
 
     public OneTouch(String uri, String key) {
-        super(uri, key, "JSON");
+        super(uri, key, Resource.JSON_CONTENT_TYPE);
 
     }
 
     public OneTouch(String uri, String key, boolean testFlag) {
-        super(uri, key, testFlag, "JSON");
+        super(uri, key, testFlag, Resource.JSON_CONTENT_TYPE);
     }
 
 

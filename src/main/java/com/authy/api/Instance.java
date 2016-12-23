@@ -1,11 +1,10 @@
 package com.authy.api;
 
-import java.io.StringReader;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
+import java.io.StringReader;
 
 /**
  * Generic class to instance a response from the API
@@ -73,12 +72,12 @@ public class Instance {
 		this.error = error;
 	}
 
-  public void setStatus(int status) {
-    this.status = status;
-  }
-
   public int getStatus() {
     return this.status;
   }
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
 }
 

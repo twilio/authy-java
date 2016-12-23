@@ -179,6 +179,80 @@ If the request was successful, you will need to store the authy id in your datab
   Hash sms = users.requestSms(authy_id, options);
 ```
 
+## OneTouch Support
+
+  `client.getOneTouch()` will return the OneTouch wrapper, with this component you will be able to use all the 
+  endpoints defined in the [OneTouch API](https://www.twilio.com/docs/api/authy/authy-onetouch-api), 
+  for example, using the 
+  'sendApprovalRequest' method you will create an ApprovalRequest
+  in OneTouch, then the approval request
+  status can be queried by using the  `uuid` provided. (NOTE: The UDID is the unique identifier for the request sent to OneTouch)    
+
+```java
+    HashMap<String, String> details = new HashMap<String, String>();
+    details.put("username", "Bill Smith");
+    details.put("location", "California, USA");
+    details.put("amount", "$20.000");
+
+    HashMap<String, String> hidden = new HashMap<String, String>();
+    hidden.put("ip_address", "10.10.3.203");
+
+    HashMap<String, String> logos = new HashMap<String, String>();
+
+    OneTouchResponse response = client.getOneTouch().sendApprovalRequest(Integer.parseInt(103), "Authorize OneTouch Unit Test", details, hidden, logos, 86400);
+    // If the request was successfuly created.
+    assert response.isSuccess();
+    String uuid = response.getApprovalRequest().getUUID();
+    System.out.println(uuid);
+```
+
+  If you want to query the ApprovalRequest status
+```java
+  String status = client.getOneTouch().getApprovalRequestStatus(udid).getStatus();
+  System.out.println(status);
+```
+When you make a OneTouch request, you will get a OneTouchResponse object which in turn will have a getApprovalRequest() accessor to retrieve the metadata from the given request, for example:
+
+```java
+    OneTouchResponse response = client.getOneTouch().getApprovalRequestStatus(udid);
+    ApprovalRequest approvalRequest  = response.getApprovalRequest();
+    // was the user notified?
+    System.out.println("The user was "+(approvalRequest.isNotified()?"":"not")+" notified.");
+    // What is the status of the request?
+    System.iout.print("The status of the request is: "+approvalRequest.getStatus());
+
+```
+As described in the documentation, you can define a callback from Authy to your web application were you will receive the result of your request with all the related information.
+
+After you define your callback, if you want to keep up with following our *Developer Best Practices* you should [Verify the authenticity of callbacks from Authy](https://www.twilio.com/docs/api/authy/authy-onetouch-api#verifying-authenticity-of-callbacks-from-authy) all this process can be done easily just by using an utility method from *AuthyUtil* like this:
+
+Inside your app your app will get a request into a servlet/controller were you will have the Http Request object.
+```java
+    // let's create a Map of Strings to put the query parameters from the Http Request
+    HashMap<String,String> params = new HashMap<>();
+    for(String p : request.queryParams()){
+        params.put(p,request.queryParams(p));
+    }
+    
+    // let's create a Map of Strings to put the query headers from the Http Request
+    HashMap<String,String> headers = new HashMap<>();
+    for(String h : request.headers()){
+        headers.put(h,request.headers(h));
+    }
+
+    //Now it is really easy just to ask AuthyUtil to check the authenticity of the signature, TOKEN will be the string with your Api_key
+    // AuthyUtil.validateSignature will tell you if the request is secure or not!
+    boolean isValid = AuthyUtil.validateSignature(params, headers, request.requestMethod(), request.url(), TOKEN)        
+     
+     // Then you can just finish the rewquest with the proper HTTP code or do any other procesing you need for this case. 
+     if(!isValid){
+         response.status(401);
+         return "Unauthorized";
+     }
+
+```     
+
+
 ## Phone Verification
 
 ### Sending the verification code.

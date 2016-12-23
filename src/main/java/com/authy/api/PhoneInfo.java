@@ -1,17 +1,5 @@
 package com.authy.api;
 
-import java.io.StringReader;
-import java.net.URLEncoder;
-import java.util.Map;
-import java.util.HashMap;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
-
-import com.authy.AuthyException;
-
 /**
  *
  * @author Moisés Vargas
@@ -21,11 +9,11 @@ public class PhoneInfo extends Resource {
   public static final String PHONE_INFO_API_PATH = "/protected/json/phones/";
 
   public PhoneInfo(String uri, String key) {
-    super(uri, key, "JSON");
+      super(uri, key, Resource.JSON_CONTENT_TYPE);
   }
 
   public PhoneInfo(String uri, String key, boolean testFlag) {
-    super(uri, key, testFlag, "JSON");
+      super(uri, key, testFlag, Resource.JSON_CONTENT_TYPE);
   }
 
   public PhoneInfoResponse info(String phoneNumber, String countryCode) {
@@ -43,8 +31,8 @@ public class PhoneInfo extends Resource {
 
   private PhoneInfoResponse getInfo(Params params) {
     PhoneInfoResponse info = new PhoneInfoResponse();
-    StringBuffer path = new StringBuffer(PHONE_INFO_API_PATH);
-    String response = "";
+      StringBuilder path = new StringBuilder(PHONE_INFO_API_PATH);
+      String response;
 
     try {
       path.append("info");

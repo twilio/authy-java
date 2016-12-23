@@ -13,7 +13,7 @@ public class Params implements Formattable {
   private Map<String, String> data;
 
   public Params() {
-    data = new HashMap<String, String>();
+      data = new HashMap<>();
   }
 
   public void setAttribute(String key, String value){

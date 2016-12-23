@@ -1,6 +1,7 @@
 package com.authy.api;
 
-import java.io.StringWriter;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,7 +14,6 @@ import java.util.Map;
 public class PhoneInfoResponse implements Formattable {
   private int status = 503;
   private String response;
-  private org.json.JSONObject jsonResponse;
   private String message = "Something went wrong!";
   private String provider = "";
   private String type = "";
@@ -54,7 +54,7 @@ public class PhoneInfoResponse implements Formattable {
 
   public void setResponse(String response) {
     this.response = response;
-    this.jsonResponse = new org.json.JSONObject (response);
+      JSONObject jsonResponse = new JSONObject(response);
     this.parseResponseToOjbect(jsonResponse);
   }
 
@@ -75,7 +75,7 @@ public class PhoneInfoResponse implements Formattable {
    * @return a Java's Map with the description of this object.
    */
   public Map<String, String> toMap() {
-    Map<String, String> map = new HashMap<String, String>();
+      Map<String, String> map = new HashMap<>();
 
     map.put("message", this.getMessage());
     map.put("success", this.getSuccess());

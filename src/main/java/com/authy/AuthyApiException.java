@@ -4,6 +4,7 @@ package com.authy;
  * 
  * @author Julian Camargo
  *
+ * Copyright © 2016 Twilio, Inc. All Rights Reserved.
  */
 public class AuthyApiException extends AuthyException {
 	String status, uri, message;

@@ -2,10 +2,12 @@ package com.authy.api;
 
 import org.json.JSONObject;
 
-import java.util.Date;
-
 /**
+ *
+ *
  * @author hansospina
+ *
+ * Copyright © 2016 Twilio, Inc. All Rights Reserved.
  */
 public class OneTouchResponse {
 
@@ -62,6 +64,11 @@ public class OneTouchResponse {
 
         public String getStatus() {
             return obj.getJSONObject("approval_request").has("status") ? obj.getJSONObject("approval_request").getString("status") : null;
+        }
+
+        // if the user was a value that is not mapped previously
+        public String getValue(String key) {
+            return obj.getJSONObject("approval_request").has(key) ? obj.getJSONObject("approval_request").getString(key) : null;
         }
     }
 

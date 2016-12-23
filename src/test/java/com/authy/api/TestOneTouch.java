@@ -15,6 +15,7 @@ import java.util.Properties;
  *
  * @author hansospina
  *
+ * Copyright © 2016 Twilio, Inc. All Rights Reserved.
  */
 public class TestOneTouch {
 
@@ -59,7 +60,7 @@ public class TestOneTouch {
         OneTouchResponse response = client.getOneTouch().sendApprovalRequest(Integer.parseInt(properties.getProperty("user_id")), "Authorize OneTouch Unit Test", details, hidden, logos, 120);
 
         Assert.assertTrue(response.isSuccess());
-        Assert.assertNotNull(response.getApprovalRequest());
+        Assert.assertNotNull(response.getApprovalRequest().getStatus());
         Assert.assertNotNull(response.getApprovalRequest().getUUID());
         // there should be no error code
         Assert.assertEquals("Expected Error Code to be empty but got: [" + response.getErrorCode() + "]", "", response.getErrorCode());

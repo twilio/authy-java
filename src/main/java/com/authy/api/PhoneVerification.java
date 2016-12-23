@@ -1,7 +1,5 @@
 package com.authy.api;
 
-import com.authy.AuthyException;
-
 /**
  *
  * @author Authy Inc
@@ -11,11 +9,11 @@ public class PhoneVerification extends Resource {
   public static final String PHONE_VERIFICATION_API_PATH = "/protected/json/phones/verification/";
 
   public PhoneVerification(String uri, String key) {
-    super(uri, key, "JSON");
+    super(uri, key, Resource.JSON_CONTENT_TYPE);
   }
 
   public PhoneVerification(String uri, String key, boolean testFlag) {
-    super(uri, key, testFlag, "JSON");
+    super(uri, key, testFlag, Resource.JSON_CONTENT_TYPE);
   }
 
   public Verification start(String phoneNumber, String countryCode, String via, Params params) {
@@ -24,8 +22,8 @@ public class PhoneVerification extends Resource {
     params.setAttribute("via", via);
 
     Verification verification = new Verification();
-    StringBuffer path = new StringBuffer(PHONE_VERIFICATION_API_PATH);
-    String response = "";
+    StringBuilder path = new StringBuilder(PHONE_VERIFICATION_API_PATH);
+    String response;
 
     try {
       path.append("start");
@@ -60,8 +58,8 @@ public class PhoneVerification extends Resource {
 
   private Verification verificationCheck(Params params){
     Verification verification = new Verification();
-    StringBuffer path = new StringBuffer(PHONE_VERIFICATION_API_PATH);
-    String response = "";
+    StringBuilder path = new StringBuilder(PHONE_VERIFICATION_API_PATH);
+    String response;
 
     try {
       path.append("check");

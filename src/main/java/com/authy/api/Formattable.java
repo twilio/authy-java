@@ -8,7 +8,9 @@ import java.util.Map;
  *
  */
 public interface Formattable {
-  public String toXML();
-  public Map<String, String> toMap();
-  public String toJSON();
+    String toXML();
+
+    Map<String, String> toMap();
+
+    String toJSON();
 }
