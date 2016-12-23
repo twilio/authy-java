@@ -154,8 +154,8 @@ public class Users extends Resource {
 			Error error = errorFromXml(status, content);
 			if(error == null) {
 				JAXBContext context = JAXBContext.newInstance(Hash.class);
-				Unmarshaller unmarshaller = context.createUnmarshaller();\
-				StringReader xml = new StringReader(content);
+                Unmarshaller unmarshaller = context.createUnmarshaller();
+                StringReader xml = new StringReader(content);
 				hash = (Hash)unmarshaller.unmarshal(new StreamSource(xml));
 			}
 			hash.setStatus(status);
