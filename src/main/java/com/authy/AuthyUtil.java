@@ -1,6 +1,7 @@
 package com.authy;
 
 import com.authy.api.Resource;
+import org.json.JSONObject;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -9,10 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Map;
-import java.util.Properties;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,33 +35,68 @@ public class AuthyUtil {
         }
     }
 
+
     /**
      * Validates the request information to
      *
      * @param parameters The request parameters(all of them)
      * @param headers    The headers of the request
-     * @param method     The method, should be GET or POST
      * @param url        The url of the request.
      * @param authyToken the security token from the authy library
      * @return true if the signature ios valid, false otherwise
      * @throws UnsupportedEncodingException if the string parameters have problems with UTF-8 encoding.
      */
-    public static boolean validateSignature(Map<String, String> parameters, Map<String, String> headers, String method, String url, String authyToken) throws UnsupportedEncodingException {
-
-        // check
-        if (method == null || (!method.equalsIgnoreCase(Resource.METHOD_POST) && !method.equalsIgnoreCase(Resource.METHOD_GET))) {
-            return false;
-        }
-
-        SortedSet<String> keys = new TreeSet<>(parameters.keySet());
-
+    private static boolean validateSignature(Map<String, String> parameters, Map<String, String> headers, String method, String url, String authyToken) throws UnsupportedEncodingException {
 
         StringBuilder sb = new StringBuilder(headers.get("X-Authy-Signature-Nonce"))
                 .append("|")
                 .append(method)
                 .append("|")
                 .append(url)
-                .append("|");
+                .append("|")
+                .append(mapToQuery(parameters));
+
+        String signature = hmacSha(authyToken, sb.toString());
+
+        // let's check that the Authy signature is valid
+        return signature.equals(headers.get("X-Authy-Signature"));
+    }
+
+
+    private static void extract(String pre, JSONObject obj, HashMap<String, String> map) {
+
+        for (String k : obj.keySet()) {
+
+            String key = pre.length() == 0 ? k : pre + "[" + k + "]";
+
+            if (obj.optJSONObject(k) != null) {
+                extract(key, obj.getJSONObject(k), map);
+            } else {
+
+                Object val = obj.get(k);
+
+                if (val instanceof Boolean) {
+                    map.put(key, Boolean.toString(obj.getBoolean(k)));
+                } else if (val instanceof Integer || val instanceof Long) {
+                    map.put(key, Long.toString(obj.getLong(k)));
+                } else if (val instanceof Float || val instanceof Double) {
+                    map.put(key, Double.toString(obj.getDouble(k)));
+                } else if (JSONObject.NULL.equals(val)) {
+                    map.put(key, "");
+                } else {
+                    map.put(key, obj.getString(k));
+                }
+
+            }
+        }
+
+    }
+
+    private static String mapToQuery(Map<String, String> map) throws UnsupportedEncodingException {
+
+        StringBuilder sb = new StringBuilder();
+
+        SortedSet<String> keys = new TreeSet<>(map.keySet());
 
         boolean first = true;
 
@@ -75,7 +108,7 @@ public class AuthyUtil {
                 sb.append("&");
             }
 
-            String value = parameters.get(key);
+            String value = map.get(key);
 
             // don't encode null values
             if (value == null) {
@@ -85,10 +118,39 @@ public class AuthyUtil {
             sb.append(URLEncoder.encode(key, "UTF-8")).append("=").append(URLEncoder.encode(value, "UTF-8"));
         }
 
-        String signature = hmacSha(authyToken, sb.toString());
+        return sb.toString();
 
-        // let's check that the Authy signature is valid
-        return signature.equals(headers.get("X-Authy-Signature"));
+    }
+
+
+    /**
+     * Validates the request information to
+     *
+     * @param body       The body of the request in case of a POST method
+     * @param headers    The headers of the request
+     * @param url        The url of the request.
+     * @param authyToken the security token from the authy library
+     * @return true if the signature ios valid, false otherwise
+     * @throws UnsupportedEncodingException if the string parameters have problems with UTF-8 encoding.
+     */
+    public static boolean validateSignatureForPost(String body, Map<String, String> headers, String url, String authyToken) throws UnsupportedEncodingException {
+        HashMap<String, String> params = new HashMap<>();
+        extract("", new JSONObject(body), params);
+        return validateSignature(params, headers, "POST", url, authyToken);
+    }
+
+    /**
+     * Validates the request information to
+     *
+     * @param params     The query parameters in case of a GET request
+     * @param headers    The headers of the request
+     * @param url        The url of the request.
+     * @param authyToken the security token from the authy library
+     * @return true if the signature ios valid, false otherwise
+     * @throws UnsupportedEncodingException if the string parameters have problems with UTF-8 encoding.
+     */
+    public static boolean validateSignatureForGet(Map<String, String> params, Map<String, String> headers, String url, String authyToken) throws UnsupportedEncodingException {
+        return validateSignature(params, headers, "GET", url, authyToken);
     }
 
 
