@@ -70,9 +70,9 @@ public class TestOneTouch {
     @Test
     public void testGetApprovalRequestStatus() {
         //Check that the properties file has a valid
-        Assert.assertNotNull(properties.getProperty("onetouch_udid"));
+        Assert.assertNotNull(properties.getProperty("onetouch_uuid"));
 
-        OneTouchResponse response = client.getOneTouch().getApprovalRequestStatus(properties.getProperty("onetouch_udid"));
+        OneTouchResponse response = client.getOneTouch().getApprovalRequestStatus(properties.getProperty("onetouch_uuid"));
         Assert.assertTrue(response.isSuccess());
     }
 

@@ -48,10 +48,10 @@ public class OneTouch extends Resource{
     }
 
 
-    public OneTouchResponse getApprovalRequestStatus(String udid){
+    public OneTouchResponse getApprovalRequestStatus(String uuid) {
 
         try {
-            return new OneTouchResponse(this.get(APPROVAL_REQUEST_STATUS+URLEncoder.encode(udid, ENCODE), new Params()));
+            return new OneTouchResponse(this.get(APPROVAL_REQUEST_STATUS + URLEncoder.encode(uuid, ENCODE), new Params()));
         }catch(Exception e) {
             e.printStackTrace();
             JSONObject object = new JSONObject();

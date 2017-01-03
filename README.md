@@ -186,7 +186,7 @@ If the request was successful, you will need to store the authy id in your datab
   for example, using the 
   'sendApprovalRequest' method you will create an ApprovalRequest
   in OneTouch, then the approval request
-  status can be queried by using the  `uuid` provided. (NOTE: The UDID is the unique identifier for the request sent to OneTouch)    
+  status can be queried by using the  `uuid` provided. (NOTE: The UUID is the unique identifier for the request sent to OneTouch)    
 
 ```java
     HashMap<String, String> details = new HashMap<String, String>();
@@ -208,18 +208,18 @@ If the request was successful, you will need to store the authy id in your datab
 
   If you want to query the ApprovalRequest status
 ```java
-  String status = client.getOneTouch().getApprovalRequestStatus(udid).getStatus();
+  String status = client.getOneTouch().getApprovalRequestStatus(uuid).getStatus();
   System.out.println(status);
 ```
 When you make a OneTouch request, you will get a OneTouchResponse object which in turn will have a getApprovalRequest() accessor to retrieve the metadata from the given request, for example:
 
 ```java
-    OneTouchResponse response = client.getOneTouch().getApprovalRequestStatus(udid);
+    OneTouchResponse response = client.getOneTouch().getApprovalRequestStatus(uuid);
     ApprovalRequest approvalRequest  = response.getApprovalRequest();
     // was the user notified?
     System.out.println("The user was "+(approvalRequest.isNotified()?"":"not")+" notified.");
     // What is the status of the request?
-    System.iout.print("The status of the request is: "+approvalRequest.getStatus());
+    System.out.print("The status of the request is: "+approvalRequest.getStatus());
 
 ```
 As described in the documentation, you can define a callback from Authy to your web application were you will receive the result of your request with all the related information.

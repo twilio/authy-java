@@ -63,7 +63,7 @@ public class AuthyUtil {
     }
 
 
-    private static void extract(String pre, JSONObject obj, HashMap<String, String> map) {
+    public static void extract(String pre, JSONObject obj, HashMap<String, String> map) {
 
         for (String k : obj.keySet()) {
 
@@ -92,7 +92,7 @@ public class AuthyUtil {
 
     }
 
-    private static String mapToQuery(Map<String, String> map) throws UnsupportedEncodingException {
+    public static String mapToQuery(Map<String, String> map) throws UnsupportedEncodingException {
 
         StringBuilder sb = new StringBuilder();
 
