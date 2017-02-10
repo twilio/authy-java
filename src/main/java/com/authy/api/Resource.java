@@ -119,9 +119,8 @@ public class Resource {
             connection.setRequestProperty("X-Authy-API-Key", apiKey);
 
             if (data.toMap().containsKey("api_key")) {
-                LOGGER.log(Level.WARNING, "Found 'api_key' as a parameter, please remove it, Authy-Java already 'api_key' for you.");
+                LOGGER.log(Level.WARNING, "Found 'api_key' as a parameter, please remove it, Authy-Java already handles the'api_key' for you.");
             }
-
             if (method.equals(Resource.METHOD_POST) || method.equals(Resource.METHOD_PUT)) {
                 if (isJSON) {
                     writeJson(connection, data);
@@ -154,7 +153,7 @@ public class Resource {
     }
 
     private void setContentType(String contentType) {
-        this.contentType = (contentType == null || contentType.equals(XML_CONTENT_TYPE) || !(contentType.equals(JSON_CONTENT_TYPE))) ? XML_CONTENT_TYPE : JSON_CONTENT_TYPE;
+        this.contentType = (contentType == null || contentType.equals(XML_CONTENT_TYPE) || !contentType.equals(JSON_CONTENT_TYPE)) ? XML_CONTENT_TYPE : JSON_CONTENT_TYPE;
         isJSON = this.contentType.equals(JSON_CONTENT_TYPE);
     }
 
@@ -217,7 +216,6 @@ public class Resource {
             return;
 
         OutputStream os = connection.getOutputStream();
-
         BufferedWriter output = new BufferedWriter(new OutputStreamWriter(os));
         output.write(data.toJSON());
         output.flush();

@@ -1,6 +1,7 @@
 package com.authy;
 
 import com.authy.api.Resource;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.crypto.Mac;
@@ -46,7 +47,19 @@ public class AuthyUtil {
      * @return true if the signature ios valid, false otherwise
      * @throws UnsupportedEncodingException if the string parameters have problems with UTF-8 encoding.
      */
-    private static boolean validateSignature(Map<String, String> parameters, Map<String, String> headers, String method, String url, String authyToken) throws UnsupportedEncodingException {
+    private static boolean validateSignature(Map<String, String> parameters, Map<String, String> headers, String method, String url, String authyToken) throws AuthyException, UnsupportedEncodingException {
+
+        if (headers == null)
+            throw new AuthyException("No headers sent");
+
+        if (!headers.containsKey("X-Authy-Signature"))
+            throw new AuthyException("'SIGNATURE' is missing.");
+
+        if (!headers.containsKey("X-Authy-Signature-Nonce"))
+            throw new AuthyException("'NONCE' is missing.");
+
+        if (parameters == null || parameters.isEmpty())
+            throw new AuthyException("'PARAMS' are missing.");
 
         StringBuilder sb = new StringBuilder(headers.get("X-Authy-Signature-Nonce"))
                 .append("|")
@@ -68,31 +81,58 @@ public class AuthyUtil {
         for (String k : obj.keySet()) {
 
             String key = pre.length() == 0 ? k : pre + "[" + k + "]";
-
             if (obj.optJSONObject(k) != null) {
                 extract(key, obj.getJSONObject(k), map);
-            } else {
 
-                Object val = obj.get(k);
+            } else if (obj.optJSONArray(k) != null) {
 
-                if (val instanceof Boolean) {
-                    map.put(key, Boolean.toString(obj.getBoolean(k)));
-                } else if (val instanceof Integer || val instanceof Long) {
-                    map.put(key, Long.toString(obj.getLong(k)));
-                } else if (val instanceof Float || val instanceof Double) {
-                    map.put(key, Double.toString(obj.getDouble(k)));
-                } else if (JSONObject.NULL.equals(val)) {
-                    map.put(key, "");
-                } else {
-                    map.put(key, obj.getString(k));
+
+
+                JSONArray arr = obj.getJSONArray(k);
+
+                int i =0;
+
+                for (Object tmp : arr) {
+                    String tmpKey = key+"["+i+"]";
+
+                    if (tmp instanceof JSONObject) {
+                        extract(tmpKey, (JSONObject) tmp, map);
+                    } else {
+                        map.put(tmpKey, getValue(obj.get(k)));
+                    }
+                    i++;
                 }
 
+            } else {
+                map.put(key, getValue(obj.get(k)));
             }
+
         }
 
     }
 
-    public static String mapToQuery(Map<String, String> map) throws UnsupportedEncodingException {
+
+    private static String getValue(Object val) {
+
+        if (val instanceof Boolean) {
+            return Boolean.toString(((Boolean)val));
+        } else if (val instanceof Integer){
+            return Long.toString(((Integer)val));
+        } else if (val instanceof Long) {
+            return Long.toString(((Long)val));
+        } else if (val instanceof Float) {
+            return Float.toString(((Float)val));
+        }else if( val instanceof Double) {
+            return Double.toString(((Double)val));
+        } else if (JSONObject.NULL.equals(val)) {
+            return "";
+        } else {
+            return String.valueOf(val);
+        }
+
+    }
+
+    public static String mapToQuery(Map<String, String> map) throws AuthyException, UnsupportedEncodingException {
 
         StringBuilder sb = new StringBuilder();
 
@@ -101,6 +141,8 @@ public class AuthyUtil {
         boolean first = true;
 
         for (String key : keys) {
+            if (key.length() > 200)
+                throw new AuthyException("max number of characters of key exceeded.");
 
             if (first) {
                 first = false;
@@ -131,10 +173,13 @@ public class AuthyUtil {
      * @param url        The url of the request.
      * @param authyToken the security token from the authy library
      * @return true if the signature ios valid, false otherwise
+     * @throws com.authy.AuthyException
      * @throws UnsupportedEncodingException if the string parameters have problems with UTF-8 encoding.
      */
-    public static boolean validateSignatureForPost(String body, Map<String, String> headers, String url, String authyToken) throws UnsupportedEncodingException {
+    public static boolean validateSignatureForPost(String body, Map<String, String> headers, String url, String authyToken) throws AuthyException, UnsupportedEncodingException {
         HashMap<String, String> params = new HashMap<>();
+        if (body == null || body.isEmpty())
+            throw new AuthyException("'PARAMS' are missing.");
         extract("", new JSONObject(body), params);
         return validateSignature(params, headers, "POST", url, authyToken);
     }
@@ -147,9 +192,10 @@ public class AuthyUtil {
      * @param url        The url of the request.
      * @param authyToken the security token from the authy library
      * @return true if the signature ios valid, false otherwise
+     * @throws com.authy.AuthyException
      * @throws UnsupportedEncodingException if the string parameters have problems with UTF-8 encoding.
      */
-    public static boolean validateSignatureForGet(Map<String, String> params, Map<String, String> headers, String url, String authyToken) throws UnsupportedEncodingException {
+    public static boolean validateSignatureForGet(Map<String, String> params, Map<String, String> headers, String url, String authyToken) throws AuthyException, UnsupportedEncodingException {
         return validateSignature(params, headers, "GET", url, authyToken);
     }
 

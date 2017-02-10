@@ -1,5 +1,6 @@
 package com.authy.api;
 
+import com.authy.AuthyUtil;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -25,11 +26,8 @@ public class JSONBody implements Formattable {
 
     public Map<String, String> toMap() {
 
-        HashMap<String, String> map = new HashMap<>();
-
-        for(String key : obj.keySet()){
-            map.put(key,obj.getString(key));
-        }
+        HashMap<String,String> map = new HashMap<>();
+        AuthyUtil.extract("",obj, map);
 
         return map;
     }

@@ -88,7 +88,7 @@ public class PhoneInfoResponse implements Formattable {
   }
 
   public String toJSON(){
-    org.json.JSONObject info = new org.json.JSONObject();
+    JSONObject info = new JSONObject();
 
     info.put("message", this.getMessage());
     info.put("success", this.getSuccess());
@@ -99,7 +99,7 @@ public class PhoneInfoResponse implements Formattable {
     return info.toString();
   }
 
-  private void parseResponseToOjbect(org.json.JSONObject json){
+  private void parseResponseToOjbect(JSONObject json){
     if( !json.isNull("message") )
       this.message = json.getString("message");
 

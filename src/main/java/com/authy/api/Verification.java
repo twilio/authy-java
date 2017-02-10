@@ -103,7 +103,7 @@ public class Verification implements Formattable {
   }
 
   public String toJSON(){
-    org.json.JSONObject verification = new org.json.JSONObject();
+    JSONObject verification = new JSONObject();
 
     verification.put("message", this.getMessage());
     verification.put("success", this.getSuccess());
@@ -113,7 +113,7 @@ public class Verification implements Formattable {
     return verification.toString();
   }
 
-  private void parseResponseToOjbect(org.json.JSONObject json){
+  private void parseResponseToOjbect(JSONObject json){
     if( !json.isNull("message") )
       this.message = json.getString("message");
 

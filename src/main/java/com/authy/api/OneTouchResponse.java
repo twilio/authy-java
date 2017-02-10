@@ -15,13 +15,22 @@ public class OneTouchResponse {
 
 
     public OneTouchResponse(String json) {
+        ini(json);
 
-        if (json == null) {
+    }
+    
+    public OneTouchResponse(boolean success, String message){
+        ini(null);
+        this.obj.put("success", success);
+        this.obj.put("message",message);
+    }
+    
+    private void ini(String json){
+            if (json == null) {
             json = "{}";
         }
 
-        obj = new JSONObject(json);
-    }
+        obj = new JSONObject(json);}
 
     public boolean isSuccess() {
         return obj.has("success") && obj.getBoolean("success");

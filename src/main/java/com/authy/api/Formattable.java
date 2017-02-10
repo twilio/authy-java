@@ -13,4 +13,5 @@ public interface Formattable {
     Map<String, String> toMap();
 
     String toJSON();
+
 }
