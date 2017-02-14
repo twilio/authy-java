@@ -120,7 +120,7 @@ If the request was successful, you will need to store the authy id in your datab
   if(verification.isOk()){
   // token was valid, user can sign in
   }else{
-  	// token is invalid
+    // token is invalid
   }
 ```
   In case `verification.isOk()` returns `false`, you can get an Error object using `verification.getError()`
@@ -164,8 +164,8 @@ If the request was successful, you will need to store the authy id in your datab
   As always, you can use `isOk()` to verify if the token was sent.
 
 ```java
-	if(sms.isOk())
-	// sms was sent ;
+  if(sms.isOk())
+  // sms was sent ;
 ```
 
   In case `sms.isOk()` returns `false`, you can get an Error object using `sms.getError()`
@@ -189,17 +189,15 @@ If the request was successful, you will need to store the authy id in your datab
   status can be queried by using the  `uuid` provided. (NOTE: The UUID is the unique identifier for the request sent to OneTouch)    
 
 ```java
-    HashMap<String, String> details = new HashMap<String, String>();
-    details.put("username", "Bill Smith");
-    details.put("location", "California, USA");
-    details.put("amount", "$20.000");
+//Detail and hidden details information are required
+//The maximum length of values for each key is 200
+   OneTouchOptionParams options = new OneTouchOptionParams();
+        options.addDetail("username", "User");
+        options.addDetail("location", "California,USA");
+        options.addHiddenDetails("ip_address", "10.10.3.203");
+        options.addLogo(Logo.Resolution.Low, "https://myurlimage.co");
 
-    HashMap<String, String> hidden = new HashMap<String, String>();
-    hidden.put("ip_address", "10.10.3.203");
-
-    HashMap<String, String> logos = new HashMap<String, String>();
-
-    OneTouchResponse response = client.getOneTouch().sendApprovalRequest(Integer.parseInt(103), "Authorize OneTouch Unit Test", details, hidden, logos, 86400);
+    OneTouchResponse response = client.getOneTouch().sendApprovalRequest(Integer.parseInt(103), "Authorize OneTouch Unit Test", options.generateParams(), ,86400);
     // If the request was successfuly created.
     assert response.isSuccess();
     String uuid = response.getApprovalRequest().getUUID();
