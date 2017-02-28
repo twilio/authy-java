@@ -54,7 +54,7 @@ public class OneTouchResponse {
         return null;
     }
 
-    class ApprovalRequest {
+    public class ApprovalRequest {
 
         private ApprovalRequest() {
         }
