@@ -186,7 +186,7 @@ If the request was successful, you will need to store the authy id in your datab
   for example, using the 
   'sendApprovalRequest' method you will create an ApprovalRequest
   in OneTouch, then the approval request
-  status can be queried by using the  `uuid` provided. (NOTE: The UUID is the unique identifier for the request sent to OneTouch). 'sendApprovalRequest' method need an intance of ApprovalRequestParams.class, you can create one using the ApprovalRequestParams.Builder like that: 
+  status can be queried by using the  `uuid` provided. (NOTE: The UUID is the unique identifier for the request sent to OneTouch). 'sendApprovalRequest' method need an intance of ApprovalRequestParams.class, you can create one using the ApprovalRequestParams.Builder like this: 
 
 ```java
  ApprovalRequestParams approvalRequestParams= new  ApprovalRequestParams.Builder(Integer.parseInt(103)),"Authorize OneTouch Unit Test")
