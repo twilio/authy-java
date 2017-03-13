@@ -1,36 +1,32 @@
 package com.authy.api;
 
+import com.authy.OneTouchException;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- *
- *
  * @author hansospina
- *
- * Copyright © 2016 Twilio, Inc. All Rights Reserved.
+ *         <p>
+ *         Copyright © 2017 Twilio, Inc. All Rights Reserved.
  */
 public class OneTouchResponse {
 
     private JSONObject obj;
 
 
-    public OneTouchResponse(String json) {
-        ini(json);
+    public OneTouchResponse(String json) throws OneTouchException {
+        init(json);
+    }
 
-    }
-    
-    public OneTouchResponse(boolean success, String message){
-        ini(null);
-        this.obj.put("success", success);
-        this.obj.put("message",message);
-    }
-    
-    private void ini(String json){
-            if (json == null) {
-            json = "{}";
+    private void init(String json) throws OneTouchException {
+
+        try {
+            obj = new JSONObject(json);
+        } catch (JSONException ex) {
+            throw new OneTouchException("Invalid JSON format, the given string is not a valid json object.", ex);
         }
 
-        obj = new JSONObject(json);}
+    }
 
     public boolean isSuccess() {
         return obj.has("success") && obj.getBoolean("success");

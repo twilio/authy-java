@@ -4,8 +4,8 @@ import java.util.Map;
 
 /**
  * Interface to represent objects as XML or Java's Map
- * @author Authy Inc
  *
+ * @author Authy Inc
  */
 public interface Formattable {
     String toXML();

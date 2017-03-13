@@ -71,7 +71,7 @@ public class TestAuthyUtil {
         // if we want to test POST, then fetch the info from the body
         if (method.equals(Resource.METHOD_POST)) {
             Assert.assertNotNull(properties.getProperty("authy_util_signature_body"));
-           
+
             Assert.assertTrue("Invalid Signature", AuthyUtil.validateSignatureForPost(properties.getProperty("authy_util_signature_body"), headers, url, properties.getProperty("api_key")));
         } else {
             // if we want to test GET, then fetch the info from the querystring
@@ -96,14 +96,14 @@ public class TestAuthyUtil {
 
 
     }
-    
+
     /**
      * This test method helps the users to clearly test the signature validation with GET and POST
      *
      * @throws AuthyException
      * @throws UnsupportedEncodingException
      */
-    @Test (expected=AuthyException.class)
+    @Test(expected = AuthyException.class)
     public void testSignatureWithoutNonce() throws AuthyException, UnsupportedEncodingException {
 
         Assert.assertNotNull(properties.getProperty("authy_util_signature_url"));
@@ -122,7 +122,7 @@ public class TestAuthyUtil {
         // if we want to test POST, then fetch the info from the body
         if (method.equals(Resource.METHOD_POST)) {
             Assert.assertNotNull(properties.getProperty("authy_util_signature_body"));
-           
+
             Assert.assertTrue("Invalid Signature", AuthyUtil.validateSignatureForPost(properties.getProperty("authy_util_signature_body"), headers, url, properties.getProperty("api_key")));
         } else {
             // if we want to test GET, then fetch the info from the querystring
@@ -147,8 +147,7 @@ public class TestAuthyUtil {
     }
 
 
-
-    @Test (expected=AuthyException.class)
+    @Test(expected = AuthyException.class)
     public void testSignatureWithoutParams() throws AuthyException, UnsupportedEncodingException {
 
         Assert.assertNotNull(properties.getProperty("authy_util_signature_url"));
@@ -168,7 +167,7 @@ public class TestAuthyUtil {
         // if we want to test POST, then fetch the info from the body
         if (method.equals(Resource.METHOD_POST)) {
             Assert.assertNotNull(properties.getProperty("authy_util_signature_body"));
-           
+
             Assert.assertTrue("Invalid Signature", AuthyUtil.validateSignatureForPost(null, headers, url, properties.getProperty("api_key")));
         } else {
             // if we want to test GET, then fetch the info from the querystring

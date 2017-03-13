@@ -18,13 +18,14 @@ import java.util.logging.Logger;
 /**
  * @author hansospina
  *         <p>
- *         Copyright © 2016 Twilio, Inc. All Rights Reserved.
+ *         Copyright © 2017 Twilio, Inc. All Rights Reserved.
  */
 public class AuthyUtil {
 
     private static final Logger LOGGER = Logger.getLogger(Resource.class.getName());
 
-    private static String hmacSha(String KEY, String VALUE) {
+    private static String hmacSha(String KEY, String VALUE) throws OneTouchException {
+
         try {
             SecretKeySpec signingKey = new SecretKeySpec(KEY.getBytes("UTF-8"), "HmacSHA256");
             Mac mac = Mac.getInstance("HmacSHA256");
@@ -32,7 +33,8 @@ public class AuthyUtil {
             byte[] rawHmac = mac.doFinal(VALUE.getBytes("UTF-8"));
             return DatatypeConverter.printBase64Binary(rawHmac);
         } catch (Exception ex) {
-            throw new RuntimeException(ex);
+            // capture the exceptions and wrap them using authy.
+            throw new OneTouchException("There was an exception checking the Authy OneTouch signature.", ex);
         }
     }
 
@@ -43,23 +45,23 @@ public class AuthyUtil {
      * @param parameters The request parameters(all of them)
      * @param headers    The headers of the request
      * @param url        The url of the request.
-     * @param authyToken the security token from the authy library
+     * @param apiKey     the security token from the authy library
      * @return true if the signature ios valid, false otherwise
      * @throws UnsupportedEncodingException if the string parameters have problems with UTF-8 encoding.
      */
-    private static boolean validateSignature(Map<String, String> parameters, Map<String, String> headers, String method, String url, String authyToken) throws AuthyException, UnsupportedEncodingException {
+    private static boolean validateSignature(Map<String, String> parameters, Map<String, String> headers, String method, String url, String apiKey) throws OneTouchException, UnsupportedEncodingException {
 
         if (headers == null)
-            throw new AuthyException("No headers sent");
+            throw new OneTouchException("No headers sent");
 
         if (!headers.containsKey("X-Authy-Signature"))
-            throw new AuthyException("'SIGNATURE' is missing.");
+            throw new OneTouchException("'SIGNATURE' is missing.");
 
         if (!headers.containsKey("X-Authy-Signature-Nonce"))
-            throw new AuthyException("'NONCE' is missing.");
+            throw new OneTouchException("'NONCE' is missing.");
 
         if (parameters == null || parameters.isEmpty())
-            throw new AuthyException("'PARAMS' are missing.");
+            throw new OneTouchException("'PARAMS' are missing.");
 
         StringBuilder sb = new StringBuilder(headers.get("X-Authy-Signature-Nonce"))
                 .append("|")
@@ -69,7 +71,7 @@ public class AuthyUtil {
                 .append("|")
                 .append(mapToQuery(parameters));
 
-        String signature = hmacSha(authyToken, sb.toString());
+        String signature = hmacSha(apiKey, sb.toString());
 
         // let's check that the Authy signature is valid
         return signature.equals(headers.get("X-Authy-Signature"));
@@ -87,13 +89,12 @@ public class AuthyUtil {
             } else if (obj.optJSONArray(k) != null) {
 
 
-
                 JSONArray arr = obj.getJSONArray(k);
 
-                int i =0;
+                int i = 0;
 
                 for (Object tmp : arr) {
-                    String tmpKey = key+"["+i+"]";
+                    String tmpKey = key + "[" + i + "]";
 
                     if (tmp instanceof JSONObject) {
                         extract(tmpKey, (JSONObject) tmp, map);
@@ -115,15 +116,15 @@ public class AuthyUtil {
     private static String getValue(Object val) {
 
         if (val instanceof Boolean) {
-            return Boolean.toString(((Boolean)val));
-        } else if (val instanceof Integer){
-            return Long.toString(((Integer)val));
+            return Boolean.toString(((Boolean) val));
+        } else if (val instanceof Integer) {
+            return Long.toString(((Integer) val));
         } else if (val instanceof Long) {
-            return Long.toString(((Long)val));
+            return Long.toString(((Long) val));
         } else if (val instanceof Float) {
-            return Float.toString(((Float)val));
-        }else if( val instanceof Double) {
-            return Double.toString(((Double)val));
+            return Float.toString(((Float) val));
+        } else if (val instanceof Double) {
+            return Double.toString(((Double) val));
         } else if (JSONObject.NULL.equals(val)) {
             return "";
         } else {
@@ -132,7 +133,7 @@ public class AuthyUtil {
 
     }
 
-    public static String mapToQuery(Map<String, String> map) throws AuthyException, UnsupportedEncodingException {
+    public static String mapToQuery(Map<String, String> map) throws OneTouchException, UnsupportedEncodingException {
 
         StringBuilder sb = new StringBuilder();
 
@@ -142,7 +143,7 @@ public class AuthyUtil {
 
         for (String key : keys) {
             if (key.length() > 200)
-                throw new AuthyException("max number of characters of key exceeded.");
+                throw new OneTouchException("max number of characters of key exceeded.");
 
             if (first) {
                 first = false;
@@ -168,35 +169,35 @@ public class AuthyUtil {
     /**
      * Validates the request information to
      *
-     * @param body       The body of the request in case of a POST method
-     * @param headers    The headers of the request
-     * @param url        The url of the request.
-     * @param authyToken the security token from the authy library
+     * @param body    The body of the request in case of a POST method
+     * @param headers The headers of the request
+     * @param url     The url of the request.
+     * @param apiKey  the security token from the authy library
      * @return true if the signature ios valid, false otherwise
-     * @throws com.authy.AuthyException
+     * @throws com.authy.OneTouchException
      * @throws UnsupportedEncodingException if the string parameters have problems with UTF-8 encoding.
      */
-    public static boolean validateSignatureForPost(String body, Map<String, String> headers, String url, String authyToken) throws AuthyException, UnsupportedEncodingException {
+    public static boolean validateSignatureForPost(String body, Map<String, String> headers, String url, String apiKey) throws OneTouchException, UnsupportedEncodingException {
         HashMap<String, String> params = new HashMap<>();
         if (body == null || body.isEmpty())
-            throw new AuthyException("'PARAMS' are missing.");
+            throw new OneTouchException("'PARAMS' are missing.");
         extract("", new JSONObject(body), params);
-        return validateSignature(params, headers, "POST", url, authyToken);
+        return validateSignature(params, headers, "POST", url, apiKey);
     }
 
     /**
      * Validates the request information to
      *
-     * @param params     The query parameters in case of a GET request
-     * @param headers    The headers of the request
-     * @param url        The url of the request.
-     * @param authyToken the security token from the authy library
+     * @param params  The query parameters in case of a GET request
+     * @param headers The headers of the request
+     * @param url     The url of the request.
+     * @param apiKey  the security token from the authy library
      * @return true if the signature ios valid, false otherwise
-     * @throws com.authy.AuthyException
+     * @throws com.authy.OneTouchException
      * @throws UnsupportedEncodingException if the string parameters have problems with UTF-8 encoding.
      */
-    public static boolean validateSignatureForGet(Map<String, String> params, Map<String, String> headers, String url, String authyToken) throws AuthyException, UnsupportedEncodingException {
-        return validateSignature(params, headers, "GET", url, authyToken);
+    public static boolean validateSignatureForGet(Map<String, String> params, Map<String, String> headers, String url, String apiKey) throws OneTouchException, UnsupportedEncodingException {
+        return validateSignature(params, headers, "GET", url, apiKey);
     }
 
 

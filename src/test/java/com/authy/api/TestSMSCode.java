@@ -58,8 +58,6 @@ public class TestSMSCode {
         Hash tmp = client.getUsers().requestSms(0, map);
         // isOK() is the method that will allow you to know if the request worked.
         Assert.assertFalse(tmp.isOk());
-        // there's also a response message.
-        Assert.assertEquals(properties.getProperty("sms_ask_response_message"), tmp.getMessage());
     }
 
     @Test

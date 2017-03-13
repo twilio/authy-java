@@ -7,10 +7,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
  * @author hansospina
- *
- * Copyright © 2016 Twilio, Inc. All Rights Reserved.
+ *         <p>
+ *         Copyright © 2017 Twilio, Inc. All Rights Reserved.
  */
 public class JSONBody implements Formattable {
 
@@ -26,8 +25,8 @@ public class JSONBody implements Formattable {
 
     public Map<String, String> toMap() {
 
-        HashMap<String,String> map = new HashMap<>();
-        AuthyUtil.extract("",obj, map);
+        HashMap<String, String> map = new HashMap<>();
+        AuthyUtil.extract("", obj, map);
 
         return map;
     }

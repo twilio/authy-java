@@ -4,8 +4,8 @@ import com.authy.api.*;
 
 /**
  * @author Julian Camargo
- *
- * Copyright © 2016 Twilio, Inc. All Rights Reserved.
+ *         <p>
+ *         Copyright © 2017 Twilio, Inc. All Rights Reserved.
  */
 public class AuthyApiClient {
     public static final String CLIENT_NAME = "AuthyJava";
