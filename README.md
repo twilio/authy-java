@@ -186,20 +186,18 @@ If the request was successful, you will need to store the authy id in your datab
   for example, using the 
   'sendApprovalRequest' method you will create an ApprovalRequest
   in OneTouch, then the approval request
-  status can be queried by using the  `uuid` provided. (NOTE: The UUID is the unique identifier for the request sent to OneTouch)    
+  status can be queried by using the  `uuid` provided. (NOTE: The UUID is the unique identifier for the request sent to OneTouch). 'sendApprovalRequest' method need an intance of ApprovalRequestParams.class, you can create one using the ApprovalRequestParams.Builder like that: 
 
 ```java
-//Detail and hidden details information are required
-//The maximum length of values for each key is 200
-   OneTouchOptionParams options = new OneTouchOptionParams();
-        options.addDetail("username", "User");
-        options.addDetail("location", "California,USA");
-        options.addHiddenDetails("ip_address", "10.10.3.203");
-        options.addLogo(Logo.Resolution.Low, "https://myurlimage.co");
-
-    OneTouchResponse response = client.getOneTouch().sendApprovalRequest(Integer.parseInt(103), "Authorize OneTouch Unit Test", options.generateParams(), ,86400);
+ ApprovalRequestParams approvalRequestParams= new  ApprovalRequestParams.Builder(Integer.parseInt(103)),"Authorize OneTouch Unit Test")
+                .addDetail("username", "User")
+                .addDetail("location", "California,USA")
+                .addHiddenDetail("ip_address", "10.10.3.203")
+                .addLogo(Resolution.Default, "http://image.co")
+                .build();
+       
+        OneTouchResponse response = client.getOneTouch().sendApprovalRequest(approvalRequestParams);
     // If the request was successfuly created.
-    assert response.isSuccess();
     String uuid = response.getApprovalRequest().getUUID();
     System.out.println(uuid);
 ```
