@@ -75,14 +75,8 @@ public class OneTouch extends Resource {
         try {
             return new OneTouchResponse(this.get(APPROVAL_REQUEST_STATUS + URLEncoder.encode(uuid, ENCODE), new Params()));
         } catch (Exception e) {
-            e.printStackTrace();
-            JSONObject object = new JSONObject();
-            object.put("success", false);
-            object.put("message", e.getMessage());
-            object.put("error_code", e.getClass().getName());
-            return new OneTouchResponse("{\"success\":false, \"message\":\"" + e.getMessage() + "\"}");
+            throw new OneTouchException("There was an error trying to process this request.", e);
         }
-
 
     }
 
