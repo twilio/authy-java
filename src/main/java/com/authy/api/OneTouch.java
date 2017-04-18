@@ -1,69 +1,96 @@
 package com.authy.api;
 
+import com.authy.OneTouchException;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.net.URLEncoder;
-import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author hansospina
+ *         <p>
+ *         Copyright © 2017 Twilio, Inc. All Rights Reserved.
  */
-public class OneTouch extends Resource{
+public class OneTouch extends Resource {
 
     public static final String APPROVAL_REQUEST_PRE = "/onetouch/json/users/";
     public static final String APPROVAL_REQUEST_POS = "/approval_requests";
     public static final String APPROVAL_REQUEST_STATUS = "/onetouch/json/approval_requests/";
 
+
     public OneTouch(String uri, String key) {
-        super(uri, key, "JSON");
+        super(uri, key, Resource.JSON_CONTENT_TYPE);
 
     }
 
-    public OneTouch(String uri, String key, boolean testFlag) {
-        super(uri, key, testFlag, "JSON");
+    public OneTouch(String uri, String apiKey, boolean testFlag) {
+        super(uri, apiKey, testFlag, Resource.JSON_CONTENT_TYPE);
     }
 
 
-    public OneTouchResponse sendApprovalRequest(Integer userId, String message, HashMap<String,String> details, HashMap<String,String> hiddenDetails, HashMap<String,String> logos, Integer seconds_to_expire){
+    /**
+     * Sends the OneTouch's approval request to the Authy servers and returns the OneTouchResponse that comes back.
+     *
+     * @param approvalRequestParams The bean wrapping the user's Authy approval request built using the ApprovalRequest.Builder
+     * @return The bean wrapping the response from Authy's service.
+     */
+    public OneTouchResponse sendApprovalRequest(ApprovalRequestParams approvalRequestParams) throws OneTouchException {//Integer userId, String message, HashMap<String, Object> options, Integer secondsToExpire) throws OneTouchException {
+
 
         JSONObject params = new JSONObject();
-        params.put("message",message);
+        params.put("message", approvalRequestParams.getMessage());
 
-        for(String key: details.keySet()){
-            params.put("details["+key+"]",details.get(key));
+
+        if (approvalRequestParams.getSecondsToExpire() != null) {
+            params.put("seconds_to_expire", approvalRequestParams.getSecondsToExpire());
         }
 
-        for(String key: hiddenDetails.keySet()){
-            params.put("hidden_details["+key+"]",hiddenDetails.get(key));
+        if (approvalRequestParams.getDetails().size() > 0) {
+            params.put("details", mapToJSONObject(approvalRequestParams.getDetails()));
         }
 
-        for(String key: logos.keySet()){
-            params.put("logos["+key+"]",logos.get(key));
+
+        if (approvalRequestParams.getHidden().size() > 0) {
+            params.put("hidden_details", mapToJSONObject(approvalRequestParams.getDetails()));
         }
 
-        params.put("message",message);
+
+        if (!approvalRequestParams.getLogos().isEmpty()) {
+            JSONArray jSONArray = new JSONArray();
+
+            for (Logo logo : approvalRequestParams.getLogos()) {
+                logo.addToMap(jSONArray);
+            }
+
+            params.put("logos", jSONArray);
+        }
 
 
-        return new OneTouchResponse(this.post(APPROVAL_REQUEST_PRE+userId+APPROVAL_REQUEST_POS, new JSONBody(params)));
+        return new OneTouchResponse(this.post(APPROVAL_REQUEST_PRE + approvalRequestParams.getAuthyId() + APPROVAL_REQUEST_POS, new JSONBody(params)));
     }
 
-
-    public OneTouchResponse getApprovalRequestStatus(String udid){
+    public OneTouchResponse getApprovalRequestStatus(String uuid) throws OneTouchException {
 
         try {
-            return new OneTouchResponse(this.get(APPROVAL_REQUEST_STATUS+URLEncoder.encode(udid, ENCODE), new Params()));
-        }catch(Exception e) {
-            e.printStackTrace();
-            JSONObject object = new JSONObject();
-            object.put("success",false);
-            object.put("message",e.getMessage());
-            object.put("error_code",e.getClass().getName());
-            return new OneTouchResponse("{\"success\":false, \"message\":\""+e.getMessage()+"\"}");
+            return new OneTouchResponse(this.get(APPROVAL_REQUEST_STATUS + URLEncoder.encode(uuid, ENCODE), new Params()));
+        } catch (Exception e) {
+            throw new OneTouchException("There was an error trying to process this request.", e);
         }
-
 
     }
 
+
+    private JSONObject mapToJSONObject(Map<String, String> map) {
+
+        JSONObject obj = new JSONObject();
+
+        for (String key : map.keySet()) {
+            obj.put(key, map.get(key));
+        }
+
+        return obj;
+    }
 
 
 }

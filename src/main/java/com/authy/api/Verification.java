@@ -1,126 +1,125 @@
 package com.authy.api;
 
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
+import org.json.JSONObject;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- *
  * @author Moisés Vargas
- *
  */
-@XmlRootElement(name="verification")
+@XmlRootElement(name = "verification")
 public class Verification implements Formattable {
-  private int status = 503;
-  private String response;
-  private org.json.JSONObject jsonResponse;
-  private String message = "Something went wrong!";
-  private boolean isPorted = false;
-  private boolean isCellphone = false;
+    private int status = 503;
+    private String response;
+    private String message = "Something went wrong!";
+    private boolean isPorted = false;
+    private boolean isCellphone = false;
 
-  public Verification() {
-  }
-
-  public Verification(int status, String response, String message) {
-    this.status = status;
-    this.response = response;
-    this.message = message;
-  }
-
-  @XmlElement(name="message")
-  public String getMessage() {
-    return message;
-  }
-
-  @XmlElement(name="success")
-  public String getSuccess(){
-    return Boolean.toString(this.isOk());
-  }
-
-  @XmlElement(name="is_ported")
-  public String getIsPorted(){
-    return Boolean.toString(this.isPorted);
-  }
-
-  @XmlElement(name="is_cellphone")
-  public String getIsCellphone(){
-    return Boolean.toString(this.isCellphone);
-  }
-
-  public void setStatus(int status) {
-    this.status = status;
-  }
-
-  public void setResponse(String response) {
-    this.response = response;
-    this.jsonResponse = new org.json.JSONObject (response);
-    this.parseResponseToOjbect(jsonResponse);
-  }
-
-  public boolean isOk() {
-    return status == 200;
-  }
-
-  /**
-   * Map a Token instance to its XML representation.
-   * @return a String with the description of this object in XML.
-   */
-  public String toXML() {
-    StringWriter sw = new StringWriter();
-    String xml = "";
-
-    try {
-      JAXBContext context = JAXBContext.newInstance(this.getClass());
-      Marshaller marshaller = context.createMarshaller();
-
-      marshaller.marshal(this, sw);
-      xml = sw.toString();
+    public Verification() {
     }
-    catch(Exception e) {
-      e.printStackTrace();
+
+    public Verification(int status, String response, String message) {
+        this.status = status;
+        this.response = response;
+        this.message = message;
     }
-    return xml;
-  }
 
-  /**
-   * Map a Token instance to its Java's Map representation.
-   * @return a Java's Map with the description of this object.
-   */
-  public Map<String, String> toMap() {
-    Map<String, String> map = new HashMap<String, String>();
+    @XmlElement(name = "message")
+    public String getMessage() {
+        return message;
+    }
 
-    map.put("message", this.getMessage());
-    map.put("success", this.getSuccess());
-    map.put("is_ported", this.getIsPorted());
-    map.put("is_cellphone", this.getIsCellphone());
+    @XmlElement(name = "success")
+    public String getSuccess() {
+        return Boolean.toString(this.isOk());
+    }
 
-    return map;
-  }
+    @XmlElement(name = "is_ported")
+    public String getIsPorted() {
+        return Boolean.toString(this.isPorted);
+    }
 
-  public String toJSON(){
-    org.json.JSONObject verification = new org.json.JSONObject();
+    @XmlElement(name = "is_cellphone")
+    public String getIsCellphone() {
+        return Boolean.toString(this.isCellphone);
+    }
 
-    verification.put("message", this.getMessage());
-    verification.put("success", this.getSuccess());
-    verification.put("is_ported", this.getIsPorted());
-    verification.put("is_cellphone", this.getIsCellphone());
+    public void setStatus(int status) {
+        this.status = status;
+    }
 
-    return verification.toString();
-  }
+    public void setResponse(String response) {
+        this.response = response;
+        JSONObject jsonResponse = new JSONObject(response);
+        this.parseResponseToOjbect(jsonResponse);
+    }
 
-  private void parseResponseToOjbect(org.json.JSONObject json){
-    if( !json.isNull("message") )
-      this.message = json.getString("message");
+    public boolean isOk() {
+        return status == 200;
+    }
 
-    if( !json.isNull("is_ported") )
-      this.isPorted = json.getBoolean("is_ported");
+    /**
+     * Map a Token instance to its XML representation.
+     *
+     * @return a String with the description of this object in XML.
+     */
+    public String toXML() {
+        StringWriter sw = new StringWriter();
+        String xml = "";
 
-    if( !json.isNull("is_cellphone") )
-      this.isCellphone = json.getBoolean("is_cellphone");
-  }
+        try {
+            JAXBContext context = JAXBContext.newInstance(this.getClass());
+            Marshaller marshaller = context.createMarshaller();
+
+            marshaller.marshal(this, sw);
+            xml = sw.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return xml;
+    }
+
+    /**
+     * Map a Token instance to its Java's Map representation.
+     *
+     * @return a Java's Map with the description of this object.
+     */
+    public Map<String, String> toMap() {
+        Map<String, String> map = new HashMap<>();
+
+        map.put("message", this.getMessage());
+        map.put("success", this.getSuccess());
+        map.put("is_ported", this.getIsPorted());
+        map.put("is_cellphone", this.getIsCellphone());
+
+        return map;
+    }
+
+    public String toJSON() {
+        JSONObject verification = new JSONObject();
+
+        verification.put("message", this.getMessage());
+        verification.put("success", this.getSuccess());
+        verification.put("is_ported", this.getIsPorted());
+        verification.put("is_cellphone", this.getIsCellphone());
+
+        return verification.toString();
+    }
+
+    private void parseResponseToOjbect(JSONObject json) {
+        if (!json.isNull("message"))
+            this.message = json.getString("message");
+
+        if (!json.isNull("is_ported"))
+            this.isPorted = json.getBoolean("is_ported");
+
+        if (!json.isNull("is_cellphone"))
+            this.isCellphone = json.getBoolean("is_cellphone");
+    }
 }

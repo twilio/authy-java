@@ -1,12 +1,15 @@
 package com.authy.api;
 
+import com.authy.AuthyUtil;
 import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by hansospina on 12/20/16.
+ * @author hansospina
+ *         <p>
+ *         Copyright © 2017 Twilio, Inc. All Rights Reserved.
  */
 public class JSONBody implements Formattable {
 
@@ -22,11 +25,8 @@ public class JSONBody implements Formattable {
 
     public Map<String, String> toMap() {
 
-        HashMap<String,String> map = new HashMap<String, String>();
-
-        for(String key : obj.keySet()){
-            map.put(key,obj.getString(key));
-        }
+        HashMap<String, String> map = new HashMap<>();
+        AuthyUtil.extract("", obj, map);
 
         return map;
     }
