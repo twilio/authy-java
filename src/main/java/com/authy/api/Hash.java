@@ -1,99 +1,100 @@
 package com.authy.api;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.StringWriter;
 import java.util.Map;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.annotation.*;
-
 /**
- * 
  * @author Julian Camargo
- *
  */
-@XmlRootElement(name="hash")
+@XmlRootElement(name = "hash")
 public class Hash extends Instance implements Formattable {
 
-	private User user = null;
-	private String message, token;
-	private boolean success;
-	
-	public Hash() {
-	}
-	
-	public Hash(int status, String content) {
-		super(status, content);
-	}
-	
-	@XmlElement(type=User.class)
-	public User getUser() {
-		return user;
-	}
+    private User user = null;
+    private String message, token;
+    private boolean success;
 
-	public void setUser(User user) {
-		this.user = user;
-	}
-	
-	public String getMessage() {
-		return message;
-	}
+    public Hash() {
+    }
 
-	public void setMessage(String message) {
-		this.message = message;
-	}
-	
-	public String getToken() {
-		return token;
-	}
+    public Hash(int status, String content) {
+        super(status, content);
+    }
 
-	public void setToken(String token) {
-		this.token = token;
-	}
+    @XmlElement(type = User.class)
+    public User getUser() {
+        return user;
+    }
 
-	public boolean isSuccess() {
-		return success;
-	}
+    public void setUser(User user) {
+        this.user = user;
+    }
 
-	public void setSuccess(boolean success) {
-		this.success = success;
-	}
+    public String getMessage() {
+        return message;
+    }
 
-	/**
-	 * Map a Token instance to its XML representation.
-	 * @return a String with the description of this object in XML.
-	 */
-	public String toXML() {
-		Error error = getError();
-		
-		if(error != null) {
-			return error.toXML();
-		}
-		
-		StringWriter sw = new StringWriter();
-		String xml = "";
-		
-		try {
-			JAXBContext context = JAXBContext.newInstance(this.getClass());
-			Marshaller marshaller = context.createMarshaller();
-			
-			marshaller.marshal(this, sw);
-			xml = sw.toString();
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-		}
-		return xml;
-	}
+    public void setMessage(String message) {
+        this.message = message;
+    }
 
-	// required to satisfy Formattable interface
-	public String toJSON(){ return ""; }
+    public String getToken() {
+        return token;
+    }
 
-	/**
-	 * Map a Token instance to its Java's Map representation.
-	 * @return a Java's Map with the description of this object.
-	 */
-	public Map<String, String> toMap() {
-		return null;
-	}
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
+
+    /**
+     * Map a Token instance to its XML representation.
+     *
+     * @return a String with the description of this object in XML.
+     */
+    public String toXML() {
+        Error error = getError();
+
+        if (error != null) {
+            return error.toXML();
+        }
+
+        StringWriter sw = new StringWriter();
+        String xml = "";
+
+        try {
+            JAXBContext context = JAXBContext.newInstance(this.getClass());
+            Marshaller marshaller = context.createMarshaller();
+
+            marshaller.marshal(this, sw);
+            xml = sw.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return xml;
+    }
+
+    // required to satisfy Formattable interface
+    public String toJSON() {
+        return "";
+    }
+
+    /**
+     * Map a Token instance to its Java's Map representation.
+     *
+     * @return a Java's Map with the description of this object.
+     */
+    public Map<String, String> toMap() {
+        return null;
+    }
 }
