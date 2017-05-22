@@ -1,5 +1,7 @@
 package com.authy.api;
 
+import org.json.JSONObject;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -39,7 +41,7 @@ public class Users extends Resource {
      * @return a User instance
      */
     public com.authy.api.User createUser(String email, String phone, String countryCode) {
-        Users.User user = new Users.User(email, phone, countryCode);
+        User user = new User(email, phone, countryCode);
 
         String content = this.post(NEW_USER_PATH, user);
 
@@ -181,8 +183,9 @@ public class Users extends Resource {
         }
 
         // required to satisfy Formattable interface
+        // required to satisfy Formattable interface
         public String toJSON() {
-            return "";
+            return new JSONObject(toMap()).toString();
         }
     }
 
@@ -244,12 +247,18 @@ public class Users extends Resource {
         }
 
         public Map<String, String> toMap() {
-            return null;
+
+            Map<String, String> map = new HashMap<>();
+            map.put("email", email);
+            map.put("cellphone", cellphone);
+            map.put("countryCode", countryCode);
+
+            return map;
         }
 
         // required to satisfy Formattable interface
         public String toJSON() {
-            return "";
+            return new JSONObject(toMap()).toString();
         }
     }
 }

@@ -1,5 +1,7 @@
 package com.authy.api;
 
+import org.json.JSONObject;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.XmlElement;
@@ -79,8 +81,9 @@ public class Error implements Formattable {
     }
 
     // required to satisfy Formattable interface
+    // required to satisfy Formattable interface
     public String toJSON() {
-        return "";
+        return new JSONObject(toMap()).toString();
     }
 
     @Override
