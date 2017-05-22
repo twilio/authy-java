@@ -1,14 +1,20 @@
 package com.authy.api;
 
+import org.json.JSONObject;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
  * @author Julian Camargo
+ *         <p>
+ *         Copyright © 2017 Twilio, Inc. All Rights Reserved.
+
  */
 @XmlRootElement(name = "hash")
 public class Hash extends Instance implements Formattable {
@@ -85,8 +91,9 @@ public class Hash extends Instance implements Formattable {
     }
 
     // required to satisfy Formattable interface
+    // required to satisfy Formattable interface
     public String toJSON() {
-        return "";
+        return new JSONObject(toMap()).toString();
     }
 
     /**
@@ -95,6 +102,22 @@ public class Hash extends Instance implements Formattable {
      * @return a Java's Map with the description of this object.
      */
     public Map<String, String> toMap() {
-        return null;
+
+        HashMap<String,String> map = new HashMap<>();
+
+        if( user != null ) {
+
+            Map<String,String> userMap = user.toMap();
+
+            for(String st : userMap.keySet() ){
+                map.put("user."+st,userMap.get(st));
+            }
+
+        }
+
+        map.put("message",message);
+        map.put("token",token);
+        map.put("success",String.valueOf(success));
+        return map;
     }
 }

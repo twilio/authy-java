@@ -118,7 +118,8 @@ public class Resource {
 
             connection.setRequestProperty("X-Authy-API-Key", apiKey);
 
-            if (data.toMap().containsKey("api_key")) {
+            // data might be sent as a null value for cases like "DELETE" requests
+            if (data!= null && data.toMap().containsKey("api_key")) {
                 LOGGER.log(Level.WARNING, "Found 'api_key' as a parameter, please remove it, Authy-Java already handles the'api_key' for you.");
             }
             if (method.equals(Resource.METHOD_POST) || method.equals(Resource.METHOD_PUT)) {

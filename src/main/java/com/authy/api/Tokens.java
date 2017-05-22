@@ -1,6 +1,7 @@
 package com.authy.api;
 
 import com.authy.AuthyException;
+import org.json.JSONObject;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -129,7 +130,7 @@ public class Tokens extends Resource {
 
         // required to satisfy Formattable interface
         public String toJSON() {
-            return "";
+            return new JSONObject(toMap()).toString();
         }
     }
 }
