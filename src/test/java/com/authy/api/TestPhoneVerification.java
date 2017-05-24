@@ -1,54 +1,80 @@
 package com.authy.api;
 
-import junit.framework.Assert;
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 public class TestPhoneVerification {
-  String apiKey = "bf12974d70818a08199d17d5e2bae630";
-  String apiEndPoint = "http://sandbox-api.authy.com";
-  PhoneVerification subject = new PhoneVerification(apiEndPoint, apiKey, true);
 
-  @Test
-  public void itChecksContentTypeToBeJson() {
-    PhoneVerification phoneVerification = new PhoneVerification("api.url", "api.key");
-    Assert.assertEquals("application/json", phoneVerification.getContentType());
-  }
+    private static Properties properties;
 
-  @Test
-  public void itTestsVerificationStartEs() {
-    Params params = new Params();
-    params.setAttribute("locale", "es");
+    static {
 
-    Verification result = subject.start("555-555-5555", "1", "call", params);
-    Assert.assertEquals("Llamada a +1 555-555-5555 fue iniciada.", result.getMessage());
-    Assert.assertEquals("true", result.getSuccess());
-  }
+        InputStream in = TestSMSCode.class.getResourceAsStream("test.properties");
+        properties = new Properties();
 
-  @Test
-  public void itTestsVerificationStartEn() {
-    Params params = new Params();
-    params.setAttribute("locale", "en");
-    Verification result = subject.start("555-555-5555", "1", "sms", params);
+        try {
+            properties.load(in);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-    Assert.assertEquals("Text message sent to +1 555-555-5555.", result.getMessage());
-    Assert.assertEquals("true", result.getSuccess());
-  }
+    private PhoneVerification client;
 
-  @Test
-  public void itTestsVerificationStartEnInvalid() {
-    Params params = new Params();
-    params.setAttribute("locale", "en");
+    @Before
+    public void setUp() throws IOException {
+        // Let's configure the API Client with the properties defined at the test.properties file.
+        Assert.assertNotNull(properties.getProperty("api_key"));
+        Assert.assertNotNull(properties.getProperty("api_url"));
+        client = new PhoneVerification(properties.getProperty("api_url"), properties.getProperty("api_key"), true);
+    }
 
-    Verification result = subject.start("282-23", "1", "sms", params);
-    Assert.assertEquals("Phone verification couldn't be created: Phone number is mandatory, Country code is mandatory", result.getMessage());
-    Assert.assertEquals("false", result.getSuccess());
-  }
+    @Test
+    public void itChecksContentTypeToBeJson() {
+        Assert.assertEquals("application/json", client.getContentType());
+    }
 
-  @Test
-  public void itTestsVerificationCheckNotFound() {
-    Verification result = subject.check("282-23", "1", "2061");
-    Assert.assertEquals("No pending verifications for +1 2-8223 found.", result.getMessage());
-    Assert.assertEquals("false", result.getSuccess());
-  }
+    @Test
+    public void itTestsVerificationStartEs() {
+        Params params = new Params();
+        params.setAttribute("locale", "es");
+
+        Verification result = client.start("+1 775-461-5609", "1", "call", params);
+        Assert.assertEquals("Llamada a +1 775-461-5609 fue iniciada.", result.getMessage());
+        Assert.assertEquals("true", result.getSuccess());
+    }
+
+    @Test
+    public void itTestsVerificationStartEn() {
+        Params params = new Params();
+        params.setAttribute("locale", "en");
+        Verification result = client.start(properties.getProperty("phone_verification_test_number"), "1", "sms", params);
+
+        String msg = "Text message sent to " + properties.getProperty("phone_verification_test_number") + ".";
+        Assert.assertEquals(msg, result.getMessage());
+        Assert.assertEquals("true", result.getSuccess());
+    }
+
+    @Test
+    public void itTestsVerificationStartEnInvalid() {
+        Params params = new Params();
+        params.setAttribute("locale", "en");
+
+        Verification result = client.start("282-23", "1", "sms", params);
+        Assert.assertEquals("Phone number is invalid", result.getMessage());
+        Assert.assertEquals("false", result.getSuccess());
+    }
+
+    @Test
+    public void itTestsVerificationCheckIncorrectCode() {
+        Verification result = client.check(properties.getProperty("phone_verification_test_number"), "1", "2061");
+        Assert.assertEquals("Verification code is incorrect", result.getMessage());
+        Assert.assertEquals("false", result.getSuccess());
+    }
 
 }

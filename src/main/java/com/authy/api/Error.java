@@ -1,90 +1,95 @@
 package com.authy.api;
 
+import org.json.JSONObject;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.annotation.*;
-
 /**
- * 
  * @author Julian Camargo
- *
  */
-@XmlRootElement(name="errors")
+@XmlRootElement(name = "errors")
 public class Error implements Formattable {
-	private String message, url, countryCode;
+    private String message, url, countryCode;
 
-	@XmlElement(name="country-code")
-	public String getCountryCode() {
-		return countryCode;
-	}
+    @XmlElement(name = "country-code")
+    public String getCountryCode() {
+        return countryCode;
+    }
 
-	public void setCountryCode(String countryCode) {
-		this.countryCode = countryCode;
-	}
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
+    }
 
-	@XmlElement(name="message")
-	public String getMessage() {
-		return message;
-	}
+    @XmlElement(name = "message")
+    public String getMessage() {
+        return message;
+    }
 
-	public void setMessage(String message) {
-		this.message = message;
-	}
+    public void setMessage(String message) {
+        this.message = message;
+    }
 
-	@XmlElement(name="url")
-	public String getUrl() {
-		return url;
-	}
+    @XmlElement(name = "url")
+    public String getUrl() {
+        return url;
+    }
 
-	public void setUrl(String url) {
-		this.url = url;
-	}
-	
-	/**
-	 * Map a Token instance to its XML representation.
-	 * @return a String with the description of this object in XML.
-	 */
-	public String toXML() {
-		StringWriter sw = new StringWriter();
-		String xml = "";
-		
-		try {
-			JAXBContext context = JAXBContext.newInstance(this.getClass());
-			Marshaller marshaller = context.createMarshaller();
-			
-			marshaller.marshal(this, sw);
-			xml = sw.toString();
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-		}
-		return xml;
-	}
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
-	/**
-	 * Map a Token instance to its Java's Map representation.
-	 * @return a Java's Map with the description of this object.
-	 */
-	public Map<String, String> toMap() {
-		Map<String, String> map = new HashMap<String, String>();
-		
-		map.put("message", message);
-		map.put("country-code", countryCode);
-		map.put("url", url);
-		
-		return map;
-	}
-	// required to satisfy Formattable interface
-	public String toJSON(){ return ""; }
+    /**
+     * Map a Token instance to its XML representation.
+     *
+     * @return a String with the description of this object in XML.
+     */
+    public String toXML() {
+        StringWriter sw = new StringWriter();
+        String xml = "";
 
-	@Override
-	public String toString() {
-		return "Error [message=" + message + ", url=" + url + ", countryCode="
-				+ countryCode + "]";
-	}
+        try {
+            JAXBContext context = JAXBContext.newInstance(this.getClass());
+            Marshaller marshaller = context.createMarshaller();
+
+            marshaller.marshal(this, sw);
+            xml = sw.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return xml;
+    }
+
+    /**
+     * Map a Token instance to its Java's Map representation.
+     *
+     * @return a Java's Map with the description of this object.
+     */
+    public Map<String, String> toMap() {
+        Map<String, String> map = new HashMap<>();
+
+        map.put("message", message);
+        map.put("country-code", countryCode);
+        map.put("url", url);
+
+        return map;
+    }
+
+    // required to satisfy Formattable interface
+    // required to satisfy Formattable interface
+    public String toJSON() {
+        return new JSONObject(toMap()).toString();
+    }
+
+    @Override
+    public String toString() {
+        return "Error [message=" + message + ", url=" + url + ", countryCode="
+                + countryCode + "]";
+    }
 
 }
