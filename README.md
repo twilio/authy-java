@@ -153,6 +153,25 @@ If the request was successful, you will need to store the authy id in your datab
 
   In case `response.isOk()` returns `false`, you can get an Error object using `response.getError()`
 
+## Requesting a Call token
+
+  `users.requestCall()` takes the authy_id that you want to send a call token.
+
+```java
+  Hash call = users.requestCall(authy_id);
+```
+
+  As always, you can use `isOk()` to verify if the token was sent.
+
+```java
+  if(call.isOk())
+  // call was started ;
+```
+
+  In case `call.isOk()` returns `false`, you can get an Error object using `call.getError()`
+
+  This call will be ignored if the user is using the Authy Mobile App.
+
 ## Requesting a SMS token
 
   `users.requestSms()` takes the authy_id that you want to send a SMS token. This requires Authy SMS plugin to be enabled.

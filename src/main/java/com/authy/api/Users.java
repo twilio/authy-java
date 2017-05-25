@@ -22,6 +22,7 @@ public class Users extends Resource {
     public static final String NEW_USER_PATH = "/protected/xml/users/new";
     public static final String DELETE_USER_PATH = "/protected/xml/users/delete/";
     public static final String SMS_PATH = "/protected/xml/sms/";
+    public static final String ONE_CODE_CALL_PATH = "/protected/xml/call/";
     public static final String DEFAULT_COUNTRY_CODE = "1";
 
     public Users(String uri, String key) {
@@ -87,6 +88,38 @@ public class Users extends Resource {
 
         MapToResponse opt = new MapToResponse(options);
         String content = this.get(SMS_PATH + url, opt);
+
+        return instanceFromXml(this.getStatus(), content);
+    }
+
+    /**
+     * Send token via call to a user.
+     *
+     * @param userId
+     * @return Hash instance with API's response.
+     */
+    public Hash requestCall(int userId) {
+        return requestCall(userId, new HashMap<String, String>(0));
+    }
+
+    /**
+     * Send token via call to a user with some options defined.
+     *
+     * @param userId
+     * @param options
+     * @return Hash instance with API's response.
+     */
+    public Hash requestCall(int userId, Map<String, String> options) {
+        String url = "";
+
+        try {
+            url = URLEncoder.encode(Integer.toString(userId), ENCODE);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        MapToResponse opt = new MapToResponse(options);
+        String content = this.get(ONE_CODE_CALL_PATH + url, opt);
 
         return instanceFromXml(this.getStatus(), content);
     }
