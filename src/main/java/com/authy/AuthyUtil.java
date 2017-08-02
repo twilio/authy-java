@@ -158,7 +158,7 @@ public class AuthyUtil {
                 continue;
             }
 
-            sb.append(URLEncoder.encode(key, "UTF-8")).append("=").append(URLEncoder.encode(value, "UTF-8"));
+            sb.append(URLEncoder.encode(key.replaceAll("\\[([0-9])*\\]", "[]"), "UTF-8")).append("=").append(URLEncoder.encode(value, "UTF-8"));
         }
 
         return sb.toString();
