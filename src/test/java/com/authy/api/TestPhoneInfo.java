@@ -1,40 +1,46 @@
 package com.authy.api;
 
-import com.authy.AuthyUtil;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.util.Properties;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 public class TestPhoneInfo {
+    private static final String successReponse = "{\n" +
+            "    \"message\": \"Phone number information as of 2017-11-25 23:21:39 UTC\",\n" +
+            "    \"type\": \"voip\",\n" +
+            "    \"provider\": \"Pinger\",\n" +
+            "    \"ported\": false,\n" +
+            "    \"success\": true\n" +
+            "}";
 
-    private static Properties properties;
-    private PhoneInfo client;
-
-    @Before
-    public void setUp() throws IOException {
-
-        Properties properties = AuthyUtil.loadProperties("test.properties", TestPhoneInfo.class);
-
-        // Let's configure the API Client with the properties defined at the test.properties file.
-        org.junit.Assert.assertNotNull(properties.getProperty("api_key"));
-        org.junit.Assert.assertNotNull(properties.getProperty("api_url"));
-
-        client = new PhoneInfo(properties.getProperty("api_url"), properties.getProperty("api_key"), true);
-    }
+    @Rule
+    public WireMockRule wireMockRule = new WireMockRule(18089);
 
     @Test
-    public void itTestsPhoneInfo() {
+    public void testsPhoneInfo() {
+        stubFor(get(urlPathEqualTo("/protected/json/phones/info"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json;charset=utf-8")
+                        .withBody(successReponse)));
+        final String testApiKey = "test_api_key";
+        final PhoneInfo client = new PhoneInfo("http://localhost:18089", testApiKey, true);
 
-        PhoneInfoResponse result = client.info("7754615609", "1");
+        final String phoneNumber = "7754615609";
+        final String countryCode = "1";
+        final PhoneInfoResponse result = client.info(phoneNumber, countryCode);
 
+        verify(getRequestedFor(urlPathEqualTo("/protected/json/phones/info"))
+                .withHeader("X-Authy-API-Key", equalTo(testApiKey))
+                .withQueryParam("phone_number", equalTo(phoneNumber))
+                .withQueryParam("country_code", equalTo(countryCode)));
         Assert.assertEquals(true, result.getMessage().contains("Phone number information as of"));
         Assert.assertEquals("Pinger", result.getProvider());
         Assert.assertEquals("voip", result.getType());
         Assert.assertEquals("false", result.getIsPorted());
         Assert.assertEquals("true", result.getSuccess());
     }
-
 }
