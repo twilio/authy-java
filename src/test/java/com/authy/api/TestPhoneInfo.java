@@ -1,14 +1,12 @@
 package com.authy.api;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
-public class TestPhoneInfo {
-    private static final String successReponse = "{\n" +
+public class TestPhoneInfo extends TestApiBase {
+    private static final String successResponse = "{\n" +
             "    \"message\": \"Phone number information as of 2017-11-25 23:21:39 UTC\",\n" +
             "    \"type\": \"voip\",\n" +
             "    \"provider\": \"Pinger\",\n" +
@@ -16,18 +14,14 @@ public class TestPhoneInfo {
             "    \"success\": true\n" +
             "}";
 
-    @Rule
-    public WireMockRule wireMockRule = new WireMockRule(18089);
-
     @Test
-    public void testsPhoneInfo() {
+    public void testPhoneInfo() {
         stubFor(get(urlPathEqualTo("/protected/json/phones/info"))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json;charset=utf-8")
-                        .withBody(successReponse)));
-        final String testApiKey = "test_api_key";
-        final PhoneInfo client = new PhoneInfo("http://localhost:18089", testApiKey, true);
+                        .withBody(successResponse)));
+        final PhoneInfo client = new PhoneInfo(testHost, testApiKey, true);
 
         final String phoneNumber = "7754615609";
         final String countryCode = "1";
