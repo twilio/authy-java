@@ -39,6 +39,11 @@ public class TestPhoneVerification extends TestApiBase {
             "    \"success\": false\n" +
             "}";
 
+    final private String checkCorrectVerificationResponse = "{\n" +
+            "    \"message\": \"Verification code is correct.\",\n" +
+            "    \"success\": true\n" +
+            "}";
+
     @Before
     public void setUp() {
         client = new PhoneVerification(testHost, testApiKey, true);
@@ -105,6 +110,20 @@ public class TestPhoneVerification extends TestApiBase {
     }
 
     @Test
+    public void testVerificationCheckSuccess(){
+        stubFor(get(urlPathEqualTo("/protected/json/phones/verification/check"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(checkCorrectVerificationResponse)));
+
+        Verification result = client.check("775-461-5609", "1", "2061");
+
+        Assert.assertEquals("Verification code is correct.", result.getMessage());
+        Assert.assertEquals("true", result.getSuccess());
+    }
+
+    @Test
     public void testVerificationCheckIncorrectCode() {
         stubFor(get(urlPathEqualTo("/protected/json/phones/verification/check"))
                 .willReturn(aResponse()
@@ -113,6 +132,7 @@ public class TestPhoneVerification extends TestApiBase {
                         .withBody(checkIncorrectVerificationResponse)));
 
         Verification result = client.check("775-461-5609", "1", "2061");
+
         Assert.assertEquals("Verification code is incorrect", result.getMessage());
         Assert.assertEquals("false", result.getSuccess());
     }
