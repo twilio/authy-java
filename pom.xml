@@ -48,6 +48,12 @@
             <version>4.11</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.github.tomakehurst</groupId>
+            <artifactId>wiremock</artifactId>
+            <version>2.11.0</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <distributionManagement>
@@ -145,7 +151,6 @@
                     <autoReleaseAfterClose>true</autoReleaseAfterClose>
                     <description>authy-java-1.2.0</description>
                 </configuration>
-
             </plugin>
         </plugins>
     </build>
