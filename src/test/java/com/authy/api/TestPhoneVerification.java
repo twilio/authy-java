@@ -10,7 +10,7 @@ public class TestPhoneVerification extends TestApiBase {
 
     private PhoneVerification client;
 
-    private String getStartSuccessResponse(final String message){
+    final private String getStartSuccessResponse(final String message){
         return "{\n" +
                 "    \"carrier\": \"Pinger - Bandwidth.com - Sybase365\",\n" +
                 "    \"is_cellphone\": false,\n" +
