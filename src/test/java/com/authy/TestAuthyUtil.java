@@ -21,7 +21,7 @@ import java.util.Properties;
  *         Copyright © 2016 Twilio, Inc. All Rights Reserved.
  */
 public class TestAuthyUtil {
-
+    private final String testApikey = "xzfVSc8CTwU2Mpl959CcMhw3fZBfI5F0";
     private static Properties properties;
 
     static {
@@ -35,15 +35,6 @@ public class TestAuthyUtil {
             e.printStackTrace();
         }
     }
-
-
-    @Before
-    public void setUp() throws IOException {
-        // Let's configure the API Client with the properties defined at the test.properties file.
-        Assert.assertNotNull(properties.getProperty("api_key"));
-        Assert.assertNotNull(properties.getProperty("api_url"));
-    }
-
 
     /**
      * This test method helps the users to clearly test the signature validation with GET and POST
@@ -72,7 +63,7 @@ public class TestAuthyUtil {
         if (method.equals(Resource.METHOD_POST)) {
             Assert.assertNotNull(properties.getProperty("authy_util_signature_body"));
 
-            Assert.assertTrue("Invalid Signature", AuthyUtil.validateSignatureForPost(properties.getProperty("authy_util_signature_body"), headers, url, properties.getProperty("api_key")));
+            Assert.assertTrue("Invalid Signature", AuthyUtil.validateSignatureForPost(properties.getProperty("authy_util_signature_body"), headers, url, testApikey));
         } else {
             // if we want to test GET, then fetch the info from the querystring
             Assert.assertNotNull(properties.getProperty("authy_util_signature_params"));
@@ -90,7 +81,7 @@ public class TestAuthyUtil {
 
             }
 
-            Assert.assertTrue("Invalid Signature", AuthyUtil.validateSignatureForGet(params, headers, url, properties.getProperty("api_key")));
+            Assert.assertTrue("Invalid Signature", AuthyUtil.validateSignatureForGet(params, headers, url, testApikey));
 
         }
 
@@ -123,7 +114,7 @@ public class TestAuthyUtil {
         if (method.equals(Resource.METHOD_POST)) {
             Assert.assertNotNull(properties.getProperty("authy_util_signature_body"));
 
-            Assert.assertTrue("Invalid Signature", AuthyUtil.validateSignatureForPost(properties.getProperty("authy_util_signature_body"), headers, url, properties.getProperty("api_key")));
+            Assert.assertTrue("Invalid Signature", AuthyUtil.validateSignatureForPost(properties.getProperty("authy_util_signature_body"), headers, url, testApikey));
         } else {
             // if we want to test GET, then fetch the info from the querystring
             Assert.assertNotNull(properties.getProperty("authy_util_signature_params"));
@@ -141,7 +132,7 @@ public class TestAuthyUtil {
 
             }
 
-            Assert.assertTrue("Invalid Signature", AuthyUtil.validateSignatureForGet(params, headers, url, properties.getProperty("api_key")));
+            Assert.assertTrue("Invalid Signature", AuthyUtil.validateSignatureForGet(params, headers, url, testApikey));
 
         }
     }
@@ -168,14 +159,14 @@ public class TestAuthyUtil {
         if (method.equals(Resource.METHOD_POST)) {
             Assert.assertNotNull(properties.getProperty("authy_util_signature_body"));
 
-            Assert.assertTrue("Invalid Signature", AuthyUtil.validateSignatureForPost(null, headers, url, properties.getProperty("api_key")));
+            Assert.assertTrue("Invalid Signature", AuthyUtil.validateSignatureForPost(null, headers, url, testApikey));
         } else {
             // if we want to test GET, then fetch the info from the querystring
             Assert.assertNotNull(properties.getProperty("authy_util_signature_params"));
             String tmp[] = properties.getProperty("authy_util_signature_params").split("&");
 
 
-            Assert.assertTrue("Invalid Signature", AuthyUtil.validateSignatureForGet(null, headers, url, properties.getProperty("api_key")));
+            Assert.assertTrue("Invalid Signature", AuthyUtil.validateSignatureForGet(null, headers, url, testApikey));
 
         }
     }

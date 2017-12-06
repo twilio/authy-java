@@ -52,7 +52,7 @@ public class OneTouch extends Resource {
 
 
         if (approvalRequestParams.getHidden().size() > 0) {
-            params.put("hidden_details", mapToJSONObject(approvalRequestParams.getDetails()));
+            params.put("hidden_details", mapToJSONObject(approvalRequestParams.getHidden()));
         }
 
 
