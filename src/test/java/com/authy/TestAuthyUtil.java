@@ -111,8 +111,8 @@ public class TestAuthyUtil {
 
     private Map<String, String> createHeaders(String nonce, String signature) {
         Map<String, String> headers = new HashMap<>();
-        headers.put("X-Authy-Signature-Nonce", nonce);
-        headers.put("X-Authy-Signature", signature);
+        headers.put(AuthyUtil.HEADER_AUTHY_SIGNATURE_NONCE, nonce);
+        headers.put(AuthyUtil.HEADER_AUTHY_SIGNATURE, signature);
         return headers;
     }
 }
