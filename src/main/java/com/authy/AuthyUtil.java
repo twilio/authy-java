@@ -1,6 +1,5 @@
 package com.authy;
 
-import com.authy.api.Resource;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -22,7 +21,7 @@ import java.util.logging.Logger;
  */
 public class AuthyUtil {
 
-    private static final Logger LOGGER = Logger.getLogger(Resource.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(AuthyUtil.class.getName());
 
     private static String hmacSha(String KEY, String VALUE) throws OneTouchException {
 
@@ -158,7 +157,7 @@ public class AuthyUtil {
                 continue;
             }
 
-            sb.append(URLEncoder.encode(key, "UTF-8")).append("=").append(URLEncoder.encode(value, "UTF-8"));
+            sb.append(URLEncoder.encode(key.replaceAll("\\[([0-9])*\\]", "[]"), "UTF-8")).append("=").append(URLEncoder.encode(value, "UTF-8"));
         }
 
         return sb.toString();
