@@ -1,6 +1,5 @@
 package com.authy;
 
-import com.authy.api.Resource;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -15,22 +14,26 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * @author hansospina
  *         <p>
  *         Copyright © 2017 Twilio, Inc. All Rights Reserved.
  */
 public class AuthyUtil {
+    public static final String HEADER_AUTHY_SIGNATURE_NONCE = "X-Authy-Signature-Nonce";
+    public static final String HEADER_AUTHY_SIGNATURE = "X-Authy-Signature";
 
-    private static final Logger LOGGER = Logger.getLogger(Resource.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(AuthyUtil.class.getName());
 
     private static String hmacSha(String KEY, String VALUE) throws OneTouchException {
 
         try {
-            SecretKeySpec signingKey = new SecretKeySpec(KEY.getBytes("UTF-8"), "HmacSHA256");
+            SecretKeySpec signingKey = new SecretKeySpec(KEY.getBytes(UTF_8), "HmacSHA256");
             Mac mac = Mac.getInstance("HmacSHA256");
             mac.init(signingKey);
-            byte[] rawHmac = mac.doFinal(VALUE.getBytes("UTF-8"));
+            byte[] rawHmac = mac.doFinal(VALUE.getBytes(UTF_8));
             return DatatypeConverter.printBase64Binary(rawHmac);
         } catch (Exception ex) {
             // capture the exceptions and wrap them using authy.
@@ -54,16 +57,16 @@ public class AuthyUtil {
         if (headers == null)
             throw new OneTouchException("No headers sent");
 
-        if (!headers.containsKey("X-Authy-Signature"))
+        if (!headers.containsKey(HEADER_AUTHY_SIGNATURE))
             throw new OneTouchException("'SIGNATURE' is missing.");
 
-        if (!headers.containsKey("X-Authy-Signature-Nonce"))
+        if (!headers.containsKey(HEADER_AUTHY_SIGNATURE_NONCE))
             throw new OneTouchException("'NONCE' is missing.");
 
         if (parameters == null || parameters.isEmpty())
             throw new OneTouchException("'PARAMS' are missing.");
 
-        StringBuilder sb = new StringBuilder(headers.get("X-Authy-Signature-Nonce"))
+        StringBuilder sb = new StringBuilder(headers.get(HEADER_AUTHY_SIGNATURE_NONCE))
                 .append("|")
                 .append(method)
                 .append("|")
@@ -74,7 +77,7 @@ public class AuthyUtil {
         String signature = hmacSha(apiKey, sb.toString());
 
         // let's check that the Authy signature is valid
-        return signature.equals(headers.get("X-Authy-Signature"));
+        return signature.equals(headers.get(HEADER_AUTHY_SIGNATURE));
     }
 
 
@@ -158,7 +161,7 @@ public class AuthyUtil {
                 continue;
             }
 
-            sb.append(URLEncoder.encode(key, "UTF-8")).append("=").append(URLEncoder.encode(value, "UTF-8"));
+            sb.append(URLEncoder.encode(key.replaceAll("\\[([0-9])*\\]", "[]"), UTF_8.name())).append("=").append(URLEncoder.encode(value, UTF_8.name()));
         }
 
         return sb.toString();
