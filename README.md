@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/authy/authy-java.svg?branch=master)](https://travis-ci.org/authy/authy-java)
+
 # Authy
 
 Java library to access the Authy API
