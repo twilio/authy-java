@@ -1,8 +1,9 @@
-[![Build Status](https://travis-ci.org/authy/authy-java.svg?branch=master)](https://travis-ci.org/authy/authy-java)
-
 # Authy
 
 Java library to access the Authy API
+
+[![Build Status](https://travis-ci.org/authy/authy-java.svg?branch=master)](https://travis-ci.org/authy/authy-java)
+[![codecov.io](http://codecov.io/github/authy/authy-java/coverage.svg?branch=master)](https://codecov.io/gh/authy/authy-java)
 
 ## Dependencies
 
