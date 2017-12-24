@@ -168,8 +168,7 @@ public class Users extends Resource {
     }
 
     private Error errorFromXml(int status, String content) {
-        Error error = new Error();
-
+        Error error;
         try {
             JAXBContext context = JAXBContext.newInstance(Error.class);
             Unmarshaller unmarshaller = context.createUnmarshaller();

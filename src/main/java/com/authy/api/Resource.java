@@ -253,7 +253,6 @@ public class Resource {
         if (this.defaultOptions == null || this.defaultOptions.isEmpty()) {
             this.defaultOptions = new HashMap<>();
             this.defaultOptions.put("Content-Type", contentType);
-            this.defaultOptions.put("Content-Type", contentType);
             this.defaultOptions.put("User-Agent", getUserAgent());
         }
         return this.defaultOptions;
