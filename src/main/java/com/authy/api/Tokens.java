@@ -1,16 +1,19 @@
 package com.authy.api;
 
 import com.authy.AuthyException;
+
 import org.json.JSONObject;
+
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
-import java.io.StringReader;
-import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author Julian Camargo
@@ -26,29 +29,24 @@ public class Tokens extends Resource {
         super(uri, key, testFlag);
     }
 
-    public Token verify(int userId, String token) {
+    public Token verify(int userId, String token) throws UnsupportedEncodingException, AuthyException {
         return verify(userId, token, null);
     }
 
-    public Token verify(int userId, String token, Map<String, String> options) {
+    public Token verify(int userId, String token, Map<String, String> options) throws AuthyException, UnsupportedEncodingException {
         InternalToken internalToken = new InternalToken();
         internalToken.setOption(options);
 
         StringBuilder path = new StringBuilder(TOKEN_VERIFICATION_PATH);
-        try {
-            validateToken(token);
-            path.append(URLEncoder.encode(token, ENCODE)).append('/');
-            path.append(URLEncoder.encode(Integer.toString(userId), ENCODE));
+        validateToken(token);
+        path.append(URLEncoder.encode(token, ENCODE)).append('/');
+        path.append(URLEncoder.encode(Integer.toString(userId), ENCODE));
 
-            String content = this.get(path.toString(), internalToken);
-            return tokenFromXml(this.getStatus(), content);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return new Token();
+        String content = this.get(path.toString(), internalToken);
+        return tokenFromXml(this.getStatus(), content);
     }
 
-    private Token tokenFromXml(int status, String content) {
+    private Token tokenFromXml(int status, String content) throws AuthyException {
         Token token = new Token();
         try {
             Error error = errorFromXml(status, content);
@@ -66,7 +64,7 @@ public class Tokens extends Resource {
 
             token = new Token(status, content, hash.getMessage());
         } catch (JAXBException e) {
-            e.printStackTrace();
+            throw new AuthyException("Invalid response from server");
         }
         return token;
     }
