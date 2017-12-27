@@ -5,8 +5,6 @@ import com.authy.AuthyException;
 import org.json.JSONObject;
 
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,18 +27,18 @@ public class Tokens extends Resource {
         super(uri, key, testFlag);
     }
 
-    public Token verify(int userId, String token) throws UnsupportedEncodingException, AuthyException {
+    public Token verify(int userId, String token) throws AuthyException {
         return verify(userId, token, null);
     }
 
-    public Token verify(int userId, String token, Map<String, String> options) throws AuthyException, UnsupportedEncodingException {
+    public Token verify(int userId, String token, Map<String, String> options) throws AuthyException {
         InternalToken internalToken = new InternalToken();
         internalToken.setOption(options);
 
         StringBuilder path = new StringBuilder(TOKEN_VERIFICATION_PATH);
         validateToken(token);
-        path.append(URLEncoder.encode(token, ENCODE)).append('/');
-        path.append(URLEncoder.encode(Integer.toString(userId), ENCODE));
+        path.append(token).append('/');
+        path.append(Integer.toString(userId));
 
         String content = this.get(path.toString(), internalToken);
         return tokenFromXml(this.getStatus(), content);
