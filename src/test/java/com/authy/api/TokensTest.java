@@ -14,7 +14,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -108,7 +107,7 @@ public class TokensTest extends TestApiBase {
         try {
             Token token = tokens.verify(testUserId, testToken);
             Assert.assertNotNull("Token must have an error", token.getError());
-        } catch (UnsupportedEncodingException | AuthyException e) {
+        } catch (AuthyException e) {
             fail("Token should have an error object");
         }
     }
@@ -126,7 +125,7 @@ public class TokensTest extends TestApiBase {
             Token token = tokens.verify(testUserId, testToken);
             Assert.assertNull("Token must not have an error", token.getError());
             Assert.assertTrue("Token verification must be successful", token.isOk());
-        } catch (UnsupportedEncodingException | AuthyException e) {
+        } catch (AuthyException e) {
             fail("Verification should be successful");
         }
     }
@@ -146,7 +145,7 @@ public class TokensTest extends TestApiBase {
             Token token = tokens.verify(testUserId, testToken, options);
             Assert.assertNull("Token must not have an error", token.getError());
             Assert.assertTrue("Token verification must be successful", token.isOk());
-        } catch (UnsupportedEncodingException | AuthyException e) {
+        } catch (AuthyException e) {
             fail("Verification should be successful");
         }
     }
@@ -163,7 +162,7 @@ public class TokensTest extends TestApiBase {
         try {
             tokens.verify(testUserId, testToken);
             fail("Exception must be thrown");
-        } catch (UnsupportedEncodingException | AuthyException e) {
+        } catch (AuthyException e) {
             Assert.assertTrue("Proper exception must be thrown", e instanceof AuthyException);
         }
     }
