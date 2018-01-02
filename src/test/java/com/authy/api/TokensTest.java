@@ -1,9 +1,13 @@
 package com.authy.api;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 
 import static junit.framework.TestCase.fail;
 
@@ -167,4 +171,24 @@ public class TokensTest extends TestApiBase {
         }
     }
 
+    @Test
+    public void testRequestParameters() {
+        stubFor(get(urlPathMatching("/protected/xml/verify/.*"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/xml")
+                        .withBody(validTokenResponse)));
+
+
+        try {
+            Token token = tokens.verify(testUserId, testToken);
+
+            verify(getRequestedFor(urlPathEqualTo("/protected/xml/verify/" + testToken + "/" + testUserId))
+                    .withHeader("X-Authy-API-Key", equalTo(testApiKey)));
+            Assert.assertNull("Token must not have an error", token.getError());
+            Assert.assertTrue("Token verification must be successful", token.isOk());
+        } catch (AuthyException e) {
+            fail("Verification should be successful");
+        }
+    }
 }
