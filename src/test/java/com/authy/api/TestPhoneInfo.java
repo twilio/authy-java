@@ -6,12 +6,12 @@ import org.junit.Test;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 public class TestPhoneInfo extends TestApiBase {
-    private static final String successResponse = "{\n" +
-            "    \"message\": \"Phone number information as of 2017-11-25 23:21:39 UTC\",\n" +
-            "    \"type\": \"voip\",\n" +
-            "    \"provider\": \"Pinger\",\n" +
-            "    \"ported\": false,\n" +
-            "    \"success\": true\n" +
+    private static final String successResponse = "{" +
+            "    \"message\": \"Phone number information as of 2017-11-25 23:21:39 UTC\"," +
+            "    \"type\": \"voip\"," +
+            "    \"provider\": \"Pinger\"," +
+            "    \"ported\": false," +
+            "    \"success\": true" +
             "}";
 
     @Test
