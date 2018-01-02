@@ -11,37 +11,37 @@ public class TestPhoneVerification extends TestApiBase {
     private PhoneVerification client;
 
     final private String getStartSuccessResponse(final String message){
-        return "{\n" +
-                "    \"carrier\": \"Pinger - Bandwidth.com - Sybase365\",\n" +
-                "    \"is_cellphone\": false,\n" +
-                "    \"message\": \""+ message + "\",\n" +
-                "    \"seconds_to_expire\": 599,\n" +
-                "    \"uuid\": \"bec828c0-b535-0135-8e26-1226b57fac04\",\n" +
-                "    \"success\": true\n" +
+        return "{" +
+                "    \"carrier\": \"Pinger - Bandwidth.com - Sybase365\"," +
+                "    \"is_cellphone\": false," +
+                "    \"message\": \""+ message + "\"," +
+                "    \"seconds_to_expire\": 599," +
+                "    \"uuid\": \"bec828c0-b535-0135-8e26-1226b57fac04\"," +
+                "    \"success\": true" +
                 "}";
     }
 
-    final private String startInvalidNumberResponse = "{\n" +
-            "    \"error_code\": \"60033\",\n" +
-            "    \"message\": \"Phone number is invalid\",\n" +
-            "    \"errors\": {\n" +
-            "        \"message\": \"Phone number is invalid\"\n" +
-            "    },\n" +
-            "    \"success\": false\n" +
+    final private String startInvalidNumberResponse = "{" +
+            "    \"error_code\": \"60033\"," +
+            "    \"message\": \"Phone number is invalid\"," +
+            "    \"errors\": {" +
+            "        \"message\": \"Phone number is invalid\"" +
+            "    }," +
+            "    \"success\": false" +
             "}";
 
-    final private String checkIncorrectVerificationResponse = "{\n" +
-            "    \"error_code\": \"60022\",\n" +
-            "    \"message\": \"Verification code is incorrect\",\n" +
-            "    \"errors\": {\n" +
-            "        \"message\": \"Verification code is incorrect\"\n" +
-            "    },\n" +
-            "    \"success\": false\n" +
+    final private String checkIncorrectVerificationResponse = "{" +
+            "    \"error_code\": \"60022\"," +
+            "    \"message\": \"Verification code is incorrect\"," +
+            "    \"errors\": {" +
+            "        \"message\": \"Verification code is incorrect\"" +
+            "    }," +
+            "    \"success\": false" +
             "}";
 
-    final private String checkCorrectVerificationResponse = "{\n" +
-            "    \"message\": \"Verification code is correct.\",\n" +
-            "    \"success\": true\n" +
+    final private String checkCorrectVerificationResponse = "{" +
+            "    \"message\": \"Verification code is correct.\"," +
+            "    \"success\": true" +
             "}";
 
     @Before

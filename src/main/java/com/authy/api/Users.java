@@ -78,17 +78,8 @@ public class Users extends Resource {
      * @return Hash instance with API's response.
      */
     public Hash requestSms(int userId, Map<String, String> options) {
-        String url = "";
-
-        try {
-            url = URLEncoder.encode(Integer.toString(userId), ENCODE);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         MapToResponse opt = new MapToResponse(options);
-        String content = this.get(SMS_PATH + url, opt);
-
+        String content = this.get(SMS_PATH + Integer.toString(userId), opt);
         return instanceFromXml(this.getStatus(), content);
     }
 
@@ -99,7 +90,7 @@ public class Users extends Resource {
      * @return Hash instance with API's response.
      */
     public Hash requestCall(int userId) {
-        return requestCall(userId, new HashMap<String, String>(0));
+        return requestCall(userId, new HashMap<>(0));
     }
 
     /**
@@ -110,17 +101,8 @@ public class Users extends Resource {
      * @return Hash instance with API's response.
      */
     public Hash requestCall(int userId, Map<String, String> options) {
-        String url = "";
-
-        try {
-            url = URLEncoder.encode(Integer.toString(userId), ENCODE);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         MapToResponse opt = new MapToResponse(options);
-        String content = this.get(ONE_CODE_CALL_PATH + url, opt);
-
+        String content = this.get(ONE_CODE_CALL_PATH + Integer.toString(userId), opt);
         return instanceFromXml(this.getStatus(), content);
     }
 
@@ -131,16 +113,7 @@ public class Users extends Resource {
      * @return Hash instance with API's response.
      */
     public Hash deleteUser(int userId) {
-        String url = "";
-
-        try {
-            url = URLEncoder.encode(Integer.toString(userId), ENCODE);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        String content = this.post(DELETE_USER_PATH + url, null);
-
+        String content = this.post(DELETE_USER_PATH + Integer.toString(userId), null);
         return instanceFromXml(this.getStatus(), content);
     }
 
@@ -168,8 +141,7 @@ public class Users extends Resource {
     }
 
     private Error errorFromXml(int status, String content) {
-        Error error = new Error();
-
+        Error error;
         try {
             JAXBContext context = JAXBContext.newInstance(Error.class);
             Unmarshaller unmarshaller = context.createUnmarshaller();
@@ -215,7 +187,6 @@ public class Users extends Resource {
             return options;
         }
 
-        // required to satisfy Formattable interface
         // required to satisfy Formattable interface
         public String toJSON() {
             return new JSONObject(toMap()).toString();
