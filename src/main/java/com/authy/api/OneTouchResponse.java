@@ -1,6 +1,6 @@
 package com.authy.api;
 
-import com.authy.OneTouchException;
+import com.authy.AuthyException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -14,16 +14,16 @@ public class OneTouchResponse {
     private JSONObject obj;
 
 
-    public OneTouchResponse(String json) throws OneTouchException {
+    public OneTouchResponse(String json) throws AuthyException {
         init(json);
     }
 
-    private void init(String json) throws OneTouchException {
+    private void init(String json) throws AuthyException {
 
         try {
             obj = new JSONObject(json);
         } catch (JSONException ex) {
-            throw new OneTouchException("Invalid JSON format, the given string is not a valid json object.", ex);
+            throw new AuthyException("Invalid JSON format, the given string is not a valid json object.", ex);
         }
 
     }
