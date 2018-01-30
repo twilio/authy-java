@@ -62,7 +62,7 @@ public class Tokens extends Resource {
 
             token = new Token(status, content, hash.getMessage());
         } catch (JAXBException e) {
-            throw new AuthyException("Invalid response from server");
+            throw new AuthyException("Invalid response from server", e);
         }
         return token;
     }

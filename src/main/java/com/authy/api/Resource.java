@@ -1,11 +1,17 @@
 package com.authy.api;
 
 import com.authy.AuthyApiClient;
+import com.authy.AuthyException;
 
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLHandshakeException;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
@@ -13,6 +19,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLHandshakeException;
 
 /**
  * Class to send http requests.
@@ -65,7 +74,7 @@ public class Resource {
      * @param data
      * @return response from API.
      */
-    public String post(String path, Formattable data) {
+    public String post(String path, Formattable data) throws AuthyException {
         return request(Resource.METHOD_POST, path, data, getDefaultOptions());
     }
 
@@ -76,7 +85,7 @@ public class Resource {
      * @param data
      * @return response from API.
      */
-    public String get(String path, Formattable data) {
+    public String get(String path, Formattable data) throws AuthyException {
         return request(Resource.METHOD_GET, path, data, getDefaultOptions());
     }
 
@@ -87,7 +96,7 @@ public class Resource {
      * @param data
      * @return response from API.
      */
-    public String put(String path, Formattable data) {
+    public String put(String path, Formattable data) throws AuthyException {
         return request(Resource.METHOD_PUT, path, data, getDefaultOptions());
     }
 
@@ -98,11 +107,11 @@ public class Resource {
      * @param data
      * @return response from API.
      */
-    public String delete(String path, Formattable data) {
+    public String delete(String path, Formattable data) throws AuthyException {
         return request("DELETE", path, data, getDefaultOptions());
     }
 
-    public String request(String method, String path, Formattable data, Map<String, String> options) {
+    public String request(String method, String path, Formattable data, Map<String, String> options) throws AuthyException {
         HttpURLConnection connection;
         String answer = null;
 
@@ -134,8 +143,10 @@ public class Resource {
             answer = getResponse(connection);
         } catch (SSLHandshakeException e) {
             System.err.println("SSL verification is failing. This might be because of an attack. Contact support@authy.com");
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            throw new AuthyException("Invalid host", e);
+        } catch (IOException e) {
+            throw new AuthyException("Connection error", e);
         }
         return answer;
     }
@@ -159,7 +170,7 @@ public class Resource {
     }
 
     protected HttpURLConnection createConnection(URL url, String method,
-                                                 Map<String, String> options) throws Exception {
+                                                 Map<String, String> options) throws IOException {
 
 
         HttpURLConnection connection;
@@ -179,7 +190,7 @@ public class Resource {
         return connection;
     }
 
-    private String getResponse(HttpURLConnection connection) throws Exception {
+    private String getResponse(HttpURLConnection connection) throws IOException {
         InputStream in;
         // Load stream
         if (status != 200) {
@@ -224,7 +235,7 @@ public class Resource {
     }
 
 
-    private String prepareGet(Formattable data) throws Exception {
+    private String prepareGet(Formattable data) {
 
         if (data == null)
             return "";
@@ -242,7 +253,11 @@ public class Resource {
                 sb.append('&');
             }
 
-            sb.append(URLEncoder.encode(s.getKey(), ENCODE)).append("=").append(URLEncoder.encode(s.getValue(), ENCODE));
+            try {
+                sb.append(URLEncoder.encode(s.getKey(), ENCODE)).append("=").append(URLEncoder.encode(s.getValue(), ENCODE));
+            } catch (UnsupportedEncodingException e) {
+                System.out.println("Encoding not supported" + e.getMessage());
+            }
         }
 
 

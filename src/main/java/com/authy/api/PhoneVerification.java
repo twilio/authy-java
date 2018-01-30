@@ -1,5 +1,7 @@
 package com.authy.api;
 
+import com.authy.AuthyException;
+
 /**
  * @author Authy Inc
  */
@@ -14,7 +16,7 @@ public class PhoneVerification extends Resource {
         super(uri, key, testFlag, Resource.JSON_CONTENT_TYPE);
     }
 
-    public Verification start(String phoneNumber, String countryCode, String via, Params params) {
+    public Verification start(String phoneNumber, String countryCode, String via, Params params) throws AuthyException {
         params.setAttribute("phone_number", phoneNumber);
         params.setAttribute("country_code", countryCode);
         params.setAttribute("via", via);
@@ -22,20 +24,15 @@ public class PhoneVerification extends Resource {
         Verification verification = new Verification();
         StringBuilder path = new StringBuilder(PHONE_VERIFICATION_API_PATH);
         String response;
+        path.append("start");
+        response = this.post(path.toString(), params);
 
-        try {
-            path.append("start");
-            response = this.post(path.toString(), params);
-
-            verification.setStatus(this.getStatus());
-            verification.setResponse(response);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        verification.setStatus(this.getStatus());
+        verification.setResponse(response);
         return verification;
     }
 
-    public Verification check(String phoneNumber, String countryCode, String code) {
+    public Verification check(String phoneNumber, String countryCode, String code) throws AuthyException {
         Params params = new Params();
         params.setAttribute("phone_number", phoneNumber);
         params.setAttribute("country_code", countryCode);
@@ -44,7 +41,7 @@ public class PhoneVerification extends Resource {
         return verificationCheck(params);
     }
 
-    public Verification check(String phoneNumber, String countryCode, String code, Params params) {
+    public Verification check(String phoneNumber, String countryCode, String code, Params params) throws AuthyException {
         params.setAttribute("phone_number", phoneNumber);
         params.setAttribute("country_code", countryCode);
         params.setAttribute("verification_code", code);
@@ -52,20 +49,16 @@ public class PhoneVerification extends Resource {
         return verificationCheck(params);
     }
 
-    private Verification verificationCheck(Params params) {
+    private Verification verificationCheck(Params params) throws AuthyException {
         Verification verification = new Verification();
         StringBuilder path = new StringBuilder(PHONE_VERIFICATION_API_PATH);
         String response;
 
-        try {
-            path.append("check");
-            response = this.get(path.toString(), params);
+        path.append("check");
+        response = this.get(path.toString(), params);
 
-            verification.setStatus(this.getStatus());
-            verification.setResponse(response);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        verification.setStatus(this.getStatus());
+        verification.setResponse(response);
         return verification;
     }
 

@@ -1,6 +1,13 @@
 package com.authy.api;
 
+import com.authy.AuthyException;
+
 import org.json.JSONObject;
+
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -9,11 +16,6 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.transform.stream.StreamSource;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author Julian Camargo
@@ -41,7 +43,7 @@ public class Users extends Resource {
      * @param countryCode
      * @return a User instance
      */
-    public com.authy.api.User createUser(String email, String phone, String countryCode) {
+    public com.authy.api.User createUser(String email, String phone, String countryCode) throws AuthyException {
         User user = new User(email, phone, countryCode);
 
         String content = this.post(NEW_USER_PATH, user);
@@ -56,7 +58,7 @@ public class Users extends Resource {
      * @param phone
      * @return a User instance
      */
-    public com.authy.api.User createUser(String email, String phone) {
+    public com.authy.api.User createUser(String email, String phone) throws AuthyException {
         return createUser(email, phone, DEFAULT_COUNTRY_CODE);
     }
 
@@ -66,7 +68,7 @@ public class Users extends Resource {
      * @param userId
      * @return Hash instance with API's response.
      */
-    public Hash requestSms(int userId) {
+    public Hash requestSms(int userId) throws AuthyException {
         return requestSms(userId, new HashMap<String, String>(0));
     }
 
@@ -77,7 +79,7 @@ public class Users extends Resource {
      * @param options
      * @return Hash instance with API's response.
      */
-    public Hash requestSms(int userId, Map<String, String> options) {
+    public Hash requestSms(int userId, Map<String, String> options) throws AuthyException {
         MapToResponse opt = new MapToResponse(options);
         String content = this.get(SMS_PATH + Integer.toString(userId), opt);
         return instanceFromXml(this.getStatus(), content);
@@ -89,7 +91,7 @@ public class Users extends Resource {
      * @param userId
      * @return Hash instance with API's response.
      */
-    public Hash requestCall(int userId) {
+    public Hash requestCall(int userId) throws AuthyException {
         return requestCall(userId, new HashMap<>(0));
     }
 
@@ -100,7 +102,7 @@ public class Users extends Resource {
      * @param options
      * @return Hash instance with API's response.
      */
-    public Hash requestCall(int userId, Map<String, String> options) {
+    public Hash requestCall(int userId, Map<String, String> options) throws AuthyException {
         MapToResponse opt = new MapToResponse(options);
         String content = this.get(ONE_CODE_CALL_PATH + Integer.toString(userId), opt);
         return instanceFromXml(this.getStatus(), content);
@@ -112,12 +114,12 @@ public class Users extends Resource {
      * @param userId
      * @return Hash instance with API's response.
      */
-    public Hash deleteUser(int userId) {
+    public Hash deleteUser(int userId) throws AuthyException {
         String content = this.post(DELETE_USER_PATH + Integer.toString(userId), null);
         return instanceFromXml(this.getStatus(), content);
     }
 
-    private com.authy.api.User userFromXml(int status, String content) {
+    private com.authy.api.User userFromXml(int status, String content) throws AuthyException {
         com.authy.api.User user = new com.authy.api.User();
 
         try {
@@ -135,7 +137,7 @@ public class Users extends Resource {
             user.status = status;
             user.setError(error);
         } catch (JAXBException e) {
-            e.printStackTrace();
+            throw new AuthyException("Invalid response from server", e);
         }
         return user;
     }
@@ -154,7 +156,7 @@ public class Users extends Resource {
         return error;
     }
 
-    private Hash instanceFromXml(int status, String content) {
+    private Hash instanceFromXml(int status, String content) throws AuthyException {
         Hash hash = new Hash();
         try {
             Error error = errorFromXml(status, content);
@@ -167,7 +169,7 @@ public class Users extends Resource {
             hash.setStatus(status);
             hash.setError(error);
         } catch (JAXBException e) {
-            e.printStackTrace();
+            throw new AuthyException("Invalid response from server", e);
         }
         return hash;
     }
@@ -244,7 +246,7 @@ public class Users extends Resource {
                 marshaller.marshal(this, sw);
 
                 xml = sw.toString();
-            } catch (Exception e) {
+            } catch (JAXBException e) {
                 e.printStackTrace();
             }
             return xml;

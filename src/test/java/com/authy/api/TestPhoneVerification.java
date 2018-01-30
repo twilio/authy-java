@@ -6,6 +6,8 @@ import org.junit.Test;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
+import com.authy.AuthyException;
+
 public class TestPhoneVerification extends TestApiBase {
 
     private PhoneVerification client;
@@ -55,7 +57,7 @@ public class TestPhoneVerification extends TestApiBase {
     }
 
     @Test
-    public void testVerificationStartEs() {
+    public void testVerificationStartEs() throws AuthyException {
         stubFor(post(urlPathEqualTo("/protected/json/phones/verification/start"))
                 .willReturn(aResponse()
                         .withStatus(200)
@@ -74,7 +76,7 @@ public class TestPhoneVerification extends TestApiBase {
     }
 
     @Test
-    public void testVerificationStartEn() {
+    public void testVerificationStartEn() throws AuthyException {
         stubFor(post(urlPathEqualTo("/protected/json/phones/verification/start"))
                 .willReturn(aResponse()
                         .withStatus(200)
@@ -94,7 +96,7 @@ public class TestPhoneVerification extends TestApiBase {
     }
 
     @Test
-    public void testVerificationStartEnInvalid() {
+    public void testVerificationStartEnInvalid() throws AuthyException {
         stubFor(post(urlPathEqualTo("/protected/json/phones/verification/start"))
                 .willReturn(aResponse()
                         .withStatus(400)
@@ -110,7 +112,7 @@ public class TestPhoneVerification extends TestApiBase {
     }
 
     @Test
-    public void testVerificationCheckSuccess(){
+    public void testVerificationCheckSuccess() throws AuthyException {
         stubFor(get(urlPathEqualTo("/protected/json/phones/verification/check"))
                 .willReturn(aResponse()
                         .withStatus(200)
@@ -124,7 +126,7 @@ public class TestPhoneVerification extends TestApiBase {
     }
 
     @Test
-    public void testVerificationCheckIncorrectCode() {
+    public void testVerificationCheckIncorrectCode() throws AuthyException {
         stubFor(get(urlPathEqualTo("/protected/json/phones/verification/check"))
                 .willReturn(aResponse()
                         .withStatus(401)

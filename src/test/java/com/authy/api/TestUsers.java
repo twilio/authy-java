@@ -1,6 +1,8 @@
 package com.authy.api;
 
 import com.authy.AuthyApiClient;
+import com.authy.AuthyException;
+
 import org.hamcrest.core.SubstringMatcher;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,7 +56,7 @@ public class TestUsers extends TestApiBase {
     }
 
     @Test
-    public void testCreateUser(){
+    public void testCreateUser() throws AuthyException {
         stubFor(post(urlPathEqualTo("/protected/xml/users/new"))
                 .willReturn(aResponse()
                         .withStatus(200)
@@ -77,7 +79,7 @@ public class TestUsers extends TestApiBase {
     }
 
     @Test
-    public void testCreateUserDefaultCountry(){
+    public void testCreateUserDefaultCountry() throws AuthyException {
         stubFor(post(urlPathEqualTo("/protected/xml/users/new"))
                 .willReturn(aResponse()
                         .withStatus(200)
@@ -100,7 +102,7 @@ public class TestUsers extends TestApiBase {
     }
 
     @Test
-    public void testCreateUserErrorInvalid(){
+    public void testCreateUserErrorInvalid() throws AuthyException {
         stubFor(post(urlPathEqualTo("/protected/xml/users/new"))
                 .willReturn(aResponse()
                         .withStatus(400)
@@ -118,7 +120,7 @@ public class TestUsers extends TestApiBase {
     }
 
     @Test
-    public void testRequestSMS() {
+    public void testRequestSMS() throws AuthyException {
         stubFor(get(urlPathEqualTo("/protected/xml/sms/" + testUserId))
                 .willReturn(aResponse()
                         .withStatus(200)
@@ -144,7 +146,7 @@ public class TestUsers extends TestApiBase {
     }
 
     @Test
-    public void testUserNotFoundSMS() {
+    public void testUserNotFoundSMS() throws AuthyException {
         final Integer badUserId = 0;
         stubFor(get(urlPathEqualTo("/protected/xml/sms/" + badUserId))
                 .willReturn(aResponse()
@@ -169,7 +171,7 @@ public class TestUsers extends TestApiBase {
     }
 
     @Test
-    public void testRequestSMSNoForce() {
+    public void testRequestSMSNoForce() throws AuthyException {
         stubFor(get(urlPathEqualTo("/protected/xml/sms/" + testUserId))
                 .willReturn(aResponse()
                         .withStatus(200)
@@ -189,7 +191,7 @@ public class TestUsers extends TestApiBase {
     }
 
     @Test
-    public void testRequestCall(){
+    public void testRequestCall() throws AuthyException {
         stubFor(get(urlPathEqualTo("/protected/xml/call/" + testUserId))
                 .willReturn(aResponse()
                         .withStatus(200)
@@ -212,7 +214,7 @@ public class TestUsers extends TestApiBase {
     }
 
     @Test
-    public void testRemoveUser(){
+    public void testRemoveUser() throws AuthyException {
         stubFor(post(urlPathEqualTo("/protected/xml/users/delete/" + testUserId))
                 .willReturn(aResponse()
                         .withStatus(200)
@@ -234,7 +236,7 @@ public class TestUsers extends TestApiBase {
     }
 
     @Test
-    public void testRemoveUserErrorNotFound(){
+    public void testRemoveUserErrorNotFound() throws AuthyException {
         stubFor(post(urlPathEqualTo("/protected/xml/users/delete/" + testUserId))
                 .willReturn(aResponse()
                         .withStatus(404)

@@ -1,6 +1,7 @@
 package com.authy.api;
 
 import com.authy.AuthyApiClient;
+import com.authy.AuthyException;
 import com.authy.OneTouchException;
 import com.authy.api.ApprovalRequestParams.Resolution;
 import org.junit.Assert;
@@ -88,7 +89,7 @@ public class TestOneTouch extends TestApiBase {
     }
 
     @Test
-    public void testSendApprovalRequestOk() throws OneTouchException {
+    public void testSendApprovalRequestOk() throws AuthyException {
         stubFor(post(urlPathEqualTo("/onetouch/json/users/" + testUserId +"/approval_requests"))
                 .willReturn(aResponse()
                         .withStatus(200)

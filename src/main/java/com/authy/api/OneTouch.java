@@ -1,5 +1,6 @@
 package com.authy.api;
 
+import com.authy.AuthyException;
 import com.authy.OneTouchException;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -35,7 +36,7 @@ public class OneTouch extends Resource {
      * @param approvalRequestParams The bean wrapping the user's Authy approval request built using the ApprovalRequest.Builder
      * @return The bean wrapping the response from Authy's service.
      */
-    public OneTouchResponse sendApprovalRequest(ApprovalRequestParams approvalRequestParams) throws OneTouchException {//Integer userId, String message, HashMap<String, Object> options, Integer secondsToExpire) throws OneTouchException {
+    public OneTouchResponse sendApprovalRequest(ApprovalRequestParams approvalRequestParams) throws AuthyException {//Integer userId, String message, HashMap<String, Object> options, Integer secondsToExpire) throws OneTouchException {
 
 
         JSONObject params = new JSONObject();
