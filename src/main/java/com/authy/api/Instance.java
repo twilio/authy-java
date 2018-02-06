@@ -1,10 +1,11 @@
 package com.authy.api;
 
+import java.io.StringReader;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
-import java.io.StringReader;
 
 /**
  * Generic class to instance a response from the API
@@ -48,18 +49,22 @@ public class Instance {
      * @return an Error object
      */
     public Error getError() {
-        if (isOk())
+        if (isOk()) {
             return error;
+        }
 
         try {
             JAXBContext context = JAXBContext.newInstance(Error.class);
             Unmarshaller unmarshaller = context.createUnmarshaller();
 
             StringReader xml = new StringReader(content);
-            if (!content.isEmpty())
+            if (!content.isEmpty()) {
                 error = (Error) unmarshaller.unmarshal(new StreamSource(xml));
+            }
         } catch (JAXBException e) {
-            e.printStackTrace();
+            error = new Error();
+            error.setMessage("Unable to parse response");
+            return error;
         }
 
         return error;
@@ -67,8 +72,6 @@ public class Instance {
 
     /**
      * Set an Error object.
-     *
-     * @param error
      */
     public void setError(Error error) {
         this.error = error;

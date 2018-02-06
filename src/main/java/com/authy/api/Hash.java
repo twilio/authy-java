@@ -20,7 +20,7 @@ import java.util.Map;
 public class Hash extends Instance implements Formattable {
 
     private User user = null;
-    private String message, token;
+    private String token;
     private boolean success;
 
     public Hash() {

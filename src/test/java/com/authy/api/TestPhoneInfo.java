@@ -5,6 +5,8 @@ import org.junit.Test;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
+import com.authy.AuthyException;
+
 public class TestPhoneInfo extends TestApiBase {
     private static final String successResponse = "{" +
             "    \"message\": \"Phone number information as of 2017-11-25 23:21:39 UTC\"," +
@@ -15,7 +17,7 @@ public class TestPhoneInfo extends TestApiBase {
             "}";
 
     @Test
-    public void testPhoneInfo() {
+    public void testPhoneInfo() throws AuthyException {
         stubFor(get(urlPathEqualTo("/protected/json/phones/info"))
                 .willReturn(aResponse()
                         .withStatus(200)
