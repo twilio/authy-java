@@ -80,12 +80,6 @@ public class Error implements Formattable {
         return map;
     }
 
-    // required to satisfy Formattable interface
-    // required to satisfy Formattable interface
-    public String toJSON() {
-        return new JSONObject(toMap()).toString();
-    }
-
     @Override
     public String toString() {
         return "Error [message=" + message + ", url=" + url + ", countryCode="

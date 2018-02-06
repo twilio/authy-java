@@ -3,7 +3,6 @@ package com.authy.api;
 import com.authy.AuthyApiClient;
 import com.authy.AuthyException;
 
-import org.hamcrest.core.SubstringMatcher;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,36 +18,30 @@ public class TestUsers extends TestApiBase {
     private Users client;
     final private String testUserId = "30144611";
 
-    private final String successResponseForced = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-            "<hash>" +
-            "    <success type=\"boolean\">true</success>" +
-            "    <message>SMS token was sent</message>" +
-            "    <cellphone>+57-XXX-XXX-XX12</cellphone>" +
-            "</hash>";
+    private final String successResponseForced = "{" +
+            "    \"success\": true," +
+            "    \"message\": \"SMS token was sent\"," +
+            "    \"cellphone\": \"+57-XXX-XXX-XX12\"" +
+            "}";
 
-    private final String userNotFoundResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-            "<errors>" +
-            "    <message>User not found.</message>" +
-            "    <error-code>60026</error-code>" +
-            "</errors>";
+    private final String userNotFoundResponse = "{" +
+            "    \"message\": \"User not found.\"," +
+            "    \"success\": false," +
+            "    \"errors\": {" +
+            "        \"message\": \"User not found.\"" +
+            "    }," +
+            "    \"error_code\": \"60026\"" +
+            "}";
 
-    private final String successResponseNotForced = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-            "<hash>" +
-            "    <message>Ignored: SMS is not needed for smartphones. Pass force=true if you want to actually send it anyway.</message>" +
-            "    <cellphone>+57-XXX-XXX-XX12</cellphone>" +
-            "    <device>android</device>" +
-            "    <ignored type=\"boolean\">true</ignored>" +
-            "    <success type=\"boolean\">true</success>" +
-            "</hash>";
+    private final String successResponseNotForced = "{" +
+            "    \"message\": \"Ignored: SMS is not needed for smartphones. Pass force=true if you want to actually send it anyway.\"," +
+            "    \"cellphone\": \"+57-XXX-XXX-XX12\"," +
+            "    \"device\": \"android\"," +
+            "    \"ignored\": true," +
+            "    \"success\": true" +
+            "}";
 
-    private final String successCreateUserResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-            "<hash>" +
-            "    <message>User created successfully.</message>" +
-            "    <user>" +
-            "        <id type=\"integer\">1000</id>" +
-            "    </user>" +
-            "    <success type=\"boolean\">true</success>" +
-            "</hash>"; ;
+    private final String successCreateUserResponse = "{\"message\":\"User created successfully.\",\"user\":{\"id\":1000},\"success\":true}";
 
     @Before
     public void setUp() {
@@ -57,74 +50,80 @@ public class TestUsers extends TestApiBase {
 
     @Test
     public void testCreateUser() throws AuthyException {
-        stubFor(post(urlPathEqualTo("/protected/xml/users/new"))
+        stubFor(post(urlPathEqualTo("/protected/json/users/new"))
                 .willReturn(aResponse()
                         .withStatus(200)
-                        .withHeader("Content-Type", "application/xml")
+                        .withHeader("Content-Type", "application/json")
                         .withBody(successCreateUserResponse)));
 
         final User user = client.createUser("test@example.com", "3003003333", "57");
 
-        verify(postRequestedFor(urlPathEqualTo("/protected/xml/users/new" ))
+        verify(postRequestedFor(urlPathEqualTo("/protected/json/users/new" ))
                 .withHeader("X-Authy-API-Key", equalTo(testApiKey))
-                .withHeader("Content-Type", equalTo("application/xml"))
-                .withRequestBody(equalToXml("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
-                        "<user>" +
-                        "<cellphone>3003003333</cellphone>" +
-                        "<country_code>57</country_code>" +
-                        "<email>test@example.com</email>" +
-                        "</user>")));
+                .withHeader("Content-Type", equalTo("application/json"))
+                .withRequestBody(equalToJson("{" +
+                        "\"user\": {"
+                        + "  \"countryCode\" : \"57\","
+                        + "  \"cellphone\" : \"3003003333\","
+                        + "  \"email\" : \"test@example.com\""
+                        + "}}")));
         assertEquals(1000, user.getId());
         assertTrue(user.isOk());
     }
 
     @Test
     public void testCreateUserDefaultCountry() throws AuthyException {
-        stubFor(post(urlPathEqualTo("/protected/xml/users/new"))
+        stubFor(post(urlPathEqualTo("/protected/json/users/new"))
                 .willReturn(aResponse()
                         .withStatus(200)
-                        .withHeader("Content-Type", "application/xml")
+                        .withHeader("Content-Type", "application/json")
                         .withBody(successCreateUserResponse)));
 
         final User user = client.createUser("test@example.com", "3003003333");
 
-        verify(postRequestedFor(urlPathEqualTo("/protected/xml/users/new" ))
+        verify(postRequestedFor(urlPathEqualTo("/protected/json/users/new" ))
                 .withHeader("X-Authy-API-Key", equalTo(testApiKey))
-                .withHeader("Content-Type", equalTo("application/xml"))
-                .withRequestBody(equalToXml("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
-                        "<user>" +
-                        "<cellphone>3003003333</cellphone>" +
-                        "<country_code>1</country_code>" + //Country defaults to +1
-                        "<email>test@example.com</email>" +
-                        "</user>")));
+                .withHeader("Content-Type", equalTo("application/json"))
+                .withRequestBody(equalToJson("{" +
+                        "\"user\": {"
+                        + "  \"countryCode\" : \"1\","
+                        + "  \"cellphone\" : \"3003003333\","
+                        + "  \"email\" : \"test@example.com\""
+                        + "}}")));
         assertEquals(1000, user.getId());
         assertTrue(user.isOk());
     }
 
     @Test
     public void testCreateUserErrorInvalid() throws AuthyException {
-        stubFor(post(urlPathEqualTo("/protected/xml/users/new"))
+        stubFor(post(urlPathEqualTo("/protected/json/users/new"))
                 .willReturn(aResponse()
                         .withStatus(400)
-                        .withHeader("Content-Type", "application/xml")
-                        .withBody("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-                                "<errors>" +
-                                "    <message>User was not valid</message>" +
-                                "    <error-code>60027</error-code>" +
-                                "</errors>")));
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{" +
+                                "    \"message\": \"User was not valid\"," +
+                                "    \"success\": false," +
+                                "    \"errors\": {" +
+                                "        \"cellphone\": \"is invalid\"," +
+                                "        \"message\": \"User was not valid\"" +
+                                "    }," +
+                                "    \"cellphone\": \"is invalid\"," +
+                                "    \"error_code\": \"60027\"" +
+                                "}")));
 
         final User user = client.createUser("test@example.com", "3001"); //Invalid Phone sent
 
         assertFalse(user.isOk());
         assertEquals(400, user.getStatus());
+        assertEquals("User was not valid", user.getError().getMessage());
     }
 
     @Test
     public void testRequestSMS() throws AuthyException {
-        stubFor(get(urlPathEqualTo("/protected/xml/sms/" + testUserId))
+        stubFor(get(urlPathEqualTo("/protected/json/sms/" + testUserId))
                 .willReturn(aResponse()
                         .withStatus(200)
-                        .withHeader("Content-Type", "application/xml")
+                        .withHeader("Content-Type", "application/json")
                         .withBody(successResponseForced)));
 
         // let's setup some extra parameters
@@ -136,7 +135,7 @@ public class TestUsers extends TestApiBase {
         // smart enough to decide if it sends the sms or just notifies the user inside the app
         Hash response = client.requestSms(Integer.parseInt(testUserId), map);
 
-        verify(getRequestedFor(urlPathEqualTo("/protected/xml/sms/" + testUserId))
+        verify(getRequestedFor(urlPathEqualTo("/protected/json/sms/" + testUserId))
                 .withHeader("X-Authy-API-Key", equalTo(testApiKey))
                 .withQueryParam("force", equalTo("true")));
         // isOK() is the method that will allow you to know if the request worked.
@@ -148,10 +147,10 @@ public class TestUsers extends TestApiBase {
     @Test
     public void testUserNotFoundSMS() throws AuthyException {
         final Integer badUserId = 0;
-        stubFor(get(urlPathEqualTo("/protected/xml/sms/" + badUserId))
+        stubFor(get(urlPathEqualTo("/protected/json/sms/" + badUserId))
                 .willReturn(aResponse()
                         .withStatus(404)
-                        .withHeader("Content-Type", "application/xml")
+                        .withHeader("Content-Type", "application/json")
                         .withBody(userNotFoundResponse)));
 
         // let's setup some extra parameters
@@ -163,7 +162,7 @@ public class TestUsers extends TestApiBase {
         // smart enough to decide if it sends the sms or just notifies the user inside the app
         Hash reponse = client.requestSms(badUserId, map);
 
-        verify(getRequestedFor(urlPathEqualTo("/protected/xml/sms/" + badUserId))
+        verify(getRequestedFor(urlPathEqualTo("/protected/json/sms/" + badUserId))
                 .withHeader("X-Authy-API-Key", equalTo(testApiKey))
                 .withQueryParam("force", equalTo("true")));
         // isOK() is the method that will allow you to know if the request worked.
@@ -172,17 +171,17 @@ public class TestUsers extends TestApiBase {
 
     @Test
     public void testRequestSMSNoForce() throws AuthyException {
-        stubFor(get(urlPathEqualTo("/protected/xml/sms/" + testUserId))
+        stubFor(get(urlPathEqualTo("/protected/json/sms/" + testUserId))
                 .willReturn(aResponse()
                         .withStatus(200)
-                        .withHeader("Content-Type", "application/xml")
+                        .withHeader("Content-Type", "application/json")
                         .withBody(successResponseNotForced)));
 
         // This is the API normal call you will do to send an SMS, if we don't pass the force option authy will be
         // smart enough to decide if it sends the sms or just notifies the user inside the app
         Hash response = client.requestSms(Integer.parseInt(testUserId));
 
-        verify(getRequestedFor(urlPathEqualTo("/protected/xml/sms/" + testUserId))
+        verify(getRequestedFor(urlPathEqualTo("/protected/json/sms/" + testUserId))
                 .withHeader("X-Authy-API-Key", equalTo(testApiKey)));
         // isOK() is the method that will allow you to know if the request worked.
         assertTrue(response.isOk());
@@ -192,22 +191,21 @@ public class TestUsers extends TestApiBase {
 
     @Test
     public void testRequestCall() throws AuthyException {
-        stubFor(get(urlPathEqualTo("/protected/xml/call/" + testUserId))
+        stubFor(get(urlPathEqualTo("/protected/json/call/" + testUserId))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/xml")
-                        .withBody("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-                                "<hash>" +
-                                "    <message>Call ignored. User is using  App Tokens and this call is not necessary. Pass force=true if you still want to call users that are using the App.</message>" +
-                                "    <cellphone>+1-XXX-XXX-XX12</cellphone>" +
-                                "    <device nil=\"true\"/>" +
-                                "    <ignored type=\"boolean\">true</ignored>" +
-                                "    <success type=\"boolean\">true</success>" +
-                                "</hash>")));
+                        .withBody("{" +
+                                "    \"message\": \"Call ignored. User is using  App Tokens and this call is not necessary. Pass force=true if you still want to call users that are using the App.\"," +
+                                "    \"cellphone\": \"+57-XXX-XXX-XX12\"," +
+                                "    \"device\": \"android\"," +
+                                "    \"ignored\": true," +
+                                "    \"success\": true" +
+                                "}")));
 
         Hash response  = client.requestCall(Integer.parseInt(testUserId));
 
-        verify(getRequestedFor(urlPathEqualTo("/protected/xml/call/" + testUserId))
+        verify(getRequestedFor(urlPathEqualTo("/protected/json/call/" + testUserId))
                 .withHeader("X-Authy-API-Key", equalTo(testApiKey)));
         assertTrue(response.isOk());
         assertThat(response.getMessage(), containsString("Call ignored. User is using  App Tokens and this call is not necessary."));
@@ -215,20 +213,19 @@ public class TestUsers extends TestApiBase {
 
     @Test
     public void testRemoveUser() throws AuthyException {
-        stubFor(post(urlPathEqualTo("/protected/xml/users/delete/" + testUserId))
+        stubFor(post(urlPathEqualTo("/protected/json/users/delete/" + testUserId))
                 .willReturn(aResponse()
                         .withStatus(200)
-                        .withHeader("Content-Type", "application/xml")
-                        .withBody("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-                                "<hash>" +
-                                "    <message>User removed from application</message>" +
-                                "    <success type=\"boolean\">true</success>" +
-                                "</hash>")));
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{" +
+                                "    \"message\": \"User removed from application\"," +
+                                "    \"success\": true" +
+                                "}")));
 
         Hash response = client.deleteUser(Integer.parseInt(testUserId));
 
-        verify(postRequestedFor(urlPathEqualTo("/protected/xml/users/delete/" + testUserId))
-                .withHeader("Content-Type", equalTo("application/xml")) //TODO: this Content-Type even if it works doesn't seem like the more appropriate
+        verify(postRequestedFor(urlPathEqualTo("/protected/json/users/delete/" + testUserId))
+                .withHeader("Content-Type", equalTo("application/json")) //TODO: this Content-Type even if it works doesn't seem like the more appropriate
                 .withHeader("X-Authy-API-Key", equalTo(testApiKey))
                 .withRequestBody(equalTo("")));
         assertTrue(response.isOk());
@@ -237,24 +234,16 @@ public class TestUsers extends TestApiBase {
 
     @Test
     public void testRemoveUserErrorNotFound() throws AuthyException {
-        stubFor(post(urlPathEqualTo("/protected/xml/users/delete/" + testUserId))
+        stubFor(post(urlPathEqualTo("/protected/json/users/delete/" + testUserId))
                 .willReturn(aResponse()
                         .withStatus(404)
-                        .withHeader("Content-Type", "application/xml")
-                        .withBody("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-                                "<errors>" +
-                                "    <error-code>60026</error-code>" +
-                                "    <message>User doesn't exist</message>" +
-                                "    <errors>" +
-                                "        <message>User doesn't exist</message>" +
-                                "    </errors>" +
-                                "    <success type=\"boolean\">false</success>" +
-                                "</errors>")));
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(userNotFoundResponse)));
 
         Hash response = client.deleteUser(Integer.parseInt(testUserId));
 
         assertFalse(response.isOk());
         assertThat(response.getStatus(), is(404));
-        assertThat(response.getError().getMessage(), containsString("User doesn't exist"));
+        assertThat(response.getError().getMessage(), containsString("User not found"));
     }
 }

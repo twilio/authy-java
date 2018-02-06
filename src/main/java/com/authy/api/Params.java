@@ -18,15 +18,6 @@ public class Params implements Formattable {
         this.data.put(key, value);
     }
 
-    public String toJSON() {
-        org.json.JSONObject json = new org.json.JSONObject(this.data);
-        for (Map.Entry<String, String> entry : this.data.entrySet()) {
-            json.put(entry.getKey(), entry.getValue());
-        }
-
-        return json.toString();
-    }
-
     // required to satisfy Formattable interface
     public String toXML() {
         return "";

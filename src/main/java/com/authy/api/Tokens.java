@@ -123,10 +123,5 @@ public class Tokens extends Resource {
 
             return options;
         }
-
-        // required to satisfy Formattable interface
-        public String toJSON() {
-            return new JSONObject(toMap()).toString();
-        }
     }
 }
