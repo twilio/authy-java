@@ -9,6 +9,7 @@ import org.junit.Test;
 import java.util.HashMap;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
@@ -58,7 +59,7 @@ public class TestUsers extends TestApiBase {
 
         final User user = client.createUser("test@example.com", "3003003333", "57");
 
-        verify(postRequestedFor(urlPathEqualTo("/protected/json/users/new" ))
+        verify(postRequestedFor(urlPathEqualTo("/protected/json/users/new"))
                 .withHeader("X-Authy-API-Key", equalTo(testApiKey))
                 .withHeader("Content-Type", equalTo("application/json"))
                 .withRequestBody(equalToJson("{" +
@@ -81,7 +82,7 @@ public class TestUsers extends TestApiBase {
 
         final User user = client.createUser("test@example.com", "3003003333");
 
-        verify(postRequestedFor(urlPathEqualTo("/protected/json/users/new" ))
+        verify(postRequestedFor(urlPathEqualTo("/protected/json/users/new"))
                 .withHeader("X-Authy-API-Key", equalTo(testApiKey))
                 .withHeader("Content-Type", equalTo("application/json"))
                 .withRequestBody(equalToJson("{" +
@@ -196,14 +197,15 @@ public class TestUsers extends TestApiBase {
                         .withStatus(200)
                         .withHeader("Content-Type", "application/xml")
                         .withBody("{" +
-                                "    \"message\": \"Call ignored. User is using  App Tokens and this call is not necessary. Pass force=true if you still want to call users that are using the App.\"," +
+                                "    \"message\": \"Call ignored. User is using  App Tokens and this call is not necessary. Pass force=true if you still want to call users that are using the App.\","
+                                +
                                 "    \"cellphone\": \"+57-XXX-XXX-XX12\"," +
                                 "    \"device\": \"android\"," +
                                 "    \"ignored\": true," +
                                 "    \"success\": true" +
                                 "}")));
 
-        Hash response  = client.requestCall(Integer.parseInt(testUserId));
+        Hash response = client.requestCall(Integer.parseInt(testUserId));
 
         verify(getRequestedFor(urlPathEqualTo("/protected/json/call/" + testUserId))
                 .withHeader("X-Authy-API-Key", equalTo(testApiKey)));
@@ -245,5 +247,13 @@ public class TestUsers extends TestApiBase {
         assertFalse(response.isOk());
         assertThat(response.getStatus(), is(404));
         assertThat(response.getError().getMessage(), containsString("User not found"));
+    }
+
+    @Test
+    public void testUserToXML() throws Exception {
+        Users.User user = new Users.User("fake@email.com", "12345678", "1");
+        String xml = user.toXML();
+
+        assertEquals(xml, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><user><cellphone>12345678</cellphone><country_code>1</country_code><email>fake@email.com</email></user>");
     }
 }
