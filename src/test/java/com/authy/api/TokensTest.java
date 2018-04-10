@@ -27,42 +27,46 @@ public class TokensTest extends TestApiBase {
     private int testUserId = 123456;
     private String testToken = "123456";
 
-    private final String invalidTokenResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-            + "<errors>"
-            + "    <message>Token is invalid.</message>"
-            + "    <success>false</success>"
-            + "    <error-code>60019</error-code>"
-            + "</errors>";
+    private final String invalidTokenResponse = "{"
+            + "    \"message\": \"Token is invalid\","
+            + "    \"token\": \"is invalid\","
+            + "    \"success\": false,"
+            + "    \"errors\": {"
+            + "        \"message\": \"Token is invalid\""
+            + "    },\n"
+            + "    \"error_code\": \"60020\""
+            + "}";
 
-    private final String validTokenResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-            + "<hash>"
-            + "    <message>Token is valid.</message>"
-            + "    <token>is valid</token>"
-            + "    <success>true</success>"
-            + "    <device>"
-            + "        <city nil=\"true\"/>"
-            + "        <country>US</country>"
-            + "        <ip>186.112.233.58</ip>"
-            + "        <region nil=\"true\"/>"
-            + "        <registration-city nil=\"true\"/>"
-            + "        <registration-country>US</registration-country>"
-            + "        <registration-ip>186.112.233.58</registration-ip>"
-            + "        <registration-method>sms</registration-method>"
-            + "        <registration-region nil=\"true\"/>"
-            + "        <os-type>android</os-type>"
-            + "        <last-account-recovery-at nil=\"true\"/>"
-            + "        <id type=\"integer\">2179876</id>"
-            + "        <registration-date type=\"integer\">1513879290</registration-date>"
-            + "        <last-sync-date type=\"integer\">1514304913</last-sync-date>"
-            + "    </device>"
-            + "</hash>";
+    private final String validTokenResponse = "{"
+            + "    \"message\": \"Token is valid.\","
+            + "    \"token\": \"is valid\","
+            + "    \"success\": \"true\","
+            + "    \"device\": {"
+            + "        \"id\": null,"
+            + "        \"os_type\": \"sms\","
+            + "        \"registration_date\": 1500648405,"
+            + "        \"registration_method\": null,"
+            + "        \"registration_country\": null,"
+            + "        \"registration_region\": null,"
+            + "        \"registration_city\": null,"
+            + "        \"country\": null,"
+            + "        \"region\": null,"
+            + "        \"city\": null,"
+            + "        \"ip\": null,"
+            + "        \"last_account_recovery_at\": 1494631010,"
+            + "        \"last_sync_date\": null"
+            + "    }"
+            + "}";
 
-    private final String invalidErrorFormatResponse = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-            + "<error>"
-            + "    <message>Token is invalid.</message>"
-            + "    <success>false</success>"
-            + "    <error-code>60019</error-code>"
-            + "</error>";
+    private final String invalidErrorFormatResponse = ""
+            + "    \"message\": \"Token is invalid\","
+            + "    \"token\": \"is invalid\","
+            + "    \"success\": false,"
+            + "    \"errors\": {"
+            + "        \"message\": \"Token is invalid\""
+            + "    },\n"
+            + "    \"error_code\": \"60019\""
+            + "}";
 
     @Before
     public void setUp() {
@@ -101,10 +105,10 @@ public class TokensTest extends TestApiBase {
 
     @Test
     public void testInvalidTokenResponse() {
-        stubFor(get(urlPathMatching("/protected/xml/verify/.*"))
+        stubFor(get(urlPathMatching("/protected/json/verify/.*"))
                 .willReturn(aResponse()
                         .withStatus(401)
-                        .withHeader("Content-Type", "application/xml")
+                        .withHeader("Content-Type", "application/json")
                         .withBody(invalidTokenResponse)));
 
 
@@ -118,10 +122,10 @@ public class TokensTest extends TestApiBase {
 
     @Test
     public void testValidTokenResponse() {
-        stubFor(get(urlPathMatching("/protected/xml/verify/.*"))
+        stubFor(get(urlPathMatching("/protected/json/verify/.*"))
                 .willReturn(aResponse()
                         .withStatus(200)
-                        .withHeader("Content-Type", "application/xml")
+                        .withHeader("Content-Type", "application/json")
                         .withBody(validTokenResponse)));
 
 
@@ -136,10 +140,10 @@ public class TokensTest extends TestApiBase {
 
     @Test
     public void testVerificationOptions() {
-        stubFor(get(urlPathMatching("/protected/xml/verify/.*"))
+        stubFor(get(urlPathMatching("/protected/json/verify/.*"))
                 .willReturn(aResponse()
                         .withStatus(200)
-                        .withHeader("Content-Type", "application/xml")
+                        .withHeader("Content-Type", "application/json")
                         .withBody(validTokenResponse)));
 
 
@@ -156,10 +160,10 @@ public class TokensTest extends TestApiBase {
 
     @Test
     public void testInvalidErrorFormatResponse() {
-        stubFor(get(urlPathMatching("/protected/xml/verify/.*"))
+        stubFor(get(urlPathMatching("/protected/json/verify/.*"))
                 .willReturn(aResponse()
                         .withStatus(401)
-                        .withHeader("Content-Type", "application/xml")
+                        .withHeader("Content-Type", "application/json")
                         .withBody(invalidErrorFormatResponse)));
 
 
@@ -173,17 +177,17 @@ public class TokensTest extends TestApiBase {
 
     @Test
     public void testRequestParameters() {
-        stubFor(get(urlPathMatching("/protected/xml/verify/.*"))
+        stubFor(get(urlPathMatching("/protected/json/verify/.*"))
                 .willReturn(aResponse()
                         .withStatus(200)
-                        .withHeader("Content-Type", "application/xml")
+                        .withHeader("Content-Type", "application/json")
                         .withBody(validTokenResponse)));
 
 
         try {
             Token token = tokens.verify(testUserId, testToken);
 
-            verify(getRequestedFor(urlPathEqualTo("/protected/xml/verify/" + testToken + "/" + testUserId))
+            verify(getRequestedFor(urlPathEqualTo("/protected/json/verify/" + testToken + "/" + testUserId))
                     .withHeader("X-Authy-API-Key", equalTo(testApiKey)));
             Assert.assertNull("Token must not have an error", token.getError());
             Assert.assertTrue("Token verification must be successful", token.isOk());

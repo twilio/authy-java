@@ -128,13 +128,6 @@ public class Users extends Resource {
         return user;
     }
 
-    private Error errorFromJson(int status, String content) {
-        JSONObject errorJson = new JSONObject(content);
-        Error error = new Error();
-        error.setMessage(errorJson.getString("message"));
-        return error;
-    }
-
     private Hash instanceFromJson(int status, String content) throws AuthyException {
         Hash hash = new Hash();
         hash.setStatus(status);

@@ -3,6 +3,9 @@ package com.authy.api;
 import com.authy.AuthyApiClient;
 import com.authy.AuthyException;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -149,6 +152,17 @@ public class Resource {
             throw new AuthyException("Connection error", e);
         }
         return answer;
+    }
+
+    Error errorFromJson(int status, String content) throws AuthyException {
+        try {
+            JSONObject errorJson = new JSONObject(content);
+            Error error = new Error();
+            error.setMessage(errorJson.getString("message"));
+            return error;
+        } catch (JSONException e) {
+            throw new AuthyException("Invalid response from server", e);
+        }
     }
 
     /**
