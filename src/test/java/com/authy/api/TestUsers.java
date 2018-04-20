@@ -64,7 +64,7 @@ public class TestUsers extends TestApiBase {
                 .withHeader("Content-Type", equalTo("application/json"))
                 .withRequestBody(equalToJson("{" +
                         "\"user\": {"
-                        + "  \"countryCode\" : \"57\","
+                        + "  \"country_code\" : \"57\","
                         + "  \"cellphone\" : \"3003003333\","
                         + "  \"email\" : \"test@example.com\""
                         + "}}")));
@@ -87,7 +87,7 @@ public class TestUsers extends TestApiBase {
                 .withHeader("Content-Type", equalTo("application/json"))
                 .withRequestBody(equalToJson("{" +
                         "\"user\": {"
-                        + "  \"countryCode\" : \"1\","
+                        + "  \"country_code\" : \"1\","
                         + "  \"cellphone\" : \"3003003333\","
                         + "  \"email\" : \"test@example.com\""
                         + "}}")));

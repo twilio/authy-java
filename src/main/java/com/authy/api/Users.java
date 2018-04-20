@@ -231,7 +231,7 @@ public class Users extends Resource {
             Map<String, String> map = new HashMap<>();
             map.put("email", email);
             map.put("cellphone", cellphone);
-            map.put("countryCode", countryCode);
+            map.put("country_code", countryCode);
 
             return map;
         }
