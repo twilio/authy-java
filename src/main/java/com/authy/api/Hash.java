@@ -1,14 +1,13 @@
 package com.authy.api;
 
-import org.json.JSONObject;
+import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author Julian Camargo
@@ -88,12 +87,6 @@ public class Hash extends Instance implements Formattable {
             e.printStackTrace();
         }
         return xml;
-    }
-
-    // required to satisfy Formattable interface
-    // required to satisfy Formattable interface
-    public String toJSON() {
-        return new JSONObject(toMap()).toString();
     }
 
     /**

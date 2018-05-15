@@ -87,18 +87,6 @@ public class PhoneInfoResponse implements Formattable {
         return map;
     }
 
-    public String toJSON() {
-        JSONObject info = new JSONObject();
-
-        info.put("message", this.getMessage());
-        info.put("success", this.getSuccess());
-        info.put("is_ported", this.getIsPorted());
-        info.put("provider", this.getProvider());
-        info.put("type", this.getType());
-
-        return info.toString();
-    }
-
     private void parseResponseToOjbect(JSONObject json) {
         if (!json.isNull("message"))
             this.message = json.getString("message");

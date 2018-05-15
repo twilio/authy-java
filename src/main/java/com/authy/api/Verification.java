@@ -101,17 +101,6 @@ public class Verification implements Formattable {
         return map;
     }
 
-    public String toJSON() {
-        JSONObject verification = new JSONObject();
-
-        verification.put("message", this.getMessage());
-        verification.put("success", this.getSuccess());
-        verification.put("is_ported", this.getIsPorted());
-        verification.put("is_cellphone", this.getIsCellphone());
-
-        return verification.toString();
-    }
-
     private void parseResponseToOjbect(JSONObject json) {
         if (!json.isNull("message"))
             this.message = json.getString("message");

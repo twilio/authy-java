@@ -74,9 +74,4 @@ public class User extends Instance implements Formattable {
 
         return map;
     }
-
-    // required to satisfy Formattable interface
-    public String toJSON() {
-        return new JSONObject(toMap()).toString();
-    }
 }

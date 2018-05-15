@@ -2,22 +2,17 @@ package com.authy.api;
 
 import com.authy.AuthyException;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
 
 /**
  * @author Julian Camargo
  */
 public class Tokens extends Resource {
-    public static final String TOKEN_VERIFICATION_PATH = "/protected/xml/verify/";
+    public static final String TOKEN_VERIFICATION_PATH = "/protected/json/verify/";
 
     public Tokens(String uri, String key) {
         super(uri, key);
@@ -41,45 +36,26 @@ public class Tokens extends Resource {
         path.append(Integer.toString(userId));
 
         String content = this.get(path.toString(), internalToken);
-        return tokenFromXml(this.getStatus(), content);
+        return tokenFromJson(this.getStatus(), content);
     }
 
-    private Token tokenFromXml(int status, String content) throws AuthyException {
-        Token token = new Token();
-        try {
-            Error error = errorFromXml(status, content);
+    private Token tokenFromJson(int status, String content) throws AuthyException {
+        if (status == 200) {
+            try {
+                JSONObject tokenJSON = new JSONObject(content);
+                String message = tokenJSON.optString("message");
+                return new Token(status, content, message);
 
-            if (error != null) {
-                token.setError(error);
-                return token;
+            } catch (JSONException e) {
+                throw new AuthyException("Invalid response from server", e);
             }
-
-            JAXBContext context = JAXBContext.newInstance(Hash.class);
-            Unmarshaller unmarshaller = context.createUnmarshaller();
-
-            StringReader xml = new StringReader(content);
-            Hash hash = (Hash) unmarshaller.unmarshal(new StreamSource(xml));
-
-            token = new Token(status, content, hash.getMessage());
-        } catch (JAXBException e) {
-            throw new AuthyException("Invalid response from server", e);
         }
+
+        Error error = errorFromJson(status, content);
+        Token token = new Token();
+        token.setError(error);
+        token.setStatus(status);
         return token;
-    }
-
-    private Error errorFromXml(int status, String content) {
-        try {
-            Error error;
-            JAXBContext context = JAXBContext.newInstance(Error.class);
-            Unmarshaller unmarshaller = context.createUnmarshaller();
-
-            StringReader xml = new StringReader(content);
-            error = (Error) unmarshaller.unmarshal(new StreamSource(xml));
-            return error;
-        } catch (JAXBException e) {
-            return null;
-        }
-
     }
 
     private void validateToken(String token) throws AuthyException {
@@ -109,8 +85,9 @@ public class Tokens extends Resource {
         }
 
         public void setOption(Map<String, String> options) {
-            if (options != null)
+            if (options != null) {
                 this.options = options;
+            }
         }
 
         public String toXML() {
@@ -118,15 +95,11 @@ public class Tokens extends Resource {
         }
 
         public Map<String, String> toMap() {
-            if (!options.containsKey("force"))
+            if (!options.containsKey("force")) {
                 options.put("force", "true");
+            }
 
             return options;
-        }
-
-        // required to satisfy Formattable interface
-        public String toJSON() {
-            return new JSONObject(toMap()).toString();
         }
     }
 }
