@@ -159,8 +159,9 @@ public class Resource {
             JSONObject errorJson = new JSONObject(content);
             Error error = new Error();
             error.setMessage(errorJson.getString("message"));
+            error.setCode(Integer.parseInt(errorJson.getString("error_code")));
             return error;
-        } catch (JSONException e) {
+        } catch (JSONException| NumberFormatException e) {
             throw new AuthyException("Invalid response from server", e);
         }
     }

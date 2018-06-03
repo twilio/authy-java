@@ -1,9 +1,11 @@
 package com.authy.api;
 
 import java.io.StringReader;
+import java.io.StringWriter;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
@@ -49,25 +51,7 @@ public class Instance {
      * @return an Error object
      */
     public Error getError() {
-        if (isOk()) {
             return error;
-        }
-
-        try {
-            JAXBContext context = JAXBContext.newInstance(Error.class);
-            Unmarshaller unmarshaller = context.createUnmarshaller();
-
-            StringReader xml = new StringReader(content);
-            if (!content.isEmpty()) {
-                error = (Error) unmarshaller.unmarshal(new StreamSource(xml));
-            }
-        } catch (JAXBException e) {
-            error = new Error();
-            error.setMessage("Unable to parse response");
-            return error;
-        }
-
-        return error;
     }
 
     /**
@@ -83,6 +67,33 @@ public class Instance {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    /**
+     * Map a Token instance to its XML representation.
+     *
+     * @return a String with the description of this object in XML.
+     */
+    public String toXML() {
+        Error error = getError();
+
+        if (error != null) {
+            return error.toXML();
+        }
+
+        StringWriter sw = new StringWriter();
+        String xml = "";
+
+        try {
+            JAXBContext context = JAXBContext.newInstance(this.getClass());
+            Marshaller marshaller = context.createMarshaller();
+
+            marshaller.marshal(this, sw);
+            xml = sw.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return xml;
     }
 }
 

@@ -9,6 +9,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 
+import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.fail;
 
 import com.authy.AuthyApiClient;
@@ -64,7 +65,7 @@ public class TokensTest extends TestApiBase {
             + "    \"success\": false,"
             + "    \"errors\": {"
             + "        \"message\": \"Token is invalid\""
-            + "    },\n"
+            + "    },"
             + "    \"error_code\": \"60019\""
             + "}";
 
@@ -114,7 +115,9 @@ public class TokensTest extends TestApiBase {
 
         try {
             Token token = tokens.verify(testUserId, testToken);
-            Assert.assertNotNull("Token must have an error", token.getError());
+            final Error error = token.getError();
+            Assert.assertNotNull("Token must have an error", error);
+            assertEquals(60020, error.getCode().intValue());
         } catch (AuthyException e) {
             fail("Token should have an error object");
         }

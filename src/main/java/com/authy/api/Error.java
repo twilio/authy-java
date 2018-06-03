@@ -16,6 +16,7 @@ import java.util.Map;
 @XmlRootElement(name = "errors")
 public class Error implements Formattable {
     private String message, url, countryCode;
+    private Integer code;
 
     @XmlElement(name = "country-code")
     public String getCountryCode() {
@@ -38,6 +39,14 @@ public class Error implements Formattable {
     @XmlElement(name = "url")
     public String getUrl() {
         return url;
+    }
+
+    public Integer getCode() {
+        return code;
+    }
+
+    public void setCode(Integer code) {
+        this.code = code;
     }
 
     public void setUrl(String url) {

@@ -107,6 +107,7 @@ public class TestPhoneVerification extends TestApiBase {
         params.setAttribute("locale", "en");
 
         Verification result = client.start("282-23", "1", "sms", params);
+
         Assert.assertEquals("Phone number is invalid", result.getMessage());
         Assert.assertEquals("false", result.getSuccess());
     }

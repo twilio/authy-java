@@ -51,10 +51,8 @@ public class Tokens extends Resource {
             }
         }
 
-        Error error = errorFromJson(status, content);
-        Token token = new Token();
-        token.setError(error);
-        token.setStatus(status);
+        Token token = new Token(status, content);
+        token.setError(errorFromJson(status, content));
         return token;
     }
 
