@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static org.junit.Assert.*;
 
 import com.authy.AuthyException;
 
@@ -53,7 +54,7 @@ public class TestPhoneVerification extends TestApiBase {
 
     @Test
     public void testContentTypeToBeJson() {
-        Assert.assertEquals("application/json", client.getContentType());
+        assertEquals("application/json", client.getContentType());
     }
 
     @Test
@@ -71,8 +72,8 @@ public class TestPhoneVerification extends TestApiBase {
         verify(postRequestedFor(urlPathEqualTo("/protected/json/phones/verification/start"))
                 .withHeader("X-Authy-API-Key", equalTo(testApiKey))
                 .withRequestBody(equalToJson("{\"country_code\": \"1\", \"phone_number\": \"775-461-5609\", \"locale\": \"es\", \"via\": \"call\"}", true, true)));
-        Assert.assertEquals("Llamada a +1 775-461-5609 fue iniciada.", result.getMessage());
-        Assert.assertEquals("true", result.getSuccess());
+        assertEquals("Llamada a +1 775-461-5609 fue iniciada.", result.getMessage());
+        assertEquals("true", result.getSuccess());
     }
 
     @Test
@@ -91,8 +92,8 @@ public class TestPhoneVerification extends TestApiBase {
                 .withHeader("X-Authy-API-Key", equalTo(testApiKey))
                 .withRequestBody(equalToJson("{\"country_code\": \"1\", \"phone_number\": \"775-461-5609\", \"locale\": \"en\", \"via\": \"sms\"}", true, true)));
         String msg = "Text message sent to +1 775-461-5609.";
-        Assert.assertEquals(msg, result.getMessage());
-        Assert.assertEquals("true", result.getSuccess());
+        assertEquals(msg, result.getMessage());
+        assertEquals("true", result.getSuccess());
     }
 
     @Test
@@ -108,8 +109,11 @@ public class TestPhoneVerification extends TestApiBase {
 
         Verification result = client.start("282-23", "1", "sms", params);
 
-        Assert.assertEquals("Phone number is invalid", result.getMessage());
-        Assert.assertEquals("false", result.getSuccess());
+        assertEquals("Phone number is invalid", result.getMessage());
+        assertEquals("false", result.getSuccess());
+        Error error = result.getError();
+        assertNotNull(error);
+        assertEquals(60033, error.getCode().intValue());
     }
 
     @Test
@@ -122,8 +126,9 @@ public class TestPhoneVerification extends TestApiBase {
 
         Verification result = client.check("775-461-5609", "1", "2061");
 
-        Assert.assertEquals("Verification code is correct.", result.getMessage());
-        Assert.assertEquals("true", result.getSuccess());
+        assertEquals("Verification code is correct.", result.getMessage());
+        assertTrue(result.isOk());
+        assertEquals("true", result.getSuccess());
     }
 
     @Test
@@ -136,7 +141,11 @@ public class TestPhoneVerification extends TestApiBase {
 
         Verification result = client.check("775-461-5609", "1", "2061");
 
-        Assert.assertEquals("Verification code is incorrect", result.getMessage());
-        Assert.assertEquals("false", result.getSuccess());
+        assertEquals("Verification code is incorrect", result.getMessage());
+        assertFalse(result.isOk());
+        assertEquals("false", result.getSuccess());
+        Error error = result.getError();
+        assertNotNull(error);
+        assertEquals(60022, error.getCode().intValue());
     }
 }

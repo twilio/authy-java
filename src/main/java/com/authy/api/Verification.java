@@ -2,11 +2,8 @@ package com.authy.api;
 
 import org.json.JSONObject;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,20 +11,20 @@ import java.util.Map;
  * @author Moisés Vargas
  */
 @XmlRootElement(name = "verification")
-public class Verification implements Formattable {
-    private int status = 503;
-    private String response;
-    private String message = "Something went wrong!";
+public class Verification extends Instance implements Formattable {
     private boolean isPorted = false;
     private boolean isCellphone = false;
 
     public Verification() {
     }
 
+    public Verification(int status, String response) {
+        this(status, response, null);
+    }
+
     public Verification(int status, String response, String message) {
-        this.status = status;
-        this.response = response;
-        this.message = message;
+        super(status, response, message);
+        this.setResponse(response);
     }
 
     @XmlElement(name = "message")
@@ -55,34 +52,9 @@ public class Verification implements Formattable {
     }
 
     public void setResponse(String response) {
-        this.response = response;
+        this.content = response;
         JSONObject jsonResponse = new JSONObject(response);
         this.parseResponseToOjbect(jsonResponse);
-    }
-
-    public boolean isOk() {
-        return status == 200;
-    }
-
-    /**
-     * Map a Token instance to its XML representation.
-     *
-     * @return a String with the description of this object in XML.
-     */
-    public String toXML() {
-        StringWriter sw = new StringWriter();
-        String xml = "";
-
-        try {
-            JAXBContext context = JAXBContext.newInstance(this.getClass());
-            Marshaller marshaller = context.createMarshaller();
-
-            marshaller.marshal(this, sw);
-            xml = sw.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return xml;
     }
 
     /**

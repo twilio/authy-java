@@ -21,24 +21,19 @@ public class PhoneVerification extends Resource {
         params.setAttribute("country_code", countryCode);
         params.setAttribute("via", via);
 
-        Verification verification = new Verification();
         StringBuilder path = new StringBuilder(PHONE_VERIFICATION_API_PATH);
-        String response;
         path.append("start");
-        response = this.post(path.toString(), params);
+        final String response = this.post(path.toString(), params);
 
-        verification.setStatus(this.getStatus());
-        verification.setResponse(response);
+        Verification verification = new Verification(this.getStatus(), response);
+        if (!verification.isOk())
+            verification.setError(errorFromJson(this.getStatus(), response));
+
         return verification;
     }
 
     public Verification check(String phoneNumber, String countryCode, String code) throws AuthyException {
-        Params params = new Params();
-        params.setAttribute("phone_number", phoneNumber);
-        params.setAttribute("country_code", countryCode);
-        params.setAttribute("verification_code", code);
-
-        return verificationCheck(params);
+        return check(phoneNumber,countryCode, code, new Params());
     }
 
     public Verification check(String phoneNumber, String countryCode, String code, Params params) throws AuthyException {
@@ -46,20 +41,16 @@ public class PhoneVerification extends Resource {
         params.setAttribute("country_code", countryCode);
         params.setAttribute("verification_code", code);
 
-        return verificationCheck(params);
-    }
-
-    private Verification verificationCheck(Params params) throws AuthyException {
-        Verification verification = new Verification();
         StringBuilder path = new StringBuilder(PHONE_VERIFICATION_API_PATH);
-        String response;
 
         path.append("check");
-        response = this.get(path.toString(), params);
+        final String response = this.get(path.toString(), params);
 
-        verification.setStatus(this.getStatus());
-        verification.setResponse(response);
+        Verification verification = new Verification(this.getStatus(), response);
+        if (!verification.isOk())
+            verification.setError(errorFromJson(this.getStatus(), response));
         return verification;
+
     }
 
 }
