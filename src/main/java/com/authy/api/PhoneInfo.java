@@ -24,10 +24,8 @@ public class PhoneInfo extends Resource {
         params.setAttribute("phone_number", phoneNumber);
         params.setAttribute("country_code", countryCode);
         StringBuilder path = new StringBuilder(PHONE_INFO_API_PATH);
-        String response;
-
         path.append("info");
-        response = this.get(path.toString(), params);
+        String response = this.get(path.toString(), params);
         PhoneInfoResponse info = new PhoneInfoResponse(this.getStatus(), response);
         if (!info.isOk()) {
             info.setError(errorFromJson(getStatus(), response));

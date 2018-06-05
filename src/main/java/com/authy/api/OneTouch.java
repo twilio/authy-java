@@ -2,6 +2,7 @@ package com.authy.api;
 
 import com.authy.AuthyException;
 import com.authy.OneTouchException;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -10,8 +11,8 @@ import java.util.Map;
 
 /**
  * @author hansospina
- *         <p>
- *         Copyright © 2017 Twilio, Inc. All Rights Reserved.
+ * <p>
+ * Copyright © 2017 Twilio, Inc. All Rights Reserved.
  */
 public class OneTouch extends Resource {
 
@@ -36,7 +37,8 @@ public class OneTouch extends Resource {
      * @param approvalRequestParams The bean wrapping the user's Authy approval request built using the ApprovalRequest.Builder
      * @return The bean wrapping the response from Authy's service.
      */
-    public OneTouchResponse sendApprovalRequest(ApprovalRequestParams approvalRequestParams) throws AuthyException {//Integer userId, String message, HashMap<String, Object> options, Integer secondsToExpire) throws OneTouchException {
+    public OneTouchResponse sendApprovalRequest(ApprovalRequestParams approvalRequestParams)
+            throws AuthyException {//Integer userId, String message, HashMap<String, Object> options, Integer secondsToExpire) throws OneTouchException {
 
 
         JSONObject params = new JSONObject();
@@ -67,14 +69,25 @@ public class OneTouch extends Resource {
             params.put("logos", jSONArray);
         }
 
+        String response = this.post(APPROVAL_REQUEST_PRE + approvalRequestParams.getAuthyId() + APPROVAL_REQUEST_POS, new JSONBody(params));
+        OneTouchResponse oneTouchResponse = new OneTouchResponse(this.getStatus(), response);
 
-        return new OneTouchResponse(this.post(APPROVAL_REQUEST_PRE + approvalRequestParams.getAuthyId() + APPROVAL_REQUEST_POS, new JSONBody(params)));
+        if (!oneTouchResponse.isOk()) {
+            oneTouchResponse.setError(errorFromJson(this.getStatus(), response));
+        }
+        return oneTouchResponse;
     }
 
     public OneTouchResponse getApprovalRequestStatus(String uuid) throws OneTouchException {
 
         try {
-            return new OneTouchResponse(this.get(APPROVAL_REQUEST_STATUS + URLEncoder.encode(uuid, ENCODE), new Params()));
+            String response = this.get(APPROVAL_REQUEST_STATUS + URLEncoder.encode(uuid, ENCODE), new Params());
+            OneTouchResponse oneTouchResponse = new OneTouchResponse(this.getStatus(), response);
+            if (!oneTouchResponse.isOk()) {
+                oneTouchResponse.setError(errorFromJson(this.getStatus(), response));
+            }
+            return oneTouchResponse;
+
         } catch (Exception e) {
             throw new OneTouchException("There was an error trying to process this request.", e);
         }

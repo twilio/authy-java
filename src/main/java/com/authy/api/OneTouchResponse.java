@@ -1,31 +1,31 @@
 package com.authy.api;
 
 import com.authy.AuthyException;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
  * @author hansospina
- *         <p>
- *         Copyright © 2017 Twilio, Inc. All Rights Reserved.
+ * <p>
+ * Copyright © 2017 Twilio, Inc. All Rights Reserved.
  */
-public class OneTouchResponse {
+public class OneTouchResponse extends Instance {
 
     private JSONObject obj;
 
 
-    public OneTouchResponse(String json) throws AuthyException {
-        init(json);
-    }
-
-    private void init(String json) throws AuthyException {
-
+    public OneTouchResponse(int status, String content) throws AuthyException {
+        super(status, content);
         try {
-            obj = new JSONObject(json);
+            obj = new JSONObject(content);
         } catch (JSONException ex) {
             throw new AuthyException("Invalid JSON format, the given string is not a valid json object.", ex);
         }
+    }
 
+    public OneTouchResponse(String json) throws AuthyException {
+        this(200, json);
     }
 
     public boolean isSuccess() {

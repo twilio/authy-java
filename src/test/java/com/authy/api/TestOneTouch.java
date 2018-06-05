@@ -1,23 +1,36 @@
 package com.authy.api;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertFalse;
+
 import com.authy.AuthyApiClient;
 import com.authy.AuthyException;
 import com.authy.OneTouchException;
 import com.authy.api.ApprovalRequestParams.Resolution;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-
 /**
  * Unit tests for the API described at: http://docs.authy.com/onetouch.html#onetouch-api
  *
  * @author hansospina
- *         <p>
- *         Copyright © 2017 Twilio, Inc. All Rights Reserved.
+ * <p>
+ * Copyright © 2017 Twilio, Inc. All Rights Reserved.
  */
 public class TestOneTouch extends TestApiBase {
 
@@ -49,6 +62,22 @@ public class TestOneTouch extends TestApiBase {
             "    }," +
             "    \"success\": true" +
             "}";
+
+    final private String userNotFoundResponse = "{"
+            + "    \"message\": \"User not found.\","
+            + "    \"success\": false,"
+            + "    \"errors\": {"
+            + "        \"message\": \"User not found.\""
+            + "    },"
+            + "    \"error_code\": \"60026\""
+            + "}";
+
+    final private String approvalRequestNotFound = "{"
+            + "    \"message\": \"Approval request not found: 3f05a350-4b2c-0136-f779-12c0c2bf9easd\","
+            + "    \"success\": false,"
+            + "    \"errors\": {},"
+            + "    \"error_code\": \"60049\""
+            + "}";
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -90,10 +119,10 @@ public class TestOneTouch extends TestApiBase {
 
     @Test
     public void testSendApprovalRequestOk() throws AuthyException {
-        stubFor(post(urlPathEqualTo("/onetouch/json/users/" + testUserId +"/approval_requests"))
+        stubFor(post(urlPathEqualTo("/onetouch/json/users/" + testUserId + "/approval_requests"))
                 .willReturn(aResponse()
                         .withStatus(200)
-                        .withHeader("Content-Type", "application/xml;charset=utf-8")
+                        .withHeader("Content-Type", "application/json;charset=utf-8")
                         .withBody(successSendApprovalRequestResponse)));
 
         ApprovalRequestParams approvalRequestParams = new ApprovalRequestParams.Builder(Integer.parseInt(testUserId), "Authorize OneTouch Unit Test")
@@ -107,28 +136,28 @@ public class TestOneTouch extends TestApiBase {
 
         OneTouchResponse response = client.getOneTouch().sendApprovalRequest(approvalRequestParams);
 
-        verify(postRequestedFor(urlPathEqualTo("/onetouch/json/users/" + testUserId +"/approval_requests"))
-                        .withHeader("X-Authy-API-Key", equalTo(testApiKey))
-                        .withRequestBody(equalToJson("{" +
-                                "  \"hidden_details\" : {" +
-                                "    \"ip_address\" : \"10.10.3.203\"" +
-                                "  }," +
-                                "  \"details\" : {" +
-                                "    \"location\" : \"California,USA\"," +
-                                "    \"username\" : \"User\"" +
-                                "  }," +
-                                "  \"message\" : \"Authorize OneTouch Unit Test\"," +
-                                "  \"logos\" : [ {" +
-                                "    \"res\" : \"med\"," +
-                                "    \"url\" : \"http://image.co\"" +
-                                "  }, {" +
-                                "    \"res\" : \"low\"," +
-                                "    \"url\" : \"http://image.low\"" +
-                                "  }, {" +
-                                "    \"res\" : \"default\"," +
-                                "    \"url\" : \"http://image.co\"" +
-                                "  } ]" +
-                                "}", true, true)));
+        verify(postRequestedFor(urlPathEqualTo("/onetouch/json/users/" + testUserId + "/approval_requests"))
+                .withHeader("X-Authy-API-Key", equalTo(testApiKey))
+                .withRequestBody(equalToJson("{" +
+                        "  \"hidden_details\" : {" +
+                        "    \"ip_address\" : \"10.10.3.203\"" +
+                        "  }," +
+                        "  \"details\" : {" +
+                        "    \"location\" : \"California,USA\"," +
+                        "    \"username\" : \"User\"" +
+                        "  }," +
+                        "  \"message\" : \"Authorize OneTouch Unit Test\"," +
+                        "  \"logos\" : [ {" +
+                        "    \"res\" : \"med\"," +
+                        "    \"url\" : \"http://image.co\"" +
+                        "  }, {" +
+                        "    \"res\" : \"low\"," +
+                        "    \"url\" : \"http://image.low\"" +
+                        "  }, {" +
+                        "    \"res\" : \"default\"," +
+                        "    \"url\" : \"http://image.co\"" +
+                        "  } ]" +
+                        "}", true, true)));
         Assert.assertTrue(response.isSuccess());
     }
 
@@ -181,14 +210,54 @@ public class TestOneTouch extends TestApiBase {
         stubFor(get(urlPathEqualTo("/onetouch/json/approval_requests/" + testOneTouchUUID))
                 .willReturn(aResponse()
                         .withStatus(200)
-                        .withHeader("Content-Type", "application/xml;charset=utf-8")
+                        .withHeader("Content-Type", "application/json;charset=utf-8")
                         .withBody(successStatusResponse)));
 
         OneTouchResponse response = client.getOneTouch().getApprovalRequestStatus(testOneTouchUUID);
 
         verify(getRequestedFor(urlPathEqualTo("/onetouch/json/approval_requests/" + testOneTouchUUID))
-                        .withHeader("X-Authy-API-Key", equalTo(testApiKey)));
+                .withHeader("X-Authy-API-Key", equalTo(testApiKey)));
         Assert.assertTrue(response.isSuccess());
         Assert.assertNotNull(response.getApprovalRequest().getStatus());
+    }
+
+    @Test
+    public void testUserNotFoundError() throws Exception {
+        String invalidUserId = "12342325";
+        stubFor(post(urlPathEqualTo("/onetouch/json/users/" + invalidUserId + "/approval_requests"))
+                .willReturn(aResponse()
+                        .withStatus(404)
+                        .withHeader("Content-Type", "application/json;charset=utf-8")
+                        .withBody(userNotFoundResponse)));
+
+        ApprovalRequestParams approvalRequestParams = new ApprovalRequestParams.Builder(Integer.parseInt(invalidUserId), "Authorize OneTouch Unit Test")
+                .addDetail("username", "User")
+                .addDetail("location", "California,USA")
+                .addHiddenDetail("ip_address", "10.10.3.203")
+                .addLogo(Resolution.Low, "http://image.low")
+                .addLogo(Resolution.Medium, "http://image.co")
+                .addLogo(Resolution.Default, "http://image.co")
+                .build();
+
+        OneTouchResponse response = client.getOneTouch().sendApprovalRequest(approvalRequestParams);
+
+        assertFalse(response.isSuccess());
+        assertEquals(60026, response.getError().getCode().intValue());
+    }
+
+    @Test
+    public void testApprovalRequestNotFoundError() throws Exception {
+        String invalidOneTouchUUID = "3f05a350-4b2c-0136-f779-12c0c2bf9easd";
+        stubFor(get(urlPathEqualTo("/onetouch/json/approval_requests/" + invalidOneTouchUUID))
+                .willReturn(aResponse()
+                        .withStatus(404)
+                        .withHeader("Content-Type", "application/json;charset=utf-8")
+                        .withBody(approvalRequestNotFound)));
+
+        OneTouchResponse response = client.getOneTouch().getApprovalRequestStatus(invalidOneTouchUUID);
+
+        assertFalse(response.isSuccess());
+        assertEquals(60049, response.getError().getCode().intValue());
+        assertEquals("60049", response.getErrorCode());
     }
 }
