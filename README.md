@@ -17,19 +17,6 @@ the [json.org jar versions here](https://search.maven.org/#search|gav|1|g%3A%22o
 
 ## Compilation
 
-
-### Using Apache Ant
-
-Use `ant` to generate `authy-java.jar` or use the jar file in `dist` directory.
-
-ant compress
-
-This will generate a jar file in `dist` folder.
-
-If you want to use this command:
-```shell
-$ ant compress
-```
 ### Using Apache Maven
 
 Use `mvn install` to compile and install the library in your local maven repository. This also installs the sources JAR file for source code lookup for better debugging.
@@ -203,12 +190,12 @@ If the request was successful, you will need to store the authy id in your datab
 
 ## OneTouch Support
 
-  `client.getOneTouch()` will return the OneTouch wrapper, with this component you will be able to use all the 
-  endpoints defined in the [OneTouch API](https://www.twilio.com/docs/api/authy/authy-onetouch-api), 
-  for example, using the 
+  `client.getOneTouch()` will return the OneTouch wrapper, with this component you will be able to use all the
+  endpoints defined in the [OneTouch API](https://www.twilio.com/docs/api/authy/authy-onetouch-api),
+  for example, using the
   'sendApprovalRequest' method you will create an ApprovalRequest
   in OneTouch, then the approval request
-  status can be queried by using the  `uuid` provided. (NOTE: The UUID is the unique identifier for the request sent to OneTouch). 'sendApprovalRequest' method need an intance of ApprovalRequestParams.class, you can create one using the ApprovalRequestParams.Builder like this: 
+  status can be queried by using the  `uuid` provided. (NOTE: The UUID is the unique identifier for the request sent to OneTouch). 'sendApprovalRequest' method need an intance of ApprovalRequestParams.class, you can create one using the ApprovalRequestParams.Builder like this:
 
 ```java
  ApprovalRequestParams approvalRequestParams= new  ApprovalRequestParams.Builder(Integer.parseInt(103)),"Authorize OneTouch Unit Test")
@@ -217,7 +204,7 @@ If the request was successful, you will need to store the authy id in your datab
                 .addHiddenDetail("ip_address", "10.10.3.203")
                 .addLogo(Resolution.Default, "http://image.co")
                 .build();
-       
+
         OneTouchResponse response = client.getOneTouch().sendApprovalRequest(approvalRequestParams);
     // If the request was successfuly created.
     String uuid = response.getApprovalRequest().getUUID();
@@ -251,7 +238,7 @@ Inside your app your app will get a request into a servlet/controller were you w
     for(String p : request.queryParams()){
         params.put(p,request.queryParams(p));
     }
-    
+
     // let's create a Map of Strings to put the query headers from the Http Request
     HashMap<String,String> headers = new HashMap<>();
     for(String h : request.headers()){
@@ -260,15 +247,15 @@ Inside your app your app will get a request into a servlet/controller were you w
 
     //Now it is really easy just to ask AuthyUtil to check the authenticity of the signature, TOKEN will be the string with your Api_key
     // AuthyUtil.validateSignature will tell you if the request is secure or not!
-    boolean isValid = AuthyUtil.validateSignature(params, headers, request.requestMethod(), request.url(), TOKEN)        
-     
-     // Then you can just finish the rewquest with the proper HTTP code or do any other procesing you need for this case. 
+    boolean isValid = AuthyUtil.validateSignature(params, headers, request.requestMethod(), request.url(), TOKEN)
+
+     // Then you can just finish the rewquest with the proper HTTP code or do any other procesing you need for this case.
      if(!isValid){
          response.status(401);
          return "Unauthorized";
      }
 
-```     
+```
 
 
 ## Phone Verification
