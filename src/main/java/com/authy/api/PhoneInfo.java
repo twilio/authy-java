@@ -17,28 +17,21 @@ public class PhoneInfo extends Resource {
     }
 
     public PhoneInfoResponse info(String phoneNumber, String countryCode) throws AuthyException {
-        Params params = new Params();
-        params.setAttribute("phone_number", phoneNumber);
-        params.setAttribute("country_code", countryCode);
-        return getInfo(params);
+        return info(phoneNumber, countryCode, new Params());
     }
 
     public PhoneInfoResponse info(String phoneNumber, String countryCode, Params params) throws AuthyException {
         params.setAttribute("phone_number", phoneNumber);
         params.setAttribute("country_code", countryCode);
-        return getInfo(params);
-    }
-
-    private PhoneInfoResponse getInfo(Params params) throws AuthyException {
-        PhoneInfoResponse info = new PhoneInfoResponse();
         StringBuilder path = new StringBuilder(PHONE_INFO_API_PATH);
         String response;
 
         path.append("info");
         response = this.get(path.toString(), params);
-
-        info.setStatus(this.getStatus());
-        info.setResponse(response);
+        PhoneInfoResponse info = new PhoneInfoResponse(this.getStatus(), response);
+        if (!info.isOk()) {
+            info.setError(errorFromJson(getStatus(), response));
+        }
         return info;
     }
 

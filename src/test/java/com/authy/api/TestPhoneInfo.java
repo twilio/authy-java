@@ -1,11 +1,18 @@
 package com.authy.api;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static junit.framework.TestCase.assertEquals;
 
 import com.authy.AuthyException;
+
+import org.junit.Test;
 
 public class TestPhoneInfo extends TestApiBase {
     private static final String successResponse = "{" +
@@ -14,6 +21,15 @@ public class TestPhoneInfo extends TestApiBase {
             "    \"provider\": \"Pinger\"," +
             "    \"ported\": false," +
             "    \"success\": true" +
+            "}";
+
+    final private String phoneInfoError = "{" +
+            "    \"error_code\": \"60025\"," +
+            "    \"message\": \"Server error while querying phone information. Please try again later\"," +
+            "    \"errors\": {" +
+            "        \"message\": \"Server error while querying phone information. Please try again later\"" +
+            "    }," +
+            "    \"success\": false" +
             "}";
 
     @Test
@@ -33,10 +49,28 @@ public class TestPhoneInfo extends TestApiBase {
                 .withHeader("X-Authy-API-Key", equalTo(testApiKey))
                 .withQueryParam("phone_number", equalTo(phoneNumber))
                 .withQueryParam("country_code", equalTo(countryCode)));
-        Assert.assertEquals(true, result.getMessage().contains("Phone number information as of"));
-        Assert.assertEquals("Pinger", result.getProvider());
-        Assert.assertEquals("voip", result.getType());
-        Assert.assertEquals("false", result.getIsPorted());
-        Assert.assertEquals("true", result.getSuccess());
+        assertEquals(true, result.getMessage().contains("Phone number information as of"));
+        assertEquals("Pinger", result.getProvider());
+        assertEquals("voip", result.getType());
+        assertEquals("false", result.getIsPorted());
+        assertEquals("true", result.getSuccess());
+    }
+
+    @Test
+    public void testPhoneInfoError() throws AuthyException {
+        stubFor(get(urlPathEqualTo("/protected/json/phones/info"))
+                .willReturn(aResponse()
+                        .withStatus(500)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(phoneInfoError)));
+        final PhoneInfo client = new PhoneInfo(testHost, testApiKey, true);
+
+        final String phoneNumber = "7754615609";
+        final String countryCode = "1";
+        final PhoneInfoResponse result = client.info(phoneNumber, countryCode);
+
+        assertEquals(true, result.getMessage().contains("Server error while querying phone information"));
+        assertEquals("false", result.getSuccess());
+        assertEquals(60025, result.getError().getCode().intValue());
     }
 }
