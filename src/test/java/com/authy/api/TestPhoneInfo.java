@@ -1,5 +1,6 @@
 package com.authy.api;
 
+import static com.authy.api.Error.Code.PHONE_INFO_ERROR_QUERYING;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -71,6 +72,6 @@ public class TestPhoneInfo extends TestApiBase {
 
         assertEquals(true, result.getMessage().contains("Server error while querying phone information"));
         assertEquals("false", result.getSuccess());
-        assertEquals(60025, result.getError().getCode().intValue());
+        assertEquals(PHONE_INFO_ERROR_QUERYING, result.getError().getCode());
     }
 }

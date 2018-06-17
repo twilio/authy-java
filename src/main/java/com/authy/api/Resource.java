@@ -17,6 +17,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -159,7 +160,12 @@ public class Resource {
             JSONObject errorJson = new JSONObject(content);
             Error error = new Error();
             error.setMessage(errorJson.getString("message"));
-            error.setCode(Integer.parseInt(errorJson.getString("error_code")));
+            final int errorCodeNumber = Integer.parseInt(errorJson.getString("error_code"));
+            final Error.Code error_code = Arrays.stream(Error.Code.values())
+                    .filter(code -> code.getNumber() == errorCodeNumber)
+                    .findFirst()
+                    .orElse(Error.Code.DEFAULT_ERROR);
+            error.setCode(error_code);
             return error;
         } catch (JSONException| NumberFormatException e) {
             throw new AuthyException("Invalid response from server", e);

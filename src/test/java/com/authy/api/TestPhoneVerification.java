@@ -1,19 +1,19 @@
 package com.authy.api;
 
-import org.junit.Assert;
+import com.authy.AuthyException;
 import org.junit.Before;
 import org.junit.Test;
 
+import static com.authy.api.Error.Code.INVALID_PHONE_NUMBER;
+import static com.authy.api.Error.Code.PHONE_VERIFICATION_INCORRECT;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.Assert.*;
-
-import com.authy.AuthyException;
 
 public class TestPhoneVerification extends TestApiBase {
 
     private PhoneVerification client;
 
-    final private String getStartSuccessResponse(final String message){
+    private String getStartSuccessResponse(final String message){
         return "{" +
                 "    \"carrier\": \"Pinger - Bandwidth.com - Sybase365\"," +
                 "    \"is_cellphone\": false," +
@@ -24,7 +24,7 @@ public class TestPhoneVerification extends TestApiBase {
                 "}";
     }
 
-    final private String startInvalidNumberResponse = "{" +
+     private String startInvalidNumberResponse = "{" +
             "    \"error_code\": \"60033\"," +
             "    \"message\": \"Phone number is invalid\"," +
             "    \"errors\": {" +
@@ -33,7 +33,7 @@ public class TestPhoneVerification extends TestApiBase {
             "    \"success\": false" +
             "}";
 
-    final private String checkIncorrectVerificationResponse = "{" +
+    private String checkIncorrectVerificationResponse = "{" +
             "    \"error_code\": \"60022\"," +
             "    \"message\": \"Verification code is incorrect\"," +
             "    \"errors\": {" +
@@ -42,7 +42,7 @@ public class TestPhoneVerification extends TestApiBase {
             "    \"success\": false" +
             "}";
 
-    final private String checkCorrectVerificationResponse = "{" +
+    private String checkCorrectVerificationResponse = "{" +
             "    \"message\": \"Verification code is correct.\"," +
             "    \"success\": true" +
             "}";
@@ -113,7 +113,7 @@ public class TestPhoneVerification extends TestApiBase {
         assertEquals("false", result.getSuccess());
         Error error = result.getError();
         assertNotNull(error);
-        assertEquals(60033, error.getCode().intValue());
+        assertEquals(INVALID_PHONE_NUMBER, error.getCode());
     }
 
     @Test
@@ -146,6 +146,6 @@ public class TestPhoneVerification extends TestApiBase {
         assertEquals("false", result.getSuccess());
         Error error = result.getError();
         assertNotNull(error);
-        assertEquals(60022, error.getCode().intValue());
+        assertEquals(PHONE_VERIFICATION_INCORRECT, error.getCode());
     }
 }

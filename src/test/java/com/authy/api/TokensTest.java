@@ -1,5 +1,6 @@
 package com.authy.api;
 
+import static com.authy.api.Error.Code.TOKEN_INVALID;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -117,7 +118,7 @@ public class TokensTest extends TestApiBase {
             Token token = tokens.verify(testUserId, testToken);
             final Error error = token.getError();
             Assert.assertNotNull("Token must have an error", error);
-            assertEquals(60020, error.getCode().intValue());
+            assertEquals(TOKEN_INVALID, error.getCode());
         } catch (AuthyException e) {
             fail("Token should have an error object");
         }
@@ -174,8 +175,9 @@ public class TokensTest extends TestApiBase {
             tokens.verify(testUserId, testToken);
             fail("Exception must be thrown");
         } catch (AuthyException e) {
-            Assert.assertTrue("Proper exception must be thrown", e instanceof AuthyException);
+            return;
         }
+        fail("Proper exception must be thrown");
     }
 
     @Test

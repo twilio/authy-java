@@ -1,5 +1,7 @@
 package com.authy.api;
 
+import static com.authy.api.Error.Code.ONETOUCH_APPROVAL_REQUEST_NOT_FOUND;
+import static com.authy.api.Error.Code.USER_NOT_FOUND;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
@@ -242,7 +244,7 @@ public class TestOneTouch extends TestApiBase {
         OneTouchResponse response = client.getOneTouch().sendApprovalRequest(approvalRequestParams);
 
         assertFalse(response.isSuccess());
-        assertEquals(60026, response.getError().getCode().intValue());
+        assertEquals(USER_NOT_FOUND, response.getError().getCode());
     }
 
     @Test
@@ -257,7 +259,7 @@ public class TestOneTouch extends TestApiBase {
         OneTouchResponse response = client.getOneTouch().getApprovalRequestStatus(invalidOneTouchUUID);
 
         assertFalse(response.isSuccess());
-        assertEquals(60049, response.getError().getCode().intValue());
+        assertEquals(ONETOUCH_APPROVAL_REQUEST_NOT_FOUND, response.getError().getCode());
         assertEquals("60049", response.getErrorCode());
     }
 }
