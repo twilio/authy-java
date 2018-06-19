@@ -24,7 +24,7 @@ public class TestPhoneVerification extends TestApiBase {
                 "}";
     }
 
-     private String startInvalidNumberResponse = "{" +
+    final private String startInvalidNumberResponse = "{" +
             "    \"error_code\": \"60033\"," +
             "    \"message\": \"Phone number is invalid\"," +
             "    \"errors\": {" +
@@ -33,7 +33,7 @@ public class TestPhoneVerification extends TestApiBase {
             "    \"success\": false" +
             "}";
 
-    private String checkIncorrectVerificationResponse = "{" +
+    final private String checkIncorrectVerificationResponse = "{" +
             "    \"error_code\": \"60022\"," +
             "    \"message\": \"Verification code is incorrect\"," +
             "    \"errors\": {" +
@@ -42,7 +42,7 @@ public class TestPhoneVerification extends TestApiBase {
             "    \"success\": false" +
             "}";
 
-    private String checkCorrectVerificationResponse = "{" +
+    final private String checkCorrectVerificationResponse = "{" +
             "    \"message\": \"Verification code is correct.\"," +
             "    \"success\": true" +
             "}";
