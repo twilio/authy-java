@@ -8,6 +8,8 @@ import org.junit.Test;
 
 import java.util.HashMap;
 
+import static com.authy.api.Error.Code.USER_NOT_FOUND;
+import static com.authy.api.Error.Code.USER_NOT_VALID;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 import static org.hamcrest.CoreMatchers.containsString;
@@ -116,7 +118,9 @@ public class TestUsers extends TestApiBase {
 
         assertFalse(user.isOk());
         assertEquals(400, user.getStatus());
-        assertEquals("User was not valid", user.getError().getMessage());
+        final Error error = user.getError();
+        assertEquals("User was not valid", error.getMessage());
+        assertEquals(USER_NOT_VALID, error.getCode());
     }
 
     @Test
@@ -168,6 +172,9 @@ public class TestUsers extends TestApiBase {
                 .withQueryParam("force", equalTo("true")));
         // isOK() is the method that will allow you to know if the request worked.
         assertFalse(reponse.isOk());
+        final Error error = reponse.getError();
+        assertNotNull(error);
+        assertEquals(USER_NOT_FOUND, error.getCode());
     }
 
     @Test
@@ -246,7 +253,9 @@ public class TestUsers extends TestApiBase {
 
         assertFalse(response.isOk());
         assertThat(response.getStatus(), is(404));
-        assertThat(response.getError().getMessage(), containsString("User not found"));
+        final Error error = response.getError();
+        assertThat(error.getMessage(), containsString("User not found"));
+        assertEquals(USER_NOT_FOUND, error.getCode());
     }
 
     @Test

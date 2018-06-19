@@ -9,9 +9,7 @@ import java.util.Map;
  * @author Moisés Vargas
  */
 
-public class PhoneInfoResponse implements Formattable {
-    private int status = 503;
-    private String response;
+public class PhoneInfoResponse extends Instance implements Formattable {
     private String message = "Something went wrong!";
     private String provider = "";
     private String type = "";
@@ -20,10 +18,15 @@ public class PhoneInfoResponse implements Formattable {
     public PhoneInfoResponse() {
     }
 
+    public PhoneInfoResponse(int status, String response) {
+        this(status, response, null);
+    }
+
     public PhoneInfoResponse(int status, String response, String message) {
         this.status = status;
-        this.response = response;
+        this.content = response;
         this.message = message;
+        this.setResponse(response);
     }
 
     public String getMessage() {
@@ -46,27 +49,10 @@ public class PhoneInfoResponse implements Formattable {
         return Boolean.toString(this.isPorted);
     }
 
-    public void setStatus(int status) {
-        this.status = status;
-    }
-
     public void setResponse(String response) {
-        this.response = response;
+        this.content = response;
         JSONObject jsonResponse = new JSONObject(response);
-        this.parseResponseToOjbect(jsonResponse);
-    }
-
-    public boolean isOk() {
-        return status == 200;
-    }
-
-    /**
-     * Map a Token instance to its XML representation.
-     *
-     * @return a String with the description of this object in XML.
-     */
-    public String toXML() {
-        return "";
+        this.parseResponseToObject(jsonResponse);
     }
 
     /**
@@ -87,17 +73,21 @@ public class PhoneInfoResponse implements Formattable {
         return map;
     }
 
-    private void parseResponseToOjbect(JSONObject json) {
-        if (!json.isNull("message"))
+    private void parseResponseToObject(JSONObject json) {
+        if (!json.isNull("message")) {
             this.message = json.getString("message");
+        }
 
-        if (!json.isNull("ported"))
+        if (!json.isNull("ported")) {
             this.isPorted = json.getBoolean("ported");
+        }
 
-        if (!json.isNull("provider"))
+        if (!json.isNull("provider")) {
             this.provider = json.getString("provider");
+        }
 
-        if (!json.isNull("type"))
+        if (!json.isNull("type")) {
             this.type = json.getString("type");
+        }
     }
 }

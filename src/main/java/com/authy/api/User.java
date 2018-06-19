@@ -1,12 +1,7 @@
 package com.authy.api;
 
-import org.json.JSONObject;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,6 +15,10 @@ public class User extends Instance implements Formattable {
     public User() {
     }
 
+    public User(int status, String content) {
+        super(status, content);
+    }
+
     public User(int status, String content, String message) {
         super(status, content, message);
     }
@@ -31,33 +30,6 @@ public class User extends Instance implements Formattable {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    /**
-     * Map a Token instance to its XML representation.
-     *
-     * @return a String with the description of this object in XML.
-     */
-    public String toXML() {
-        Error error = getError();
-
-        if (error != null) {
-            return error.toXML();
-        }
-
-        StringWriter sw = new StringWriter();
-        String xml = "";
-
-        try {
-            JAXBContext context = JAXBContext.newInstance(this.getClass());
-            Marshaller marshaller = context.createMarshaller();
-
-            marshaller.marshal(this, sw);
-            xml = sw.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return xml;
     }
 
     /**

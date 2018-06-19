@@ -1,13 +1,9 @@
 package com.authy.api;
 
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Julian Camargo
@@ -60,33 +56,6 @@ public class Hash extends Instance implements Formattable {
 
     public void setSuccess(boolean success) {
         this.success = success;
-    }
-
-    /**
-     * Map a Token instance to its XML representation.
-     *
-     * @return a String with the description of this object in XML.
-     */
-    public String toXML() {
-        Error error = getError();
-
-        if (error != null) {
-            return error.toXML();
-        }
-
-        StringWriter sw = new StringWriter();
-        String xml = "";
-
-        try {
-            JAXBContext context = JAXBContext.newInstance(this.getClass());
-            Marshaller marshaller = context.createMarshaller();
-
-            marshaller.marshal(this, sw);
-            xml = sw.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return xml;
     }
 
     /**

@@ -116,8 +116,7 @@ public class Users extends Resource {
     }
 
     private com.authy.api.User userFromJson(int status, String content) throws AuthyException {
-        com.authy.api.User user = new com.authy.api.User();
-        user.setStatus(status);
+        com.authy.api.User user = new com.authy.api.User(status, content);
         if (user.isOk()) {
             JSONObject userJson = new JSONObject(content);
             user.setId(userJson.getJSONObject("user").getInt("id"));
@@ -129,8 +128,7 @@ public class Users extends Resource {
     }
 
     private Hash instanceFromJson(int status, String content) throws AuthyException {
-        Hash hash = new Hash();
-        hash.setStatus(status);
+        Hash hash = new Hash(status, content);
         if (hash.isOk()) {
             try {
                 JSONObject jsonResponse = new JSONObject(content);
