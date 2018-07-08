@@ -35,8 +35,8 @@ public class Tokens extends Resource {
         path.append(token).append('/');
         path.append(Integer.toString(userId));
 
-        String content = this.get(path.toString(), internalToken);
-        return tokenFromJson(this.getStatus(), content);
+        final Response response = this.get(path.toString(), internalToken);
+        return tokenFromJson(response.getStatus(), response.getBody());
     }
 
     private Token tokenFromJson(int status, String content) throws AuthyException {
@@ -52,7 +52,7 @@ public class Tokens extends Resource {
         }
 
         Token token = new Token(status, content);
-        token.setError(errorFromJson(status, content));
+        token.setError(errorFromJson(content));
         return token;
     }
 
@@ -78,11 +78,11 @@ public class Tokens extends Resource {
     class InternalToken implements Formattable {
         Map<String, String> options;
 
-        public InternalToken() {
+        InternalToken() {
             options = new HashMap<>();
         }
 
-        public void setOption(Map<String, String> options) {
+        void setOption(Map<String, String> options) {
             if (options != null) {
                 this.options = options;
             }

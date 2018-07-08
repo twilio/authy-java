@@ -69,11 +69,11 @@ public class OneTouch extends Resource {
             params.put("logos", jSONArray);
         }
 
-        String response = this.post(APPROVAL_REQUEST_PRE + approvalRequestParams.getAuthyId() + APPROVAL_REQUEST_POS, new JSONBody(params));
-        OneTouchResponse oneTouchResponse = new OneTouchResponse(this.getStatus(), response);
+        final Response response = this.post(APPROVAL_REQUEST_PRE + approvalRequestParams.getAuthyId() + APPROVAL_REQUEST_POS, new JSONBody(params));
+        OneTouchResponse oneTouchResponse = new OneTouchResponse(response.getStatus(), response.getBody());
 
         if (!oneTouchResponse.isOk()) {
-            oneTouchResponse.setError(errorFromJson(this.getStatus(), response));
+            oneTouchResponse.setError(errorFromJson(response.getBody()));
         }
         return oneTouchResponse;
     }
@@ -81,10 +81,10 @@ public class OneTouch extends Resource {
     public OneTouchResponse getApprovalRequestStatus(String uuid) throws OneTouchException {
 
         try {
-            String response = this.get(APPROVAL_REQUEST_STATUS + URLEncoder.encode(uuid, ENCODE), new Params());
-            OneTouchResponse oneTouchResponse = new OneTouchResponse(this.getStatus(), response);
+            final Response response = this.get(APPROVAL_REQUEST_STATUS + URLEncoder.encode(uuid, ENCODE), new Params());
+            OneTouchResponse oneTouchResponse = new OneTouchResponse(response.getStatus(), response.getBody());
             if (!oneTouchResponse.isOk()) {
-                oneTouchResponse.setError(errorFromJson(this.getStatus(), response));
+                oneTouchResponse.setError(errorFromJson(response.getBody()));
             }
             return oneTouchResponse;
 

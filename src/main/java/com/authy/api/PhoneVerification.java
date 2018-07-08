@@ -21,13 +21,11 @@ public class PhoneVerification extends Resource {
         params.setAttribute("country_code", countryCode);
         params.setAttribute("via", via);
 
-        StringBuilder path = new StringBuilder(PHONE_VERIFICATION_API_PATH);
-        path.append("start");
-        final String response = this.post(path.toString(), params);
+        final Response response = this.post(PHONE_VERIFICATION_API_PATH + "start", params);
 
-        Verification verification = new Verification(this.getStatus(), response);
+        Verification verification = new Verification(response.getStatus(), response.getBody());
         if (!verification.isOk())
-            verification.setError(errorFromJson(this.getStatus(), response));
+            verification.setError(errorFromJson(response.getBody()));
 
         return verification;
     }
@@ -41,14 +39,11 @@ public class PhoneVerification extends Resource {
         params.setAttribute("country_code", countryCode);
         params.setAttribute("verification_code", code);
 
-        StringBuilder path = new StringBuilder(PHONE_VERIFICATION_API_PATH);
+        final Response response = this.get(PHONE_VERIFICATION_API_PATH + "check", params);
 
-        path.append("check");
-        final String response = this.get(path.toString(), params);
-
-        Verification verification = new Verification(this.getStatus(), response);
+        Verification verification = new Verification(response.getStatus(), response.getBody());
         if (!verification.isOk())
-            verification.setError(errorFromJson(this.getStatus(), response));
+            verification.setError(errorFromJson(response.getBody()));
         return verification;
 
     }

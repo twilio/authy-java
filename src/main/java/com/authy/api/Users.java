@@ -41,10 +41,8 @@ public class Users extends Resource {
      */
     public com.authy.api.User createUser(String email, String phone, String countryCode) throws AuthyException {
         User user = new User(email, phone, countryCode);
-
-        String content = this.post(NEW_USER_PATH, user);
-
-        return userFromJson(this.getStatus(), content);
+        final Response response = this.post(NEW_USER_PATH, user);
+        return userFromJson(response.getStatus(), response.getBody());
     }
 
     /**
@@ -77,8 +75,8 @@ public class Users extends Resource {
      */
     public Hash requestSms(int userId, Map<String, String> options) throws AuthyException {
         MapToResponse opt = new MapToResponse(options);
-        String content = this.get(SMS_PATH + Integer.toString(userId), opt);
-        return instanceFromJson(this.getStatus(), content);
+        final Response response = this.get(SMS_PATH + Integer.toString(userId), opt);
+        return instanceFromJson(response.getStatus(), response.getBody());
     }
 
     /**
@@ -100,8 +98,8 @@ public class Users extends Resource {
      */
     public Hash requestCall(int userId, Map<String, String> options) throws AuthyException {
         MapToResponse opt = new MapToResponse(options);
-        String content = this.get(ONE_CODE_CALL_PATH + Integer.toString(userId), opt);
-        return instanceFromJson(this.getStatus(), content);
+        final Response response = this.get(ONE_CODE_CALL_PATH + Integer.toString(userId), opt);
+        return instanceFromJson(response.getStatus(), response.getBody());
     }
 
     /**
@@ -111,8 +109,8 @@ public class Users extends Resource {
      * @return Hash instance with API's response.
      */
     public Hash deleteUser(int userId) throws AuthyException {
-        String content = this.post(DELETE_USER_PATH + Integer.toString(userId), null);
-        return instanceFromJson(this.getStatus(), content);
+        final Response response = this.post(DELETE_USER_PATH + Integer.toString(userId), null);
+        return instanceFromJson(response.getStatus(), response.getBody());
     }
 
     private com.authy.api.User userFromJson(int status, String content) throws AuthyException {
@@ -121,7 +119,7 @@ public class Users extends Resource {
             JSONObject userJson = new JSONObject(content);
             user.setId(userJson.getJSONObject("user").getInt("id"));
         } else {
-            Error error = errorFromJson(status, content);
+            Error error = errorFromJson(content);
             user.setError(error);
         }
         return user;
@@ -144,7 +142,7 @@ public class Users extends Resource {
                 throw new AuthyException("Invalid response from server", e);
             }
         } else {
-            Error error = errorFromJson(status, content);
+            Error error = errorFromJson(content);
             hash.setError(error);
         }
 
@@ -154,7 +152,7 @@ public class Users extends Resource {
     static class MapToResponse implements Formattable {
         private Map<String, String> options;
 
-        public MapToResponse(Map<String, String> options) {
+        MapToResponse(Map<String, String> options) {
             this.options = options;
         }
 
