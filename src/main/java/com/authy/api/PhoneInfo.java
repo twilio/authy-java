@@ -23,12 +23,10 @@ public class PhoneInfo extends Resource {
     public PhoneInfoResponse info(String phoneNumber, String countryCode, Params params) throws AuthyException {
         params.setAttribute("phone_number", phoneNumber);
         params.setAttribute("country_code", countryCode);
-        StringBuilder path = new StringBuilder(PHONE_INFO_API_PATH);
-        path.append("info");
-        String response = this.get(path.toString(), params);
-        PhoneInfoResponse info = new PhoneInfoResponse(this.getStatus(), response);
+        final Response response = this.get(PHONE_INFO_API_PATH + "info", params);
+        PhoneInfoResponse info = new PhoneInfoResponse(response.getStatus(), response.getBody());
         if (!info.isOk()) {
-            info.setError(errorFromJson(getStatus(), response));
+            info.setError(errorFromJson(response.getBody()));
         }
         return info;
     }
