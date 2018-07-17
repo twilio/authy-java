@@ -1,6 +1,8 @@
 package com.authy.api;
 
 import com.authy.AuthyException;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -11,6 +13,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.StringWriter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,6 +24,7 @@ public class Users extends Resource {
     public static final String DELETE_USER_PATH = "/protected/json/users/delete/";
     public static final String SMS_PATH = "/protected/json/sms/";
     public static final String ONE_CODE_CALL_PATH = "/protected/json/call/";
+    public static final String USER_STATUS_PATH = "/protected/json/users/%d/status";
     public static final String DEFAULT_COUNTRY_CODE = "1";
 
     public Users(String uri, String key) {
@@ -113,6 +117,17 @@ public class Users extends Resource {
         return instanceFromJson(response.getStatus(), response.getBody());
     }
 
+    /**
+     * Get user status.
+     *
+     * @return object containing user status
+     */
+    public UserStatus requestStatus(int userId) throws AuthyException {
+        final Response response = this.get(String.format(USER_STATUS_PATH, userId), null);
+        UserStatus userStatus = userStatusFromJson(response);
+        return userStatus;
+    }
+
     private com.authy.api.User userFromJson(int status, String content) throws AuthyException {
         com.authy.api.User user = new com.authy.api.User(status, content);
         if (user.isOk()) {
@@ -147,6 +162,50 @@ public class Users extends Resource {
         }
 
         return hash;
+    }
+
+    private UserStatus userStatusFromJson(Response response) throws AuthyException {
+        UserStatus userStatus = new UserStatus(response.getStatus(), response.getBody());
+        if (userStatus.isOk()) {
+            try {
+                JSONObject jsonResponse = new JSONObject(response.getBody());
+                String message = jsonResponse.optString("message");
+                userStatus.setMessage(message);
+
+                boolean success = jsonResponse.optBoolean("success");
+                userStatus.setSuccess(success);
+
+                JSONObject status = jsonResponse.getJSONObject("status");
+                int userId = status.getInt("authy_id");
+                userStatus.setUserId(userId);
+
+                boolean confirmed = status.getBoolean("confirmed");
+                userStatus.setConfirmed(confirmed);
+
+                boolean registered = status.getBoolean("registered");
+                userStatus.setRegistered(registered);
+
+                int countryCode = status.getInt("country_code");
+                userStatus.setCountryCode(countryCode);
+
+                String phoneNumber = status.getString("phone_number");
+                userStatus.setPhoneNumber(phoneNumber);
+
+                JSONArray devicesArray = status.getJSONArray("devices");
+                List<String> devices = userStatus.getDevices();
+                for (int i = 0; i < devicesArray.length(); i++) {
+                    devices.add(devicesArray.getString(i));
+                }
+
+            } catch (JSONException e) {
+                throw new AuthyException("Invalid response from server", e);
+            }
+        } else {
+            Error error = errorFromJson(response.getBody());
+            userStatus.setError(error);
+        }
+
+        return userStatus;
     }
 
     static class MapToResponse implements Formattable {
