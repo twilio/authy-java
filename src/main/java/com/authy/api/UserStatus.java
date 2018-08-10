@@ -1,17 +1,30 @@
 package com.authy.api;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@XmlRootElement(name = "user_status")
 public class UserStatus extends Instance implements Formattable {
 
+    @XmlElement(name = "userId")
     private int userId;
+    @XmlElement(name = "success")
     private boolean success;
+    @XmlElement(name = "confirmed")
     private boolean confirmed;
+    @XmlElement(name = "registered")
     private boolean registered;
+    @XmlElement(name = "country_code")
     private int countryCode;
+    @XmlElementWrapper
+    @XmlElement(name = "device")
     private List<String> devices;
+    @XmlElement(name = "phone_number")
     private String phoneNumber;
 
     public UserStatus() {
@@ -28,12 +41,17 @@ public class UserStatus extends Instance implements Formattable {
 
     @Override
     public Map<String, String> toMap() {
-        return null;
-    }
+        Map<String, String> map = new HashMap<>();
 
-    @Override
-    public String toJSON() {
-        return null;
+        map.put("userId", Integer.toString(getUserId()));
+        map.put("success", Boolean.toString(getSuccess()));
+        map.put("confirmed", Boolean.toString(isConfirmed()));
+        map.put("registered", Boolean.toString(isRegistered()));
+        map.put("countryCode", Integer.toString(getCountryCode()));
+        map.put("phoneNumber", getPhoneNumber());
+        map.put("devices", getDevices().toString());
+
+        return map;
     }
 
     public int getUserId() {
