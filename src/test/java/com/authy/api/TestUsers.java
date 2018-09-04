@@ -202,7 +202,7 @@ public class TestUsers extends TestApiBase {
         stubFor(get(urlPathEqualTo("/protected/json/call/" + testUserId))
                 .willReturn(aResponse()
                         .withStatus(200)
-                        .withHeader("Content-Type", "application/xml")
+                        .withHeader("Content-Type", "application/json")
                         .withBody("{" +
                                 "    \"message\": \"Call ignored. User is using  App Tokens and this call is not necessary. Pass force=true if you still want to call users that are using the App.\","
                                 +
@@ -264,5 +264,58 @@ public class TestUsers extends TestApiBase {
         String xml = user.toXML();
 
         assertEquals(xml, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><user><cellphone>12345678</cellphone><country_code>1</country_code><email>fake@email.com</email></user>");
+    }
+
+    @Test
+    public void testRequestUserStatus() throws AuthyException {
+        stubFor(get(urlPathEqualTo("/protected/json/users/" + testUserId + "/status"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{"
+                                + "    \"status\": {"
+                                + "        \"authy_id\":2,"
+                                + "        \"confirmed\":true,"
+                                + "        \"registered\":true,"
+                                + "        \"country_code\":1,"
+                                + "        \"phone_number\":\"XXX-XXX-9302\","
+                                + "        \"devices\": ["
+                                + "            \"authy_chrome\","
+                                + "            \"android\""
+                                + "        ]"
+                                + "    },"
+                                + "    \"message\":\"User status.\","
+                                + "    \"success\":true"
+                                + "}")));
+
+        final UserStatus userStatus = client.requestStatus(Integer.parseInt(testUserId));
+        assertNotNull(userStatus);
+        assertEquals(2, userStatus.getUserId());
+        assertEquals("User status.", userStatus.getMessage());
+        assertEquals(1, userStatus.getCountryCode());
+        assertEquals("XXX-XXX-9302", userStatus.getPhoneNumber());
+        assertTrue(userStatus.isConfirmed());
+        assertTrue(userStatus.isRegistered());
+        assertEquals(2, userStatus.getDevices().size());
+        assertEquals("authy_chrome", userStatus.getDevices().get(0));
+        assertEquals("android", userStatus.getDevices().get(1));
+    }
+
+    @Test
+    public void testRequestUserStatusNotFound() throws AuthyException {
+        stubFor(get(urlPathEqualTo("/protected/json/users/" + testUserId + "/status"))
+                .willReturn(aResponse()
+                        .withStatus(404)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(userNotFoundResponse)));
+
+        final UserStatus userStatus = client.requestStatus(Integer.parseInt(testUserId));
+        assertNotNull(userStatus);
+        assertFalse(userStatus.isOk());
+        assertThat(userStatus.getStatus(), is(404));
+        final Error error = userStatus.getError();
+        assertThat(error.getMessage(), containsString("User not found"));
+        assertEquals(USER_NOT_FOUND, error.getCode());
+
     }
 }
