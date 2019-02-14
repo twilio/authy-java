@@ -1,9 +1,9 @@
 package com.authy.api;
 
 import com.authy.AuthyException;
-
 import org.json.JSONException;
 import org.json.JSONObject;
+import sun.net.www.protocol.http.HttpURLConnection;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +33,7 @@ public class Tokens extends Resource {
         StringBuilder path = new StringBuilder(TOKEN_VERIFICATION_PATH);
         validateToken(token);
         path.append(token).append('/');
-        path.append(Integer.toString(userId));
+        path.append(userId);
 
         final Response response = this.get(path.toString(), internalToken);
         return tokenFromJson(response.getStatus(), response.getBody());
@@ -47,22 +47,23 @@ public class Tokens extends Resource {
                 return new Token(status, content, message);
 
             } catch (JSONException e) {
-                throw new AuthyException("Invalid response from server", e);
+                throw new AuthyException("Invalid response from server", e, status);
             }
         }
 
-        Token token = new Token(status, content);
-        token.setError(errorFromJson(content));
-        return token;
+        final Error error = errorFromJson(content);
+        throw new AuthyException("Invalid token", status, error.getCode());
     }
 
     private void validateToken(String token) throws AuthyException {
         int len = token.length();
         if (!isInteger(token)) {
-            throw new AuthyException("Invalid Token. Only digits accepted.");
+            throw new AuthyException("Invalid Token. Only digits accepted.", HttpURLConnection.HTTP_UNAUTHORIZED,
+                    Error.Code.TOKEN_INVALID);
         }
         if (len < 6 || len > 10) {
-            throw new AuthyException("Invalid Token. Unexpected length.");
+            throw new AuthyException("Invalid Token. Unexpected length.", HttpURLConnection.HTTP_UNAUTHORIZED,
+                    Error.Code.TOKEN_INVALID);
         }
     }
 

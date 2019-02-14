@@ -115,12 +115,44 @@ public class TokensTest extends TestApiBase {
 
 
         try {
-            Token token = tokens.verify(testUserId, testToken);
-            final Error error = token.getError();
-            Assert.assertNotNull("Token must have an error", error);
-            assertEquals(TOKEN_INVALID, error.getCode());
+            tokens.verify(testUserId, testToken);
+            fail("Exception should have been thrown");
         } catch (AuthyException e) {
-            fail("Token should have an error object");
+            assertEquals(TOKEN_INVALID, e.getErrorCode());
+        }
+    }
+
+    @Test
+    public void testInvalidTokenLength() {
+        stubFor(get(urlPathMatching("/protected/json/verify/.*"))
+                .willReturn(aResponse()
+                        .withStatus(401)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(invalidTokenResponse)));
+
+
+        try {
+            tokens.verify(testUserId, "12345678901234567890");
+            fail("Exception should have been thrown");
+        } catch (AuthyException e) {
+            assertEquals(TOKEN_INVALID, e.getErrorCode());
+        }
+    }
+
+    @Test
+    public void testInvalidTokenCharacters() {
+        stubFor(get(urlPathMatching("/protected/json/verify/.*"))
+                .willReturn(aResponse()
+                        .withStatus(401)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(invalidTokenResponse)));
+
+
+        try {
+            tokens.verify(testUserId, "asdasdadasdasdasdasda");
+            fail("Exception should have been thrown");
+        } catch (AuthyException e) {
+            assertEquals(TOKEN_INVALID, e.getErrorCode());
         }
     }
 
