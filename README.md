@@ -279,9 +279,8 @@ Inside your app your app will get a request into a servlet/controller were you w
   ```
 
 ### Check the verification code.
-  Once you sent the verification code the user will receive the code in the
+  Once you send the verification code the user will receive the code in the
   mobile device. Then you need to provide this code to check if it is okay.
-
 
   ```java
   AuthyApiClient client = new AuthyApiClient("SomeApiKey");
@@ -293,6 +292,27 @@ Inside your app your app will get a request into a servlet/controller were you w
   System.out.println(verificationCode.getMessage());
   System.out.println(verificationCode.getIsPorted());
   System.out.println(verificationCode.getSuccess());
+  System.out.println(verification.isOk());
+  ```
+
+
+### Check the verification status.
+  Once you send the verification code, the response will contain a UUID to track the verification.
+  You can check the status with just the UUID or you can provide the phone number.
+  ```java
+  AuthyApiClient client = new AuthyApiClient("SomeApiKey");
+  PhoneVerification phoneVerification = client.getPhoneVerification();
+
+  Verification verification;
+  // with phone number only
+  verification = phoneVerification.status("111-111-1111", "1");
+  // with UUID
+  verification = phoneVerification.status("some-uuid");
+
+  System.out.println(verificationCode.getMessage());
+  System.out.println(verificationCode.getIsPorted());
+  System.out.println(verificationCode.getSuccess());
+  System.out.println(verification.isOk());
   ```
 
 ## Phone Intelligence

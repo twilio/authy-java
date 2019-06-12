@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import static com.authy.api.Error.Code.INVALID_PHONE_NUMBER;
 import static com.authy.api.Error.Code.PHONE_VERIFICATION_INCORRECT;
+import static com.authy.api.Error.Code.PHONE_VERIFICATION_NOT_FOUND;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.Assert.*;
 
@@ -46,6 +47,22 @@ public class TestPhoneVerification extends TestApiBase {
             "    \"message\": \"Verification code is correct.\"," +
             "    \"success\": true" +
             "}";
+
+    final private String getStatusSuccessResponse = "{\n"
+            + "  \"message\": \"Phone Verification status.\",\n"
+            + "  \"status\": \"verified\",\n"
+            + "  \"seconds_to_expire\": 474,\n"
+            + "  \"success\": true\n"
+            + "}";
+
+    final private String getStatusVerificationNotFoundResponse = "{\n"
+            + "    \"error_code\": \"60023\",\n"
+            + "    \"message\": \"Phone verification not found\",\n"
+            + "    \"errors\": {\n"
+            + "        \"message\": \"Phone verification not found\"\n"
+            + "    },\n"
+            + "    \"success\": false\n"
+            + "}";
 
     @Before
     public void setUp() {
@@ -147,5 +164,53 @@ public class TestPhoneVerification extends TestApiBase {
         Error error = result.getError();
         assertNotNull(error);
         assertEquals(PHONE_VERIFICATION_INCORRECT, error.getCode());
+    }
+
+    @Test
+    public void testVerificationStatusSuccessPhoneNumberOnly() throws AuthyException {
+        stubFor(get(urlPathEqualTo("/protected/json/phones/verification/status"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(getStatusSuccessResponse)));
+
+        Verification result = client.status("775-461-5609", "1");
+
+        assertEquals("Phone Verification status.", result.getMessage());
+        assertTrue(result.isOk());
+        assertEquals("true", result.getSuccess());
+    }
+
+    @Test
+    public void testVerificationStatusSuccessUuidOnly() throws AuthyException {
+        stubFor(get(urlPathEqualTo("/protected/json/phones/verification/status"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(getStatusSuccessResponse)));
+
+        Verification result = client.status("bec828c0-b535-0135-8e26-1226b57fac04");
+
+        assertEquals("Phone Verification status.", result.getMessage());
+        assertTrue(result.isOk());
+        assertEquals("true", result.getSuccess());
+    }
+
+    @Test
+    public void testVerificationStatusNotFound() throws AuthyException {
+        stubFor(get(urlPathEqualTo("/protected/json/phones/verification/status"))
+                .willReturn(aResponse()
+                        .withStatus(404)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(getStatusVerificationNotFoundResponse)));
+
+        Verification result = client.status("bec828c0-b535-0135-8e26-1226b57fac04");
+
+        assertEquals("Phone verification not found", result.getMessage());
+        assertFalse(result.isOk());
+        assertEquals("false", result.getSuccess());
+        Error error = result.getError();
+        assertNotNull(error);
+        assertEquals(PHONE_VERIFICATION_NOT_FOUND, error.getCode());
     }
 }
