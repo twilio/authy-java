@@ -174,11 +174,14 @@ public class TestPhoneVerification extends TestApiBase {
                         .withHeader("Content-Type", "application/json")
                         .withBody(getStatusSuccessResponse)));
 
-        Verification result = client.status("775-461-5609", "1");
+        VerificationStatus result = client.status("775-461-5609", "1");
 
         assertEquals("Phone Verification status.", result.getMessage());
         assertTrue(result.isOk());
         assertEquals("true", result.getSuccess());
+        assertNull(result.getError());
+        assertEquals(new Integer(474), result.getSecondsToExpire());
+        assertEquals("verified", result.getVerificationStatus());
     }
 
     @Test
@@ -189,11 +192,14 @@ public class TestPhoneVerification extends TestApiBase {
                         .withHeader("Content-Type", "application/json")
                         .withBody(getStatusSuccessResponse)));
 
-        Verification result = client.status("bec828c0-b535-0135-8e26-1226b57fac04");
+        VerificationStatus result = client.status("bec828c0-b535-0135-8e26-1226b57fac04");
 
         assertEquals("Phone Verification status.", result.getMessage());
         assertTrue(result.isOk());
         assertEquals("true", result.getSuccess());
+        assertNull(result.getError());
+        assertEquals(new Integer(474), result.getSecondsToExpire());
+        assertEquals("verified", result.getVerificationStatus());
     }
 
     @Test
@@ -204,7 +210,7 @@ public class TestPhoneVerification extends TestApiBase {
                         .withHeader("Content-Type", "application/json")
                         .withBody(getStatusVerificationNotFoundResponse)));
 
-        Verification result = client.status("bec828c0-b535-0135-8e26-1226b57fac04");
+        VerificationStatus result = client.status("bec828c0-b535-0135-8e26-1226b57fac04");
 
         assertEquals("Phone verification not found", result.getMessage());
         assertFalse(result.isOk());
@@ -212,5 +218,8 @@ public class TestPhoneVerification extends TestApiBase {
         Error error = result.getError();
         assertNotNull(error);
         assertEquals(PHONE_VERIFICATION_NOT_FOUND, error.getCode());
+        assertNull(result.getSecondsToExpire());
+        assertNull(result.getVerificationStatus());
     }
+
 }
