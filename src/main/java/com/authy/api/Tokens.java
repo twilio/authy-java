@@ -58,11 +58,11 @@ public class Tokens extends Resource {
     private void validateToken(String token) throws AuthyException {
         int len = token.length();
         if (!isInteger(token)) {
-            throw new AuthyException("Invalid Token. Only digits accepted.", HttpURLConnection.HTTP_UNAUTHORIZED,
+            throw new AuthyException("Invalid Token. Only digits accepted.", HttpURLConnection.HTTP_BAD_REQUEST,
                     Error.Code.TOKEN_INVALID);
         }
         if (len < 6 || len > 10) {
-            throw new AuthyException("Invalid Token. Unexpected length.", HttpURLConnection.HTTP_UNAUTHORIZED,
+            throw new AuthyException("Invalid Token. Unexpected length.", HttpURLConnection.HTTP_BAD_REQUEST,
                     Error.Code.TOKEN_INVALID);
         }
     }

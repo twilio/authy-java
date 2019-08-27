@@ -1,5 +1,15 @@
 package com.authy.api;
 
+import com.authy.AuthyApiClient;
+import com.authy.AuthyException;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import sun.net.www.protocol.http.HttpURLConnection;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import static com.authy.api.Error.Code.TOKEN_INVALID;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
@@ -9,19 +19,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
-
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.fail;
-
-import com.authy.AuthyApiClient;
-import com.authy.AuthyException;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class TokensTest extends TestApiBase {
 
@@ -109,7 +108,7 @@ public class TokensTest extends TestApiBase {
     public void testInvalidTokenResponse() {
         stubFor(get(urlPathMatching("/protected/json/verify/.*"))
                 .willReturn(aResponse()
-                        .withStatus(401)
+                        .withStatus(HttpURLConnection.HTTP_UNAUTHORIZED)
                         .withHeader("Content-Type", "application/json")
                         .withBody(invalidTokenResponse)));
 
@@ -119,23 +118,18 @@ public class TokensTest extends TestApiBase {
             fail("Exception should have been thrown");
         } catch (AuthyException e) {
             assertEquals(TOKEN_INVALID, e.getErrorCode());
+            assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, e.getStatus());
         }
     }
 
     @Test
     public void testInvalidTokenLength() {
-        stubFor(get(urlPathMatching("/protected/json/verify/.*"))
-                .willReturn(aResponse()
-                        .withStatus(401)
-                        .withHeader("Content-Type", "application/json")
-                        .withBody(invalidTokenResponse)));
-
-
         try {
             tokens.verify(testUserId, "12345678901234567890");
             fail("Exception should have been thrown");
         } catch (AuthyException e) {
             assertEquals(TOKEN_INVALID, e.getErrorCode());
+            assertEquals(HttpURLConnection.HTTP_BAD_REQUEST, e.getStatus());
         }
     }
 
