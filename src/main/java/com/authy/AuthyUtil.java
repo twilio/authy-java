@@ -102,7 +102,7 @@ public class AuthyUtil {
                     if (tmp instanceof JSONObject) {
                         extract(tmpKey, (JSONObject) tmp, map);
                     } else {
-                        map.put(tmpKey, getValue(obj.get(k)));
+                        map.put(tmpKey, getValue(tmp));
                     }
                     i++;
                 }
