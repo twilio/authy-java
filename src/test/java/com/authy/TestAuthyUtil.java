@@ -38,6 +38,18 @@ public class TestAuthyUtil {
     }
 
     @Test
+    public void testValidSignatureApprovedWithUnlockMethodPost() throws UnsupportedEncodingException, OneTouchException {
+        final String testNonce = "1570641874";
+        final String expectedSignature = "QZL9dnpVH5bjPMRvC98pm9zsQ2Zv1PToXlpN5X8H1hI=";
+        final String callbackBody = "{\"authy_id\":688611,\"device_uuid\":2102943,\"callback_action\":\"approval_request_status\",\"uuid\":\"4a725520-bff5-0135-eb01-0e5d90336a8c\",\"status\":\"approved\",\"approval_request\":{\"transaction\":{\"details\":{\"Username\":\"jdoe\",\"Location\":\"earth\",\"Process ID\":\"1234567890\"},\"device_details\":{},\"device_geolocation\":\"\",\"device_signing_time\":1512923419,\"encrypted\":false,\"flagged\":false,\"hidden_details\":{\"transaction_id\":\"TR139872562346\"},\"message\":\"Authorize OneTouch Unit Test\",\"reason\":\"\",\"requester_details\":null,\"status\":\"approved\",\"uuid\":\"4a725520-bff5-0135-eb01-0e5d90336a8c\",\"created_at_time\":1512923400,\"customer_uuid\":15083},\"expiration_timestamp\":1513009800,\"logos\":null,\"app_id\":\"582380eb7e1caa03317ec08c\"},\"signature\":\"pQmypvnmoIb7qIHrKcd3nwPArh8Ecr8L87XTYqqAfagDkXhOD7CulSdDkE0ImFBzigwc+vxwZsgxBnhFmU2c9kYuvMJiPLeS8NCpRucg7eHeGPM0jQbKveqzFcZ9L6P1kRHjSYwS7dLqEINBffNckK7O9LHz13XYklxXvYUwvemtj+yEemyCJbmlJbCSlUTyajr3WSRPMYZV7xXTNtWp2XvcRSclP8izgA1cV/cw7ctDYIPG6wUXJGSIs/kg3hTDeN1Z3YBq1fnMkfxeb5g9bRveRlCjXpQ6xFh1wQEUbbtJpf+uRgxddbQwxfda9gIb5osOEhKRv5HoJ03yOvKiBQ==\",\"device\":{\"city\":null,\"country\":\"Colombia\",\"enabled_unlock_methods\":[\"pin\",\"fingerprint\"],\"ip\":\"190.130.65.251\",\"last_unlock_method_used\":\"pin\",\"region\":null,\"registration_city\":null,\"registration_country\":\"Colombia\",\"registration_ip\":\"190.130.66.242\",\"registration_method\":\"sms\",\"registration_region\":null,\"os_type\":\"android\",\"last_account_recovery_at\":null,\"multidevice_enabled\":true,\"multidevice_updated_at\":1570469080,\"id\":2102943,\"registration_date\":1505418165,\"last_sync_date\":1505418173,\"last_unlock_date\":1570641596}}";
+
+        Map<String, String> headers = createHeaders(testNonce, expectedSignature);
+        final boolean valid = AuthyUtil.validateSignatureForPost(callbackBody, headers, testCallbackUrl, testApikey);
+
+        assertThat(valid, is(true));
+    }
+
+    @Test
     public void testValidSignatureDeniedWithDetailsPost() throws UnsupportedEncodingException, OneTouchException {
         final String testNonce = "1512940231";
         final String expectedSignature = "HFc5mICOVRrEmpmBoIuubKWcN0YYd50TaO7YQJFrnlM=";
