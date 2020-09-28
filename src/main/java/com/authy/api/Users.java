@@ -109,7 +109,7 @@ public class Users extends Resource {
     }
     
     /**
-     * Send token via call to a user.
+     * Send token via email to a user.
      * 
      * @param userId
      * @return
