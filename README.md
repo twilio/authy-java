@@ -73,4 +73,4 @@ AuthyApiClient client = new AuthyApiClient("your-api-key")
 
 ## Copyright
 
-Copyright (c) 2011-2020 Authy Inc. See [LICENSE](https://github.com/twilio/authy-java/blob/master/LICENSE.txt) for further details.
+Copyright (c) 2011-2021 Authy Inc. See [LICENSE](https://github.com/twilio/authy-java/blob/master/LICENSE.txt) for further details.
