@@ -10,6 +10,9 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import org.json.JSONException;
+import org.skyscreamer.jsonassert.JSONAssert;
+
 public class UserStatusTest {
 
     public static final int USER_ID = 1234;
@@ -17,6 +20,17 @@ public class UserStatusTest {
     public static final String DEVICE_A = "deviceA";
     public static final String DEVICE_B = "deviceB";
     private UserStatus userStatus;
+
+    /**
+     * Compare JSON string without enforcing the order
+     */
+    public void assertJsonEqualsNonStrict(String json1, String json2) {
+        try {
+            JSONAssert.assertEquals(json1, json2, false);
+        } catch (JSONException jse) {
+            throw new IllegalArgumentException(jse.getMessage());
+        }
+    }
 
     @Before
     public void setup() {
@@ -63,7 +77,7 @@ public class UserStatusTest {
     public void testToJSON() {
         String userStatusJson = userStatus.toJSON();
         assertNotNull(userStatusJson);
-        assertEquals(userStatusJson, "{\"phoneNumber\":\"456 758 8990\"," +
+        assertJsonEqualsNonStrict(userStatusJson, "{\"phoneNumber\":\"456 758 8990\"," +
                 "\"devices\":\"[deviceA, deviceB]\",\"success\":\"true\"," +
                 "\"countryCode\":\"1\",\"registered\":\"true\",\"userId\":\"1234\",\"confirmed\":\"true\"}");
     }
