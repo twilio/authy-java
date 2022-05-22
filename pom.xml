@@ -40,7 +40,7 @@
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20150729</version>
+            <version>20180130</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -175,7 +175,7 @@
                         <format>html</format>
                         <format>xml</format>
                     </formats>
-                    <check />
+                    <check/>
                 </configuration>
             </plugin>
         </plugins>
