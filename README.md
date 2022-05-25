@@ -1,7 +1,23 @@
 [![Build Status](https://travis-ci.org/twilio/authy-java.svg?branch=master)](https://travis-ci.org/twilio/authy-java)
 [![codecov.io](http://codecov.io/github/twilio/authy-java/coverage.svg?branch=master)](https://codecov.io/gh/twilio/authy-java)
 
-# Java Client for Twilio Authy Two-Factor Authentication (2FA) API
+🚨🚨🚨
+
+**This library is no longer actively maintained.** The Authy API has been replaced with the [Twilio Verify API](https://www.twilio.com/docs/verify). Twilio will support the Authy API through November 1, 2022 for SMS/Voice. After this date, we’ll start to deprecate the service for SMS/Voice. Any requests sent to the API after May 1, 2023, will automatically receive an error.  Push and TOTP will continue to be supported through July 2023.
+
+[Learn more about migrating from Authy to Verify.](https://www.twilio.com/blog/migrate-authy-to-verify)
+
+Please visit the Twilio Docs for:
+* [Verify + Java (Servlets) quickstart](https://www.twilio.com/docs/verify/quickstarts/java-servlets)
+* [Twilio Java helper library](https://www.twilio.com/docs/libraries/java)
+* [Verify API reference](https://www.twilio.com/docs/verify/api)
+
+Please direct any questions to [Twilio Support](https://support.twilio.com/hc/en-us). Thank you!
+
+🚨🚨🚨
+
+
+## Java Client for Twilio Authy Two-Factor Authentication (2FA) API
 
 Documentation for Java usage of the Authy API lives in the [official Twilio documentation](https://www.twilio.com/docs/authy/api/).
 
